@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "type": "node",
+        "request": "launch",
+        "name": "Debug Typescript",
+        "program": "${workspaceFolder}/src/index.ts",
+        "preLaunchTask": "tsc: build - tsconfig.json",
+        "sourceMaps": true,
+        "smartStep": true,
+        "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+        
+      }
+    ]
+  }

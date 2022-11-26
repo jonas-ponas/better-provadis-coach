@@ -1,11 +1,11 @@
-import { Database } from "sqlite3";
+import {Database} from 'sqlite3';
 
-const db = new Database("./data/data.sqlite", (err) => {
-    if(err) {
-        return console.error(err.message)
-    }
-    console.log("Connected to Database")
-})
+const db = new Database('./data/data.sqlite', err => {
+	if (err) {
+		return console.error(err.message);
+	}
+	console.log('Connected to Database');
+});
 
 const RECURSIVE_SQL = `
 WITH RECURSIVE folder_structure AS (
@@ -29,21 +29,22 @@ WITH RECURSIVE folder_structure AS (
     FROM folder f, folder_structure
     WHERE f.parent = folder_structure.id
 )
-`
+`;
 db.serialize(() => {
-    // db.each(RECURSIVE_SQL+"SELECT * FROM folder_structure ORDER BY level DESC LIMIT 3", (err, row) => {
-    //     if(err) return console.error(err.message)
-    //     console.log(row)
-    // })
-    
-    
-    db.all(RECURSIVE_SQL+`
+	// db.each(RECURSIVE_SQL+"SELECT * FROM folder_structure ORDER BY level DESC LIMIT 3", (err, row) => {
+	//     if(err) return console.error(err.message)
+	//     console.log(row)
+	// })
+
+	db.all(
+		RECURSIVE_SQL +
+			`
     SELECT  f.*,
             fs.textPath || '/' || f.name || '.' || f.mime AS path,
             fs.level AS level
     FROM file f, folder_structure fs
     INNER JOIN folder_structure ON f.folder = fs.id
-    `, (err, rows) => {
-        
-    })     
-})
+    `,
+		(err, rows) => {}
+	);
+});

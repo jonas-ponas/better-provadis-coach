@@ -129,7 +129,7 @@ export default class Coach {
 			};
 			console.debug('Updated Refresh-Token', this.refreshToken);
 		}
-    console.log(json);
+    // console.log(json);
 		return json;
 	}
 
@@ -271,9 +271,13 @@ export default class Coach {
 			clientSecret,
 			clientId
 		})
-		const userInfo = await coach.getUserInfo()
-		console.log("Got User-Info: ", userInfo.user.firstname + " " + userInfo.user.lastname)
-		return coach
+		try {
+			const data = await coach.getUserInfo();
+			console.log("Got User-Info: ", data.user.firstname + " " + data.user.familyname + " #" + data.user.id)
+			return coach;
+		} catch(e) {
+			throw e;
+		}
 	}
 
 	/* ----------------------------

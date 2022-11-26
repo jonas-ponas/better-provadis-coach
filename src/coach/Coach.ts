@@ -48,9 +48,6 @@ export default class Coach {
 			clientId: this.clientId,
 			clientSecret: this.clientSecret
 		});
-    this.getUserInfo().then(() => {
-      console.debug("Successfully initialized Coach")
-    })
 	}
 
 	public async getNewAccessToken() {
@@ -261,9 +258,22 @@ export default class Coach {
 		throw new Error();
 	}
 
-	public static fromQrCode(): Coach {
-		// TODO
-		throw new Error();
+	public static async fromQrCode(qrcode: {
+		token: string;
+		expires: string;
+		refreshToken: string;
+		url?: string;
+		userId?: string;
+		domainId?: number;
+	}, clientSecret: string, clientId: string): Promise<Coach> {
+		let coach = new Coach({
+			...qrcode, 
+			clientSecret,
+			clientId
+		})
+		const userInfo = await coach.getUserInfo()
+		console.log("Got User-Info: ", userInfo.user.firstname + " " + userInfo.user.lastname)
+		return coach
 	}
 
 	/* ----------------------------

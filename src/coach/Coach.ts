@@ -1,10 +1,5 @@
-/**
- * In Theory this library is working. It worked before...
- * But it currently doesn't work due to mysterious circumstances :(
- * Feel free to find the bug(?) ¯\_(ツ)_/¯
- */
-
-import * as CryptoJS from 'crypto-js';
+import { HmacSHA256 } from 'crypto-js';
+import { stringify } from 'crypto-js/enc-hex'
 
 export default class Coach {
 	private accessToken?: {expires: number; token: string};
@@ -98,7 +93,7 @@ export default class Coach {
 			},
 			body: JSON.stringify({
 				domain_id: this.domainId,
-				client_verifier: CryptoJS.HmacSHA256(this.clientSecret || '', this.accessToken?.token || '').toString(),
+				client_verifier: HmacSHA256(this.clientSecret || '', this.accessToken?.token || '').toString(),
 				client_id: this.clientId || ''
 			})
 		};
@@ -280,6 +275,17 @@ export default class Coach {
 		}
 	}
 
+	public exportCurrentState() {
+		return {
+			refreshToken: this.refreshToken?.token,
+			token: this.accessToken?.token,
+			expires: this.accessToken?.expires,
+			url: this.url,
+			userId: this.userId,
+			domainId: this.domainId
+		}
+	}
+
 	/* ----------------------------
       Below are Helper functions
      ----------------------------  */
@@ -315,14 +321,10 @@ export default class Coach {
 			}, '');
 		};
 		const signatureString = generateParams(obj, '=', '&').slice(0, -1);
-		const signature = CryptoJS.enc.Hex.stringify(CryptoJS.HmacSHA256(signatureString, this.accessToken!!.token));
+		const signature = stringify(HmacSHA256(signatureString, this.accessToken!!.token));
 		return (
 			generateParams(obj, '/', '/') + 'signature/' + encodeURI(Buffer.from(signature, 'utf-8').toString('base64'))
 		);
-	}
-
-	public dumpCurrentRefreshToken() {
-		return this.refreshToken?.token;
 	}
 }
 

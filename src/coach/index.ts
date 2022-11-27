@@ -1,9 +1,12 @@
 import Coach from './Coach';
 import dotenv from 'dotenv';
-import {writeFile} from 'fs';
+import {writeFile, readFile} from 'fs';
 dotenv.config();
 
 async function main() {
+	readFile('./data/state.json', (err, data) => {
+		const json = JSON.parse(data.toString())
+	})
 	let coach: Coach = await Coach.fromQrCode(
 		{
 			token: process.env.ACCESS_TOKEN || '',
@@ -22,6 +25,8 @@ async function main() {
 	writeFile('./data/dirs.json', JSON.stringify(directories), () => {});
 	writeFile('./data/files.json', JSON.stringify(files), () => {});
 	writeFile('./data/news.json', JSON.stringify(news), () => {});
+
+	writeFile('./data/state.json', JSON.stringify(coach.exportCurrentState()), () => {})
 }
 
 main()

@@ -1,32 +1,43 @@
 import Coach from './Coach';
 import dotenv from 'dotenv';
-import {writeFile, readFile} from 'fs';
+import {writeFile, readFile} from 'fs/promises';
+import path from 'path'
+
 dotenv.config();
 
 async function main() {
-	readFile('./data/state.json', (err, data) => {
-		const json = JSON.parse(data.toString())
-	})
-	let coach: Coach = await Coach.fromQrCode(
-		{
-			token: process.env.ACCESS_TOKEN || '',
-			expires: process.env.ACCESS_TOKEN_EXPIRES || '0',
-			refreshToken: process.env.REFRESH_TOKEN || '',
-			domainId: 2
-		},
-		process.env.CLIENT_SECRET || '',
-		process.env.CLIENT_ID || ''
-	);
+	if(!process.env.CLIENT_SECRET || !process.env.CLIENT_ID) throw Error("Client-Id or Client-Secret not found")
+	let coach: Coach
+	try {
+		const stateData = await readFile('./data/state.json')
+		const stateJson = JSON.parse(stateData.toString())
+		coach = await Coach.createFromState({
+			...stateJson,
+			clientId: process.env.CLIENT_ID||'',
+			clientSecret: process.env.CLIENT_SECRET||''
+		})
+	} catch(e) {
+		console.log("Could not read from state.json. Trying to read from Env-Variables...")
+		coach = await Coach.createFromQrCode(
+			{
+				token: process.env.ACCESS_TOKEN || '',
+				expires: process.env.ACCESS_TOKEN_EXPIRES || '0',
+				refreshToken: process.env.REFRESH_TOKEN || '',
+				domainId: 2
+			},
+			process.env.CLIENT_SECRET || '',
+			process.env.CLIENT_ID || ''
+		);
+	} 
 	
 	const directories = await coach.getDirectories();
 	const files = await coach.getFiles();
 	const news = await coach.getNews();
 
-	writeFile('./data/dirs.json', JSON.stringify(directories), () => {});
-	writeFile('./data/files.json', JSON.stringify(files), () => {});
-	writeFile('./data/news.json', JSON.stringify(news), () => {});
-
-	writeFile('./data/state.json', JSON.stringify(coach.exportCurrentState()), () => {})
+	await writeFile('./data/dirs.json', JSON.stringify(directories));
+	await writeFile('./data/files.json', JSON.stringify(files));
+	await writeFile('./data/news.json', JSON.stringify(news));
+	await writeFile('./data/state.json', JSON.stringify(coach.exportFromState()))
 }
 
 main()

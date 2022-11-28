@@ -1,5 +1,7 @@
-import { HmacSHA256 } from 'crypto-js';
-import { stringify } from 'crypto-js/enc-hex'
+import {HmacSHA256} from 'crypto-js';
+import {stringify} from 'crypto-js/enc-hex';
+
+const ZEROTIME = new Date(0).toISOString();
 
 export default class Coach {
 	private accessToken?: {expires: number; token: string};
@@ -9,6 +11,8 @@ export default class Coach {
 	private userId: number = -1;
 	private url: string = '';
 	private domainId: number = -1;
+
+	private coachMeta?: {name: string; version: string; id: string};
 
 	private clientId?: string;
 	private clientSecret?: string;
@@ -31,6 +35,7 @@ export default class Coach {
 			token: options.refreshToken
 		};
 		this.domainId = options.domainId || -1;
+		this.url = options.url || 'hochschule.provadis-coach.de';
 
 		this.clientId = options.clientId;
 		this.clientSecret = options.clientSecret;
@@ -45,9 +50,9 @@ export default class Coach {
 		});
 	}
 
-	public async getNewAccessToken() {
+	private async getNewAccessToken() {
 		console.log('Refreshing Token');
-		const response = await fetch('https://hochschule.provadis-coach.de/oauth/token', {
+		const response = await fetch(`https://${this.url}/oauth/token`, {
 			method: 'POST',
 			headers: {
 				'X-Requested-With': 'de.provadis.provadiscampus',
@@ -81,7 +86,7 @@ export default class Coach {
 		console.debug('Updated Access- and Refresh-Token', this.accessToken, this.refreshToken);
 	}
 
-	public async getUserInfo() {
+	private async getUserInfo() {
 		console.log('Getting Oauth User-Info...');
 		// await this.checkAccessToken()
 		const options = {
@@ -97,7 +102,7 @@ export default class Coach {
 				client_id: this.clientId || ''
 			})
 		};
-		const response = await fetch('https://hochschule.provadis-coach.de/oauth/userinfo', options);
+		const response = await fetch(`https://${this.url}/oauth/userinfo`, options);
 
 		if (response.status != 200) {
 			try {
@@ -108,9 +113,9 @@ export default class Coach {
 			}
 		}
 		const json = await response.json();
-    if(json.error) {
-      throw new Error(`Request failed (${json['error']}: ${json['error_description']})`)
-    }
+		if (json.error) {
+			throw new Error(`Request failed (${json['error']}: ${json['error_description']})`);
+		}
 		if (json.token?.access_token) {
 			this.accessToken = {
 				token: json.token?.access_token,
@@ -124,15 +129,23 @@ export default class Coach {
 			};
 			console.debug('Updated Refresh-Token', this.refreshToken);
 		}
-    // console.log(json);
+		if (json?.user?.id) {
+			this.userId = json.user.id;
+		}
+		if (json?.coach) {
+			this.coachMeta = {
+				name: json.coach.name,
+				version: json.coach.version,
+				id: json.coach.version
+			};
+		}
+		// console.log(json);
 		return json;
 	}
 
-	public async getResource() {
+	private async getResource() {
 		await this.checkAccessToken();
-		const response = await fetch(
-			`https://hochschule.provadis-coach.de/oauth/resource?access_token=${this.accessToken?.token}`
-		);
+		const response = await fetch(`https://${this.url}/oauth/resource?access_token=${this.accessToken?.token}`);
 		if (response.status != 200) throw new Error(`Request was not successful (Response ${response.status})`);
 		const json = (await response.json()) as any;
 		if (!json['success']) throw new Error(`Request was not successful (success=false)`);
@@ -143,7 +156,7 @@ export default class Coach {
 		console.debug('Updated Coach-Login-Token: ', this.coachToken);
 	}
 
-	public async getFiles(): Promise<object[]> {
+	public async getFiles(): Promise<File[]> {
 		console.debug('Getting Files...');
 		await this.checkAccessToken();
 		await this.checkCoachToken();
@@ -156,7 +169,7 @@ export default class Coach {
 			timestamp: new Date().toISOString()
 		});
 		// console.debug('Generated URL-Parameters: ', urlParams);
-		const response = await fetch('https://hochschule.provadis-coach.de/api/files/' + urlParams, {
+		const response = await fetch(`https://${this.url}/api/files/${urlParams}`, {
 			headers: {
 				'X-Requested-With': 'de.provadis.provadiscampus'
 			}
@@ -173,11 +186,26 @@ export default class Coach {
 		if (!json['success']) {
 			throw new Error('Request failed (success=false)');
 		}
-		console.debug('Received Files:', json.length);
-		return json['data'];
+		let files: File[] = json['data'].map((v: any, i: number, a: any[]): File => {
+			return {
+				id: parseInt(v?.file_id) || -1,
+				name: v?.file_name || '',
+				mime: v?.file_ext || '',
+				size: parseInt(v?.file_size) || -1,
+				directory: {
+					id: parseInt(v?.directory_id) || -1,
+					name: v?.directory_name || '',
+					parent: parseInt(v?.file_directory_parent_id) || -1
+				},
+				timestamp: v?.timestamp?.date || new Date(0).toISOString(),
+				download_url: v?.file_download || ''
+			};
+		});
+		console.log('Received Files', files.length);
+		return files;
 	}
 
-	public async getDirectories() {
+	public async getDirectories(): Promise<Directory> {
 		console.debug('Getting Directories...');
 		await this.checkAccessToken();
 		await this.checkCoachToken();
@@ -190,7 +218,7 @@ export default class Coach {
 			timestamp: new Date().toISOString()
 		});
 		// console.debug('Generated URL-Parameters: ', urlParams);
-		const response = await fetch('https://hochschule.provadis-coach.de/api/FilesDirTree/' + urlParams, {
+		const response = await fetch(`https://${this.url}/api/FilesDirTree/${urlParams}`, {
 			headers: {
 				'X-Requested-With': 'de.provadis.provadiscampus'
 			}
@@ -207,11 +235,12 @@ export default class Coach {
 		if (!json['success']) {
 			throw new Error('Request failed (success=false)');
 		}
-		return json['data'];
+		let directory = this.parseDirectory(json['data']);
+		return directory;
 	}
 
-  public async getNews() {
-    console.debug('Getting News...');
+	public async getNews(): Promise<NewsItem[]> {
+		console.debug('Getting News...');
 		await this.checkAccessToken();
 		await this.checkCoachToken();
 
@@ -223,7 +252,7 @@ export default class Coach {
 			timestamp: new Date().toISOString()
 		});
 		// console.debug('Generated URL-Parameters: ', urlParams);
-		const response = await fetch('https://hochschule.provadis-coach.de/api/news/' + urlParams, {
+		const response = await fetch(`https://${this.url}/api/news/${urlParams}`, {
 			headers: {
 				'X-Requested-With': 'de.provadis.provadiscampus'
 			}
@@ -240,42 +269,75 @@ export default class Coach {
 		if (!json['success']) {
 			throw new Error('Request failed (success=false)');
 		}
-		return json['data'];
-  }
+		let newsItems: NewsItem[] = json['data'].map((v: any, i: number, a: any[]): NewsItem => {
+			return {
+				id: parseInt(v?.id) || -1,
+				title: v?.title || '',
+				text: v?.text || '',
+				author: v?.author || '',
+				modified: v?.modified_date || ZEROTIME,
+				created: v?.created?.date || ZEROTIME,
+				mapped: parseInt(v?.mapped) || -1,
+				source: parseInt(v?.source_id) || -1
+			};
+		});
+		console.log('Received News-Items', newsItems.length);
+		return newsItems;
+	}
 
 	public getFileStructure(): any {
-		// TODO
+		// TODO: Take getFiles and getDirectories and turn it in one big structure
 		return [];
 	}
 
-	public static fromDatabase(): Coach {
-		// TODO
-		throw new Error();
+	public static async createFromQrCode(
+		qrcode: {
+			token: string;
+			expires: string;
+			refreshToken: string;
+			url?: string;
+			userId?: string;
+			domainId?: number;
+		},
+		clientSecret: string,
+		clientId: string
+	): Promise<Coach> {
+		let coach = new Coach({
+			...qrcode,
+			clientSecret,
+			clientId
+		});
+		try {
+			const data = await coach.getUserInfo();
+			console.log('Got User-Info: ', data.user.firstname + ' ' + data.user.familyname + ' #' + data.user.id);
+			return coach;
+		} catch (e) {
+			throw e;
+		}
 	}
 
-	public static async fromQrCode(qrcode: {
+	public static async createFromState(state: {
 		token: string;
 		expires: string;
 		refreshToken: string;
 		url?: string;
 		userId?: string;
 		domainId?: number;
-	}, clientSecret: string, clientId: string): Promise<Coach> {
-		let coach = new Coach({
-			...qrcode, 
-			clientSecret,
-			clientId
-		})
+		clientSecret: string;
+		clientId: string;
+	}) {
+		let coach = new Coach(state);
 		try {
+			coach.checkAccessToken();
 			const data = await coach.getUserInfo();
-			console.log("Got User-Info: ", data.user.firstname + " " + data.user.familyname + " #" + data.user.id)
+			console.log('Got User-Info: ', data.user.firstname + ' ' + data.user.familyname + ' #' + data.user.id);
 			return coach;
-		} catch(e) {
+		} catch (e) {
 			throw e;
 		}
 	}
 
-	public exportCurrentState() {
+	public exportFromState() {
 		return {
 			refreshToken: this.refreshToken?.token,
 			token: this.accessToken?.token,
@@ -283,7 +345,7 @@ export default class Coach {
 			url: this.url,
 			userId: this.userId,
 			domainId: this.domainId
-		}
+		};
 	}
 
 	/* ----------------------------
@@ -325,6 +387,42 @@ export default class Coach {
 		return (
 			generateParams(obj, '/', '/') + 'signature/' + encodeURI(Buffer.from(signature, 'utf-8').toString('base64'))
 		);
+	}
+
+	private parseDirectory(root: any): Directory {
+		let children: Directory[] = [];
+		if ((root?.children || 0) >= 1) {
+			children = root.children.map((v: any) => {
+				return this.parseDirectory(v);
+			});
+		}
+		return {
+			id: parseInt(root.file_directory_id) || -1,
+			name: root.file_directory_name || '',
+			parent_id: parseInt(root.file_directory_parent_id) || -1,
+			object: {
+				id: parseInt(root?.object_id) || -1,
+				inc: parseInt(root?.object_inc_id) || -1,
+				type: parseInt(root?.object_type_id) || -1
+			},
+			created: {
+				timestamp: root?.object_created || ZEROTIME,
+				user: parseInt(root?.user_id_created) || -1
+			},
+			modified: {
+				timestamp: root?.object_modified || ZEROTIME,
+				user: parseInt(root?.user_id_modified) || -1
+			},
+			status: {
+				status: root?.object_status,
+				timestamp: root?.object_status_datetime || ZEROTIME,
+				user: parseInt(root?.user_id_status) || -1
+			},
+			display: parseInt(root?.object_display) || -1,
+			group_id: parseInt(root?.group_id) || -1,
+			subfolder: parseInt(root?.file_directory_subfolder) || -1,
+			children: children
+		};
 	}
 }
 
@@ -368,4 +466,15 @@ interface Directory {
 	group_id: number; // =
 	subfolder: number; // file_directory_subfolder
 	children: Directory[]; // =
+}
+
+interface NewsItem {
+	id: number; // =
+	title: string; // =
+	text: string; // =
+	author: string; // =
+	modified: string; // modified_date
+	created: string; // created.date
+	mapped: number; // =
+	source: number; // source_id
 }

@@ -51,7 +51,7 @@ export default class Coach {
 	}
 
 	private async getNewAccessToken() {
-		console.log('Refreshing Token...');
+		console.debug('Refreshing Token...');
 		const response = await fetch(`https://${this.url}/oauth/token`, {
 			method: 'POST',
 			headers: {
@@ -74,7 +74,6 @@ export default class Coach {
 			}
 		}
 		const json = (await response.json()) as any;
-		// console.log(json);
 		if (!json['success']) throw new Error(`Could not retrieve new Access Token. (Returned success=false)`);
 		this.accessToken = {
 			token: json['access_token'],
@@ -90,7 +89,7 @@ export default class Coach {
 	}
 
 	private async getUserInfo() {
-		console.log('Getting Oauth User-Info...');
+		console.debug('Getting Oauth User-Info...');
 		// await this.checkAccessToken()
 		const options = {
 			method: 'POST',
@@ -142,7 +141,6 @@ export default class Coach {
 				id: json.coach.version
 			};
 		}
-		// console.log(json);
 		return json;
 	}
 
@@ -156,7 +154,6 @@ export default class Coach {
 			token: json['coach']['login_token'] || '',
 			expires: (json['coach']['expires'] || 0) * 1000
 		};
-		console.log(json['coach']);
 		console.debug('Updated Coach-Login-Token' /* this.coachToken*/);
 	}
 
@@ -172,7 +169,6 @@ export default class Coach {
 			scope: 'coach_session',
 			timestamp: new Date().toISOString()
 		});
-		// console.debug('Generated URL-Parameters: ', urlParams);
 		const response = await fetch(`https://${this.url}/api/files/${urlParams}`, {
 			headers: {
 				'X-Requested-With': 'de.provadis.provadiscampus'
@@ -205,7 +201,7 @@ export default class Coach {
 				download_url: v?.file_download || ''
 			};
 		});
-		console.log('Received Files', files.length);
+		console.debug('Received Files', files.length);
 		return files;
 	}
 
@@ -221,7 +217,6 @@ export default class Coach {
 			scope: 'coach_session',
 			timestamp: new Date().toISOString()
 		});
-		// console.debug('Generated URL-Parameters: ', urlParams);
 		const response = await fetch(`https://${this.url}/api/FilesDirTree/${urlParams}`, {
 			headers: {
 				'X-Requested-With': 'de.provadis.provadiscampus'
@@ -240,7 +235,7 @@ export default class Coach {
 			throw new Error('Request failed (success=false)');
 		}
 		let directories = this.parseDirectory(json['data']);
-		console.log('Received Directories', directories.length);
+		console.debug('Received Directories', directories.length);
 		return directories;
 	}
 
@@ -286,7 +281,7 @@ export default class Coach {
 				source: parseInt(v?.source_id) || -1
 			};
 		});
-		console.log('Received News-Items', newsItems.length);
+		console.debug('Received News-Items', newsItems.length);
 		return newsItems;
 	}
 
@@ -314,7 +309,7 @@ export default class Coach {
 		});
 		try {
 			const data = await coach.getUserInfo();
-			console.log('Got User-Info: ', data.user.firstname + ' ' + data.user.familyname + ' #' + data.user.id);
+			console.debug('Got User-Info: ', data.user.firstname + ' ' + data.user.familyname, data.user.id);
 			return coach;
 		} catch (e) {
 			throw e;

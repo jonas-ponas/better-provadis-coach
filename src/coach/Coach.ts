@@ -19,7 +19,7 @@ export default class Coach {
 
 	constructor(options: {
 		token: string;
-		expires: string;
+		expires: string | number;
 		refreshToken: string;
 		clientSecret: string;
 		clientId: string;
@@ -29,7 +29,7 @@ export default class Coach {
 	}) {
 		this.accessToken = {
 			token: options.token,
-			expires: new Date(options.token).getTime()
+			expires: typeof options.expires != 'number' ? new Date(options.expires).getTime() : options.expires
 		};
 		this.refreshToken = {
 			token: options.refreshToken
@@ -51,7 +51,7 @@ export default class Coach {
 	}
 
 	private async getNewAccessToken() {
-		console.log('Refreshing Token');
+		console.log('Refreshing Token...');
 		const response = await fetch(`https://${this.url}/oauth/token`, {
 			method: 'POST',
 			headers: {
@@ -74,16 +74,19 @@ export default class Coach {
 			}
 		}
 		const json = (await response.json()) as any;
-		console.log(json);
+		// console.log(json);
 		if (!json['success']) throw new Error(`Could not retrieve new Access Token. (Returned success=false)`);
 		this.accessToken = {
 			token: json['access_token'],
-			expires: Date.now() + json['expires_in']
+			expires: new Date().getTime() + parseInt(json['expires_in']) * 1000
 		};
 		this.refreshToken = {
 			token: json['refresh_token']
 		};
-		console.debug('Updated Access- and Refresh-Token', this.accessToken, this.refreshToken);
+		console.debug(
+			'Refreshed Access- and Refresh-Token. Expires',
+			new Date(this.accessToken.expires).toISOString() /*this.accessToken, this.refreshToken*/
+		);
 	}
 
 	private async getUserInfo() {
@@ -121,13 +124,13 @@ export default class Coach {
 				token: json.token?.access_token,
 				expires: json.token?.expires
 			};
-			console.debug('Updated Access-Token', this.accessToken);
+			console.debug('Updated Access-Token via User-Info' /*this.accessToken*/);
 		}
 		if (json?.token?.refresh_token) {
 			this.refreshToken = {
 				token: json.token?.refresh_token
 			};
-			console.debug('Updated Refresh-Token', this.refreshToken);
+			console.debug('Updated Refresh-Token via User-Info' /*this.refreshToken*/);
 		}
 		if (json?.user?.id) {
 			this.userId = json.user.id;
@@ -151,9 +154,10 @@ export default class Coach {
 		if (!json['success']) throw new Error(`Request was not successful (success=false)`);
 		this.coachToken = {
 			token: json['coach']['login_token'] || '',
-			expires: json['coach']['expires'] || 0
+			expires: (json['coach']['expires'] || 0) * 1000
 		};
-		console.debug('Updated Coach-Login-Token: ', this.coachToken);
+		console.log(json['coach']);
+		console.debug('Updated Coach-Login-Token' /* this.coachToken*/);
 	}
 
 	public async getFiles(): Promise<File[]> {
@@ -205,7 +209,7 @@ export default class Coach {
 		return files;
 	}
 
-	public async getDirectories(): Promise<Directory> {
+	public async getDirectories(): Promise<Directory[]> {
 		console.debug('Getting Directories...');
 		await this.checkAccessToken();
 		await this.checkCoachToken();
@@ -235,8 +239,9 @@ export default class Coach {
 		if (!json['success']) {
 			throw new Error('Request failed (success=false)');
 		}
-		let directory = this.parseDirectory(json['data']);
-		return directory;
+		let directories = this.parseDirectory(json['data']);
+		console.log('Received Directories', directories.length);
+		return directories;
 	}
 
 	public async getNews(): Promise<NewsItem[]> {
@@ -318,7 +323,7 @@ export default class Coach {
 
 	public static async createFromState(state: {
 		token: string;
-		expires: string;
+		expires: number;
 		refreshToken: string;
 		url?: string;
 		userId?: string;
@@ -328,9 +333,9 @@ export default class Coach {
 	}) {
 		let coach = new Coach(state);
 		try {
-			coach.checkAccessToken();
-			const data = await coach.getUserInfo();
-			console.log('Got User-Info: ', data.user.firstname + ' ' + data.user.familyname + ' #' + data.user.id);
+			await coach.checkAccessToken();
+			// const data = await coach.getUserInfo();
+			// console.log('Got User-Info: ', data.user.firstname + ' ' + data.user.familyname + ' #' + data.user.id);
 			return coach;
 		} catch (e) {
 			throw e;
@@ -352,9 +357,11 @@ export default class Coach {
       Below are Helper functions
      ----------------------------  */
 	private async checkAccessToken() {
-		if ((this.accessToken?.expires || 0) < Date.now()) {
+		console.debug('Check Access Token...');
+		if ((this.accessToken?.expires || 0) < new Date().getTime()) {
+			console.debug('Access-Token expired. Getting new Access-Token');
 			if ((this.refreshToken?.token || '') == '') {
-				throw new Error('Refresh Token nicht verfügbar');
+				throw new Error('Refresh-Token nicht verfügbar');
 			}
 			await this.getNewAccessToken();
 		}
@@ -362,8 +369,9 @@ export default class Coach {
 	}
 
 	private async checkCoachToken() {
-		if ((this.coachToken?.expires || 0) < Date.now()) {
-			console.debug('Getting new Coach-Login-Token...');
+		console.debug('Check Coach-Login Token...');
+		if ((this.coachToken?.expires || 0) < new Date().getTime()) {
+			console.debug('Coach-Login-Token expired. Getting new Coach-Login-Token...');
 			await this.getResource();
 		}
 		return true;
@@ -389,14 +397,9 @@ export default class Coach {
 		);
 	}
 
-	private parseDirectory(root: any): Directory {
-		let children: Directory[] = [];
-		if ((root?.children || 0) >= 1) {
-			children = root.children.map((v: any) => {
-				return this.parseDirectory(v);
-			});
-		}
-		return {
+	private parseDirectory(root: any): Directory[] {
+		let directories: Directory[] = [];
+		directories.push({
 			id: parseInt(root.file_directory_id) || -1,
 			name: root.file_directory_name || '',
 			parent_id: parseInt(root.file_directory_parent_id) || -1,
@@ -420,9 +423,12 @@ export default class Coach {
 			},
 			display: parseInt(root?.object_display) || -1,
 			group_id: parseInt(root?.group_id) || -1,
-			subfolder: parseInt(root?.file_directory_subfolder) || -1,
-			children: children
-		};
+			subfolder: parseInt(root?.file_directory_subfolder) || -1
+		});
+		root?.children.forEach((child: any) => {
+			directories.push(...this.parseDirectory(child));
+		});
+		return directories;
 	}
 }
 
@@ -465,7 +471,7 @@ interface Directory {
 	display: number; // object_display
 	group_id: number; // =
 	subfolder: number; // file_directory_subfolder
-	children: Directory[]; // =
+	// children: Directory[]; // =
 }
 
 interface NewsItem {

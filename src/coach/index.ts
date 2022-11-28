@@ -1,23 +1,23 @@
 import Coach from './Coach';
 import dotenv from 'dotenv';
 import {writeFile, readFile} from 'fs/promises';
-import path from 'path'
 
 dotenv.config();
 
 async function main() {
-	if(!process.env.CLIENT_SECRET || !process.env.CLIENT_ID) throw Error("Client-Id or Client-Secret not found")
-	let coach: Coach
+	if (!process.env.CLIENT_SECRET || !process.env.CLIENT_ID) throw Error('Client-Id or Client-Secret not found');
+	let coach: Coach;
 	try {
-		const stateData = await readFile('./data/state.json')
-		const stateJson = JSON.parse(stateData.toString())
+		const stateData = await readFile('./data/state.json');
+		const stateJson = JSON.parse(stateData.toString());
+		console.log('stateJson', stateJson);
 		coach = await Coach.createFromState({
 			...stateJson,
-			clientId: process.env.CLIENT_ID||'',
-			clientSecret: process.env.CLIENT_SECRET||''
-		})
-	} catch(e) {
-		console.log("Could not read from state.json. Trying to read from Env-Variables...")
+			clientId: process.env.CLIENT_ID || '',
+			clientSecret: process.env.CLIENT_SECRET || ''
+		});
+	} catch (e) {
+		console.log('Could not read from state.json. Trying to read from Env-Variables...');
 		coach = await Coach.createFromQrCode(
 			{
 				token: process.env.ACCESS_TOKEN || '',
@@ -28,16 +28,20 @@ async function main() {
 			process.env.CLIENT_SECRET || '',
 			process.env.CLIENT_ID || ''
 		);
-	} 
-	
-	const directories = await coach.getDirectories();
-	const files = await coach.getFiles();
-	const news = await coach.getNews();
+	}
+	try {
+		const directories = await coach.getDirectories();
+		const files = await coach.getFiles();
+		const news = await coach.getNews();
 
-	await writeFile('./data/dirs.json', JSON.stringify(directories));
-	await writeFile('./data/files.json', JSON.stringify(files));
-	await writeFile('./data/news.json', JSON.stringify(news));
-	await writeFile('./data/state.json', JSON.stringify(coach.exportFromState()))
+		await writeFile('./data/dirs.json', JSON.stringify(directories));
+		await writeFile('./data/files.json', JSON.stringify(files));
+		await writeFile('./data/news.json', JSON.stringify(news));
+	} catch (e) {
+		throw e;
+	} finally {
+		await writeFile('./data/state.json', JSON.stringify(coach.exportFromState()));
+	}
 }
 
 main()

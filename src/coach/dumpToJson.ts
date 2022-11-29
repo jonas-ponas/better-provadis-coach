@@ -1,4 +1,4 @@
-import Coach from './Coach';
+import {Coach} from './Coach';
 import dotenv from 'dotenv';
 import {writeFile, readFile} from 'fs/promises';
 
@@ -17,7 +17,7 @@ async function main() {
 			clientSecret: process.env.CLIENT_SECRET || ''
 		});
 	} catch (e) {
-		console.log('Could not read from state.json. Trying to read from Env-Variables...');
+		console.log('Could not read from state.json. Trying to read from ENV-Variables...');
 		coach = await Coach.createFromQrCode(
 			{
 				token: process.env.ACCESS_TOKEN || '',
@@ -30,13 +30,13 @@ async function main() {
 		);
 	}
 	try {
-		const directories = await coach.getDirectories();
-		const files = await coach.getFiles();
-		const news = await coach.getNews();
+		// const directories = await coach.getDirectories();
+		// const files = await coach.getFiles();
+		// const news = await coach.getNews();
 
-		await writeFile('./data/dirs.json', JSON.stringify(directories));
-		await writeFile('./data/files.json', JSON.stringify(files));
-		await writeFile('./data/news.json', JSON.stringify(news));
+		// await writeFile('./data/dirs.json', JSON.stringify(directories));
+		// await writeFile('./data/files.json', JSON.stringify(files));
+		// await writeFile('./data/news.json', JSON.stringify(news));
 	} catch (e) {
 		throw e;
 	} finally {

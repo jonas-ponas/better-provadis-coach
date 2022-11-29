@@ -3,7 +3,7 @@ import {stringify} from 'crypto-js/enc-hex';
 
 const ZEROTIME = new Date(0).toISOString();
 
-export default class Coach {
+export class Coach {
 	private accessToken?: {expires: number; token: string};
 	private coachToken?: {expires: number; token: string};
 	private refreshToken?: {expires?: number; token: string};
@@ -427,7 +427,7 @@ export default class Coach {
 	}
 }
 
-interface File {
+export interface File {
 	id: number; // file_id
 	name: string; // file_name
 	mime: string; // file_ext, file_mime_ext
@@ -441,7 +441,7 @@ interface File {
 	download_url: string; // file_download
 }
 
-interface Directory {
+export interface Directory {
 	id: number; // file_directory_id
 	name: string; // file_directory_name
 	parent_id: number; // file_directory_parent_id
@@ -469,7 +469,7 @@ interface Directory {
 	// children: Directory[]; // =
 }
 
-interface NewsItem {
+export interface NewsItem {
 	id: number; // =
 	title: string; // =
 	text: string; // =

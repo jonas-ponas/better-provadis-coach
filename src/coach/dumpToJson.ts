@@ -33,7 +33,6 @@ async function main() {
 		// const directories = await coach.getDirectories();
 		// const files = await coach.getFiles();
 		// const news = await coach.getNews();
-
 		// await writeFile('./data/dirs.json', JSON.stringify(directories));
 		// await writeFile('./data/files.json', JSON.stringify(files));
 		// await writeFile('./data/news.json', JSON.stringify(news));

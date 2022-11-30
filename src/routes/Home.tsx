@@ -15,34 +15,27 @@ export default function Home(props: {}) {
     const [showSyncDialog, setShowSyncDialog] = useState(false)
 
 	useEffect(() => {
-		// Check if user is logged in
-		if (!client?.authStore.isValid) {
-			window.location.href = '/login';
-			return;
-		}
-
 		// Get dir from url query
 		const root = new URL(window.location.href).searchParams.get('dir');
         const expand = 'parent,parent.parent,parent.parent.parent,parent.parent.parent.parent,parent.parent.parent.parent.parent,parent.parent.parent.parent.parent.parent'
 		if (!root) {
-			client
-				.collection('directory')
+			client?.collection('directory')
 				.getFirstListItem('parent = null', {
 					expand
 				})
 				.then(record => {
 					setRoot(record);
 				});
-		} else {
-			client
-				.collection('directory')
-				.getOne(root, {
-					expand
-				})
-				.then(record => {
-					setRoot(record);
-				});
-		}
+			return;
+		} 
+		client?.collection('directory')
+			.getOne(root, {
+				expand
+			})
+			.then(record => {
+				setRoot(record);
+			});
+		
 	}, []);
 
 	function logout() {

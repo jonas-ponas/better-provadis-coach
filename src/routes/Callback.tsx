@@ -15,11 +15,12 @@ export default function Callback() {
         const url = new URL(window.location.href)
         const code = url.searchParams.get("code")
         const state = url.searchParams.get("state")
-        if(!state || !code) return
+        const provider = JSON.parse(localStorage.getItem("provider")||"{}")
+        if(!state || !code || !provider?.name) return
         client?.collection('users').authWithOAuth2(
-            'github',
+            provider.name,
             code,
-            state,
+            provider.codeVerifier,
             'http://localhost:5173/callback'
         ).then((r) => {
             console.log(r)

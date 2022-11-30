@@ -1,22 +1,28 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {Container, Box, Paper, Typography, useTheme, Divider, Button, Avatar} from '@mui/material';
-import CloudCircleTwoToneIcon from '@mui/icons-material/CloudCircleTwoTone';
 import PocketBaseContext from '../hooks/PocketbaseContext';
+import {AuthMethodsList, AuthProviderInfo} from 'pocketbase';
+
+const GOOGLE_REDIRECT_URI = 'http://localhost:5173/callback'
 
 export default function Login(props: {}) {
 	const theme = useTheme();
 	const client = useContext(PocketBaseContext);
 
-	const [authUrl, setAuthUrl] = useState<string>("")
-	const [error, setError] = useState<undefined|string>(undefined)
-	
+	const [authMethods, setAuthMethods] = useState<undefined | AuthMethodsList>(undefined);
+	const [error, setError] = useState<undefined | string>(undefined);
+
 	useEffect(() => {
-		client?.collection('users').listAuthMethods().then((methods) => {
-			setAuthUrl(methods.authProviders[0].authUrl)
-		}).catch((e) => {
-			setError(e.message)
-		})
-	}, [])
+		client
+			?.collection('users')
+			.listAuthMethods()
+			.then(methods => {
+				setAuthMethods(methods);
+			})
+			.catch(e => {
+				setError(e.message);
+			});
+	}, []);
 
 	return (
 		<Box
@@ -29,8 +35,8 @@ export default function Login(props: {}) {
 			}}
 		>
 			<Container
-				component="main"
-				maxWidth="sm"
+				component='main'
+				maxWidth='sm'
 				sx={{
 					mt: '20vh'
 				}}
@@ -41,7 +47,8 @@ export default function Login(props: {}) {
 						// p: theme.spacing(2),
 						display: 'flex',
 						alignItems: 'center',
-						flexDirection: 'column'
+						flexDirection: 'column',
+						bgcolor: theme.palette.grey[50]
 					}}
 				>
 					<Box
@@ -52,50 +59,89 @@ export default function Login(props: {}) {
 							flexDirection: 'column'
 						}}
 					>
-						<Avatar
+						<Box
 							sx={{
-								width: 56,
-								height: 56,
-								bgcolor: theme.palette.common.black
+								display: 'flex',
+								alignItems: 'center',
+								mb: theme.spacing(1)
 							}}
 						>
-							<CloudCircleTwoToneIcon fontSize="large" />
-						</Avatar>
-						<Typography
-							variant="h5"
-							component="h1"
-							sx={{
-								mt: theme.spacing(1),
-								fontWeight: 'bold'
-							}}
-						>
-							Login
-						</Typography>
+							<Avatar
+								src='/provadis-logo.png'
+								sx={{
+									bgcolor: theme.palette.common.white
+								}}
+							/>
+							<Typography
+								variant='h5'
+								sx={{
+									fontWeight: 'bold',
+									ml: theme.spacing(1)
+								}}
+							>
+								Expert Giggle
+							</Typography>
+						</Box>
+						<Typography variant='body2'>Das deutlich bessere UI für den Provadis-Coach</Typography>
 					</Box>
-					<Divider variant="fullWidth" light />
 					<Box
 						sx={{
 							p: theme.spacing(2)
 						}}
 					>
-						{error ?
-						<Typography variant='body1'>{error}</Typography>
-						:
-						<Button
-							// onClick={() => (window.location.href = authUrl)}
-							LinkComponent={"a"}
-							href={authUrl||""}
-							sx={{
-								bgcolor: '#000',
-								color: theme.palette.common.white,
-								'&:hover': {
-									bgcolor: '#383838'
+						{error && (
+							<Typography variant='body1' color={theme.palette.error.main}>
+								{error}
+							</Typography>
+						)}
+
+						<Box sx={{
+							display: 'flex',
+							flexDirection: 'column'
+						}}>
+							{authMethods &&
+							authMethods.authProviders.map(v => {
+								console.log(v)
+								switch (v.name) {
+									case 'google':
+										return (
+											<Button
+												LinkComponent={'a'}
+												href={(v.authUrl+encodeURIComponent(GOOGLE_REDIRECT_URI))|| ''}
+												onClick={() => localStorage.setItem('provider', JSON.stringify(v))}
+												sx={{
+													bgcolor: theme.palette.common.white,
+													color: theme.palette.common.black,
+													m: theme.spacing(1),
+													border: "1px solid black"
+												}}
+											>
+												Sign in with Google
+											</Button>
+										);
+									case 'github':
+										return (
+											<Button
+												LinkComponent={'a'}
+												href={v.authUrl || ''}
+												onClick={() => localStorage.setItem('provider', JSON.stringify(v))}
+												sx={{
+													bgcolor: theme.palette.common.black,
+													m: theme.spacing(1),
+													color: theme.palette.common.white,
+													'&:hover': {
+														bgcolor: '#383838'
+													}
+												}}
+											>
+												Sign in with Github
+											</Button>
+										);
+									default:
+										return null;
 								}
-							}}
-						>
-							Sign in with Github
-						</Button>
-					}
+							})}
+						</Box>
 					</Box>
 				</Paper>
 			</Container>

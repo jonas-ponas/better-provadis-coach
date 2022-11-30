@@ -15,9 +15,7 @@ export default function PathBreadcrumb({directory}: {directory: Record | undefin
 
 	if (!directory) {
 		return (
-			<Typography variant='body1' color='initial'>
-				unbekannt
-			</Typography>
+			<Typography variant='body1' color='initial'>/</Typography>
 		);
 	}
 
@@ -31,6 +29,7 @@ export default function PathBreadcrumb({directory}: {directory: Record | undefin
 			<IconButton size='small' href='?dir='>
 				<FolderTwoToneIcon />
 			</IconButton>
+				<Typography variant="body1" color="grey">/</Typography>
 			<Breadcrumbs
 				separator='/'
 				maxItems={3}

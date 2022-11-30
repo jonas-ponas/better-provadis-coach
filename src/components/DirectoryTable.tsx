@@ -1,5 +1,4 @@
 import {
-	Button,
 	IconButton,
 	Link,
 	Paper,
@@ -18,12 +17,20 @@ import {Record} from 'pocketbase';
 
 import FolderTwoToneIcon from '@mui/icons-material/FolderTwoTone';
 import InsertDriveFileTwoToneIcon from '@mui/icons-material/InsertDriveFileTwoTone';
+import InserDriveFile from '@mui/icons-material/InsertDriveFileOutlined';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import verbalizeDate from '../util/verbalizeDate';
+import verbalizeFileSize from '../util/verbalizeFileSize';
 
 function DirectoryItem({record}: {record: Record}) {
 	const theme = useTheme();
 	return (
-		<TableRow>
+		<TableRow sx={{
+			"&:hover": {
+				bgcolor: theme.palette.grey[100],
+				cursor: "pointer"
+			}
+		}} onDoubleClick={() => window.location.href = `?dir=${record.id}`}>
 			<TableCell>
 				<FolderTwoToneIcon />
 			</TableCell>
@@ -31,14 +38,16 @@ function DirectoryItem({record}: {record: Record}) {
 				<Link
 					href={`?dir=${record.id}`}
 					sx={{
-						color: theme.palette.common.black
+						color: theme.palette.common.black,
+						textDecorationColor: theme.palette.grey[500]
 					}}
 				>
 					{record.name}
 				</Link>
+				{/* {record.name} */}
 			</TableCell>
 			<TableCell></TableCell>
-			<TableCell>{record.timestamp}</TableCell>
+			<TableCell>{verbalizeDate(record.timestamp)}</TableCell>
 		</TableRow>
 	);
 }
@@ -47,11 +56,11 @@ function FileItem({record}: {record: Record}) {
 	return (
 		<TableRow>
 			<TableCell>
-				<InsertDriveFileTwoToneIcon />
+				<InserDriveFile />
 			</TableCell>
 			<TableCell>{record.name}</TableCell>
-			<TableCell>{record.size}</TableCell>
-			<TableCell>{record.timestamp}</TableCell>
+			<TableCell>{verbalizeFileSize(record.size)}</TableCell>
+			<TableCell>{verbalizeDate(record.timestamp)}</TableCell>
 		</TableRow>
 	);
 }
@@ -88,7 +97,7 @@ export default function DirectoryTable({record}: {record: Record}) {
 			<Table size='small'>
 				<TableHead>
 					<TableRow>
-						<TableCell>
+						<TableCell width={24}>
 							{record.parent && (
 								<IconButton size='small' href={`?dir=${record.parent}`}>
 									<ArrowUpwardIcon />

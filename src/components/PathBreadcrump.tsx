@@ -12,13 +12,7 @@ function getBreadcrumb(record: Record): JSX.Element[] {
 
 export default function PathBreadcrumb({directory}: {directory: Record | undefined}) {
 	const theme = useTheme();
-
-	if (!directory) {
-		return (
-			<Typography variant='body1' color='initial'>/</Typography>
-		);
-	}
-
+	
 	return (
 		<Box
 			sx={{
@@ -29,14 +23,14 @@ export default function PathBreadcrumb({directory}: {directory: Record | undefin
 			<IconButton size='small' href='?dir='>
 				<FolderTwoToneIcon />
 			</IconButton>
-				<Typography variant="body1" color="grey">/</Typography>
-			<Breadcrumbs
+			<Typography variant="body1" color="grey">/</Typography>
+			{directory && (
+				<Breadcrumbs
 				separator='/'
 				maxItems={3}
 				sx={{
 					ml: theme.spacing(1)
-				}}
-			>
+				}}>
 				{directory.expand?.parent && getBreadcrumb(directory.expand.parent as Record).map(v => v)}
 				{directory.name !== 'root' && (
 					<Typography variant='body1' color='initial'>
@@ -44,6 +38,7 @@ export default function PathBreadcrumb({directory}: {directory: Record | undefin
 					</Typography>
 				)}
 			</Breadcrumbs>
+			)}
 		</Box>
 	);
 }

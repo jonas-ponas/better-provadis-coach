@@ -13,7 +13,7 @@ const router = createBrowserRouter([
 		element: <Login />
 	},
 	{
-		path: '/callback',
+		path: '/callback/*',
 		element: <Callback />
 	},
   {

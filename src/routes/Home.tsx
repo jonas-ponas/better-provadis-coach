@@ -1,11 +1,14 @@
-import {Container, useTheme, Typography, Button, Box, Avatar} from '@mui/material';
+import {Container, useTheme, Typography, Button, Box, Avatar, Alert, AlertTitle, Link} from '@mui/material';
 import React, {useContext, useEffect, useState} from 'react';
 import PocketBaseContext from '../hooks/PocketbaseContext';
-import {Record} from 'pocketbase';
+import { Record } from 'pocketbase';
 import DirectoryTable from '../components/DirectoryTable';
 import FolderTwoToneIcon from '@mui/icons-material/FolderTwoTone';
 import PathBreadcrumb from '../components/PathBreadcrump';
 import SyncDialog from '../components/SyncDialog';
+import {Link as RouterLink} from 'react-router-dom'
+import ConnectDialog from '../components/ConnectDialog';
+import UserAvatar from '../components/UserAvatar';
 
 export default function Home(props: {}) {
 	const theme = useTheme();
@@ -13,23 +16,49 @@ export default function Home(props: {}) {
 
 	const [root, setRoot] = useState<Record | undefined>(undefined);
     const [showSyncDialog, setShowSyncDialog] = useState(false)
+	const [showConnectDialog, setShowConnectDialog] = useState(false)
+	const [error, setError] = useState<undefined|JSX.Element>(undefined)
 
 	useEffect(() => {
 		// Get dir from url query
-		const root = new URL(window.location.href).searchParams.get('dir');
+		const dirQuery = new URL(window.location.href).searchParams.get('dir');
         const expand = 'parent,parent.parent,parent.parent.parent,parent.parent.parent.parent,parent.parent.parent.parent.parent,parent.parent.parent.parent.parent.parent'
-		if (!root) {
-			client?.collection('directory')
+		console.log()
+		if (!dirQuery) {
+			if(!client?.authStore.model?.rootDirectory) {
+				client?.collection('directory')
 				.getFirstListItem('parent = null', {
 					expand
 				})
 				.then(record => {
 					setRoot(record);
-				});
+				}).catch(e => {
+					client.collection('state').getFirstListItem(`user.id = ${client.authStore.model?.id}`).then((record) => {
+						setError(<Alert variant='filled' severity='error'>
+						<AlertTitle>Kein Wurzel-Knoten gefunden!</AlertTitle>
+						Haben Sie einen Coach verbunden?<br/>
+						<Link sx={{
+							color: 'inherit',
+							fontWeight: 'bold',
+							textDecorationColor: 'inherit'
+						}} component={RouterLink} to='/connect'>Hier</Link> einen Coach verbinden
+					</Alert>)
+					}).catch((e) => {
+						console.log('Connect Coach!')
+						setShowConnectDialog(true)
+					})					
+				})
+			} else {
+				client?.collection('directory').getOne(client?.authStore.model.rootDirectory, {
+					expand
+				}).then((record) => {
+					setRoot(record)
+				})
+			}
 			return;
 		} 
 		client?.collection('directory')
-			.getOne(root, {
+			.getOne(dirQuery, {
 				expand
 			})
 			.then(record => {
@@ -97,7 +126,9 @@ export default function Home(props: {}) {
 					}}
 				>
 					<PathBreadcrumb directory={root} />
-					<span>
+					<Box sx={{
+                        display: 'flex',
+					}}>
 						<Button
 							variant='outlined'
 							size='small'
@@ -108,20 +139,23 @@ export default function Home(props: {}) {
 						>
 							Sync now
 						</Button>
-						<Button onClick={logout} variant='contained' size='small' LinkComponent='a' href='#'>
+						{/* <Button onClick={logout} variant='contained' size='small' LinkComponent='a' href='#'>
 							Logout
-						</Button>
-					</span>
+						</Button> */}
+						<UserAvatar />
+					</Box>
 				</Box>
 				<Box
 					sx={{
 						mt: theme.spacing(2)
 					}}
 				>
-					{root ? <DirectoryTable record={root} /> : 'Lade Daten ...'}
+					{error}
+					{(root) && <DirectoryTable record={root} />}
 				</Box>
 			</Container>
             <SyncDialog open={showSyncDialog} onFinished={() => setShowSyncDialog(false)}/>
+			<ConnectDialog open={showConnectDialog} onClose={() => setShowConnectDialog(false)}/>
 		</Box>
 	);
 }

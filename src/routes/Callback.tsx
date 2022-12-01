@@ -4,6 +4,10 @@ import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import PocketBaseContext from '../hooks/PocketbaseContext';
 
+// const REDIRECT_URI = 'https://coach.***REMOVED***/callback'
+const REDIRECT_URI = 'http://localhost:5173/callback'
+const GITHUB_REDIRECT_URI = 'https://coach.***REMOVED***/callback/dev'
+
 export default function Callback() {
     const theme = useTheme()
     const client = React.useContext(PocketBaseContext)
@@ -21,7 +25,7 @@ export default function Callback() {
             provider.name,
             code,
             provider.codeVerifier,
-            'http://localhost:5173/callback'
+            provider.name == 'github' ? GITHUB_REDIRECT_URI : REDIRECT_URI
         ).then((r) => {
             console.log(r)
             document.cookie = client.authStore.exportToCookie()

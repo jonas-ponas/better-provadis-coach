@@ -1,3 +1,4 @@
+import React, { useContext, useEffect, useState } from 'react';
 import {
 	IconButton,
 	Link,
@@ -11,61 +12,13 @@ import {
 	Typography,
 	useTheme
 } from '@mui/material';
-import React, {useContext, useEffect, useState} from 'react';
 import PocketBaseContext from '../hooks/PocketbaseContext';
-import {Record} from 'pocketbase';
-
-import FolderTwoToneIcon from '@mui/icons-material/FolderTwoTone';
-import InsertDriveFileTwoToneIcon from '@mui/icons-material/InsertDriveFileTwoTone';
-import InserDriveFile from '@mui/icons-material/InsertDriveFileOutlined';
+import { Record } from 'pocketbase';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import verbalizeDate from '../util/verbalizeDate';
-import verbalizeFileSize from '../util/verbalizeFileSize';
+import FileItemRow from './FileItemRow';
+import DirectoryItemRow from './DirectoryItemRow';
 
-function DirectoryItem({record}: {record: Record}) {
-	const theme = useTheme();
-	return (
-		<TableRow sx={{
-			"&:hover": {
-				bgcolor: theme.palette.grey[100],
-				cursor: "pointer"
-			}
-		}} onDoubleClick={() => window.location.href = `?dir=${record.id}`}>
-			<TableCell>
-				<FolderTwoToneIcon />
-			</TableCell>
-			<TableCell>
-				<Link
-					href={`?dir=${record.id}`}
-					sx={{
-						color: theme.palette.common.black,
-						textDecorationColor: theme.palette.grey[500]
-					}}
-				>
-					{record.name}
-				</Link>
-				{/* {record.name} */}
-			</TableCell>
-			<TableCell></TableCell>
-			<TableCell>{verbalizeDate(record.timestamp)}</TableCell>
-		</TableRow>
-	);
-}
-
-function FileItem({record}: {record: Record}) {
-	return (
-		<TableRow>
-			<TableCell>
-				<InserDriveFile />
-			</TableCell>
-			<TableCell>{record.name}</TableCell>
-			<TableCell>{verbalizeFileSize(record.size)}</TableCell>
-			<TableCell>{verbalizeDate(record.timestamp)}</TableCell>
-		</TableRow>
-	);
-}
-
-export default function DirectoryTable({record}: {record: Record}) {
+export default function DirectoryTable({ record }: { record: Record }) {
 	const theme = useTheme();
 	const client = useContext(PocketBaseContext);
 
@@ -107,6 +60,7 @@ export default function DirectoryTable({record}: {record: Record}) {
 						<TableCell>Name</TableCell>
 						<TableCell>Größe</TableCell>
 						<TableCell>Zuletzt geändert</TableCell>
+						<TableCell width={24} />
 					</TableRow>
 				</TableHead>
 				<TableBody>
@@ -124,10 +78,10 @@ export default function DirectoryTable({record}: {record: Record}) {
 						) : (
 							<>
 								{directories.map((directory: Record) => (
-									<DirectoryItem record={directory} />
+									<DirectoryItemRow record={directory} />
 								))}
 								{files.map((file: Record) => (
-									<FileItem record={file} />
+									<FileItemRow record={file} />
 								))}
 							</>
 						)

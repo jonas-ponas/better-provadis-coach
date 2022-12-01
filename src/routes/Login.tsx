@@ -3,7 +3,9 @@ import {Container, Box, Paper, Typography, useTheme, Divider, Button, Avatar} fr
 import PocketBaseContext from '../hooks/PocketbaseContext';
 import {AuthMethodsList, AuthProviderInfo} from 'pocketbase';
 
+// const GOOGLE_REDIRECT_URI = 'https://coach.***REMOVED***/callback'
 const GOOGLE_REDIRECT_URI = 'http://localhost:5173/callback'
+const GITHUB_REDIRECT_URI = 'https://coach.***REMOVED***/callback/dev'
 
 export default function Login(props: {}) {
 	const theme = useTheme();
@@ -123,7 +125,7 @@ export default function Login(props: {}) {
 										return (
 											<Button
 												LinkComponent={'a'}
-												href={v.authUrl || ''}
+												href={(v.authUrl+encodeURIComponent(GITHUB_REDIRECT_URI))|| ''}
 												onClick={() => localStorage.setItem('provider', JSON.stringify(v))}
 												sx={{
 													bgcolor: theme.palette.common.black,

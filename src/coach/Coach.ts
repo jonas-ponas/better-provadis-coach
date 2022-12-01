@@ -84,7 +84,7 @@ export class Coach {
 		};
 		console.debug(
 			'Refreshed Access- and Refresh-Token. Expires',
-			new Date(this.accessToken.expires).toISOString() /*this.accessToken, this.refreshToken*/
+			new Date(this.accessToken.expires).toISOString(), this.accessToken.token, this.refreshToken.token
 		);
 	}
 
@@ -123,13 +123,13 @@ export class Coach {
 				token: json.token?.access_token,
 				expires: json.token?.expires
 			};
-			console.debug('Updated Access-Token via User-Info' /*this.accessToken*/);
+			console.debug('Updated Access-Token via User-Info', this.accessToken.token);
 		}
 		if (json?.token?.refresh_token) {
 			this.refreshToken = {
 				token: json.token?.refresh_token
 			};
-			console.debug('Updated Refresh-Token via User-Info' /*this.refreshToken*/);
+			console.debug('Updated Refresh-Token via User-Info', this.refreshToken.token);
 		}
 		if (json?.user?.id) {
 			this.userId = json.user.id;
@@ -285,6 +285,13 @@ export class Coach {
 		return newsItems;
 	}
 
+	public async getFileContents(fileId: number): Promise<Blob> {
+		this.checkCoachToken()
+		const response = await fetch(`https://${this.url}/shared/filemanager/${fileId}?login_token=${this.coachToken?.token}`)
+		// if(!response?.body) throw new Error("Response body empty");
+		return response.blob()
+	}
+
 	public getFileStructure(): any {
 		// TODO: Take getFiles and getDirectories and turn it in one big structure
 		return [];
@@ -328,9 +335,11 @@ export class Coach {
 	}) {
 		let coach = new Coach(state);
 		try {
-			await coach.checkAccessToken();
-			// const data = await coach.getUserInfo();
-			// console.log('Got User-Info: ', data.user.firstname + ' ' + data.user.familyname + ' #' + data.user.id);
+			if(state.refreshToken == "") {
+				await coach.getUserInfo()
+			} else {
+				await coach.checkAccessToken()
+			}
 			return coach;
 		} catch (e) {
 			throw e;

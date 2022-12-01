@@ -5,13 +5,12 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const USERNAME = process.env.USERNAME;
-if(!USERNAME) {
-	console.log("No user specified")
+const PB_USER = process.env.PB_USER;
+const PB_PASSWD = process.env.PB_PASSWD;
+if(!USERNAME || !PB_USER || !PB_PASSWD) {
+	console.log("Missing Environment Variables")
 	process.exit(1)
 }
-
-const PB_USER = process.env.PB_USER || '';
-const PB_PASSWD = process.env.PB_PASSWD || '';
 
 const pb = new PocketBase('https://coach.***REMOVED***/');
 // pb.autoCancellation(false);
@@ -34,30 +33,35 @@ pb.admins
 			// console.log(user.id);
 			const user = await coach.getUserInfo()
 			// Insert Directories
-			const dirs = await await coach.getDirectories();
+			const dirs = await coach.getDirectories();
 			const ctoPb = await coachToPocketbase.insertDirectories(dirs, pb, user.id);
-
+			
 			// Insert Files
-			const files = await await coach.getFiles();
-			await coachToPocketbase.insertFiles(files, pb, user.id);
+			const files = await (await coach.getFiles()).slice(400, -1)
+			const ftoPb = await coachToPocketbase.insertFiles(files, pb, user.id, ctoPb);
+
+			await coachToPocketbase.insertCacheFiles(pb, coach, ftoPb)
+
 			success = true
 		} catch (e) {
 			console.log(e);
 		} finally {
 			const currentState = coach.exportFromState();
+			// console.log(currentState)
 			const data: any = {
 				refreshToken: currentState.refreshToken,
 				token: currentState.token,
-				expires: new Date((currentState.expires || 0)*1000).toISOString(),
+				expires: new Date((currentState.expires||0)).toISOString(),
 				url: currentState.url,
 				coachUserId: currentState.userId,	
 			}
-			console.log(data);
 			if(success) data.lastSync = new Date().toISOString()
+			console.log(data)
 			const updateResult = await pb.collection('state').update(state.id, data);
 			console.log('Wrote State back to PB');
 		}
 	})
 	.catch((e: Error) => {
 		console.log('Failed to authenticate');
+		console.error(e)
 	});

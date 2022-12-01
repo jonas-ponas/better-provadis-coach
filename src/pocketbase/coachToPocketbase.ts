@@ -1,8 +1,10 @@
 import insertDirectories from './insertDirectories';
 import insertFiles from './insertFiles';
+import insertCacheFiles from './insertCacheFiles';
 
 const coachToPocketbase = {
 	insertDirectories,
-	insertFiles
+	insertFiles,
+	insertCacheFiles
 };
 export default coachToPocketbase;

@@ -3,6 +3,7 @@ import {File} from '../coach/Coach';
 
 export default async function insertFiles(files: File[], pb: any, userId?: string, cToPbMap?: Map<number, string>) {
 	cToPbMap = cToPbMap || new Map<number, string>();
+	const fToPbMap = new Map<number, {pbId: string, name: string}>();
 	if (!pb.authStore.isValid) throw Error('Pocketbase-AuthStore not valid');
 
 	for (const file of files) {
@@ -27,6 +28,7 @@ export default async function insertFiles(files: File[], pb: any, userId?: strin
 			};
 			// console.log(data)
 			const create = await pb.collection('file').create(data);
+			fToPbMap.set(create.coachId, create.id)
 			console.log('Created', create.name, create.id, create.coachId);
 		} catch (e) {
 			try {
@@ -45,6 +47,7 @@ export default async function insertFiles(files: File[], pb: any, userId?: strin
 							allowedUser: userExists ? record.allowedUser : [...record.allowedUser, userId]
 						});
 						console.log('Updated', update.name, update.id, update.coachId);
+						fToPbMap.set(record.coachId, {pbId: record.id, name: record.name}) // Update Cache File
 					} else {
 						// console.log('No update neccessary', record.name, record.id, record.coachId);
 					}
@@ -55,4 +58,5 @@ export default async function insertFiles(files: File[], pb: any, userId?: strin
 			}
 		}
 	}
+	return fToPbMap
 }

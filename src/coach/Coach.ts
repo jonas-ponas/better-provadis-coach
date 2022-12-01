@@ -88,7 +88,7 @@ export class Coach {
 		);
 	}
 
-	private async getUserInfo() {
+	public async getUserInfo() {
 		console.debug('Getting Oauth User-Info...');
 		// await this.checkAccessToken()
 		const options = {

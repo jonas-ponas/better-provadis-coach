@@ -4,6 +4,12 @@ const PocketBase = require('pocketbase/cjs');
 import dotenv from 'dotenv';
 dotenv.config();
 
+const USERNAME = process.env.USERNAME;
+if(!USERNAME) {
+	console.log("No user specified")
+	process.exit(1)
+}
+
 const PB_USER = process.env.PB_USER || '';
 const PB_PASSWD = process.env.PB_PASSWD || '';
 
@@ -23,8 +29,10 @@ pb.admins
 			clientId: process.env.CLIENT_ID || '',
 			clientSecret: process.env.CLIENT_SECRET || ''
 		});
+		let success = false
 		try {
-			console.log(user.id);
+			// console.log(user.id);
+			const user = await coach.getUserInfo()
 			// Insert Directories
 			const dirs = await await coach.getDirectories();
 			const ctoPb = await coachToPocketbase.insertDirectories(dirs, pb, user.id);
@@ -32,18 +40,21 @@ pb.admins
 			// Insert Files
 			const files = await await coach.getFiles();
 			await coachToPocketbase.insertFiles(files, pb, user.id);
+			success = true
 		} catch (e) {
 			console.log(e);
 		} finally {
 			const currentState = coach.exportFromState();
-			console.log(currentState);
-			const updateResult = await pb.collection('state').update(state.id, {
+			const data: any = {
 				refreshToken: currentState.refreshToken,
 				token: currentState.token,
-				expires: new Date(currentState.expires || 0 * 1000).toISOString(),
+				expires: new Date((currentState.expires || 0)*1000).toISOString(),
 				url: currentState.url,
-				coachUserId: currentState.userId
-			});
+				coachUserId: currentState.userId,	
+			}
+			console.log(data);
+			if(success) data.lastSync = new Date().toISOString()
+			const updateResult = await pb.collection('state').update(state.id, data);
 			console.log('Wrote State back to PB');
 		}
 	})

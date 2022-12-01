@@ -39,7 +39,7 @@ export default async function insertDirectories(
 						});
 						console.log('Updated', update.name, update.id, update.coachId);
 					} else {
-						console.log('No update neccessary', record.name, record.id, record.coachId);
+						// console.log('No update neccessary', record.name, record.id, record.coachId);
 					}
 				}
 			} catch (e) {

@@ -1,11 +1,18 @@
 import {File} from '../coach/Coach';
 // import pocketbaseEs from "pocketbase"
 
-export default async function insertFiles(files: File[], pb: any, userId?: string, cToPbMap?: Map<number, string>) {
+export default async function insertFiles(
+	files: File[],
+	pb: any,
+	userId?: string,
+	cToPbMap?: Map<number, string>,
+	onProgress?: (i: number, t: number) => void
+) {
 	cToPbMap = cToPbMap || new Map<number, string>();
-	const fToPbMap = new Map<number, {pbId: string, name: string}>();
+	const fToPbMap = new Map<number, {pbId: string; name: string}>();
 	if (!pb.authStore.isValid) throw Error('Pocketbase-AuthStore not valid');
-
+	const total = files.length
+	let i = 0
 	for (const file of files) {
 		let parentId = cToPbMap.get(file.directory.id);
 		if (!parentId) {
@@ -28,8 +35,9 @@ export default async function insertFiles(files: File[], pb: any, userId?: strin
 			};
 			// console.log(data)
 			const create = await pb.collection('file').create(data);
-			fToPbMap.set(create.coachId, create.id)
+			fToPbMap.set(create.coachId, {name: create.name, pbId: create.id});
 			console.log('Created', create.name, create.id, create.coachId);
+			if (onProgress) onProgress(++i, total);
 		} catch (e) {
 			try {
 				const record = await pb.collection('file').getFirstListItem(`coachId = ${file.id}`);
@@ -47,16 +55,20 @@ export default async function insertFiles(files: File[], pb: any, userId?: strin
 							allowedUser: userExists ? record.allowedUser : [...record.allowedUser, userId]
 						});
 						console.log('Updated', update.name, update.id, update.coachId);
-						fToPbMap.set(record.coachId, {pbId: record.id, name: record.name}) // Update Cache File
+						fToPbMap.set(record.coachId, {pbId: record.id, name: record.name}); // Update Cache File
+						if (onProgress) onProgress(++i, total);
 					} else {
 						// console.log('No update neccessary', record.name, record.id, record.coachId);
+						if (onProgress) onProgress(++i, total);
 					}
 				}
 			} catch (e) {
 				console.log('Create/Search/Update failed!', file.name + '.' + file.mime, file.id);
 				console.error(e);
+				if (onProgress) onProgress(++i, total);
+
 			}
 		}
 	}
-	return fToPbMap
+	return fToPbMap;
 }

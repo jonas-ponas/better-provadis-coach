@@ -5,12 +5,14 @@ export default async function insertDirectories(
 	directories: Directory[],
 	pb: any,
 	userId?: string,
-	cToPbMap?: Map<number, string>
+	cToPbMap?: Map<number, string>,
+	onProgress?: (i: number, t: number)=>void
 ) {
 	cToPbMap = cToPbMap || new Map<number, string>();
 	const updateDirs: Directory[] = [];
 	if (!pb.authStore.isValid) throw Error('Pocketbase-AuthStore not valid');
-
+	const total = directories.length;
+	let i = 0
 	for (const directory of directories) {
 		try {
 			const create = await pb.collection('directory').create({
@@ -22,6 +24,7 @@ export default async function insertDirectories(
 			cToPbMap.set(directory.id, create.id);
 			updateDirs.push(directory);
 			console.log('Created', create.name, create.id, create.coachId);
+			if(onProgress) onProgress(++i, total)
 		} catch (e: any) {
 			try {
 				const record = await pb.collection('directory').getFirstListItem(`coachId = ${directory.id}`);
@@ -38,12 +41,15 @@ export default async function insertDirectories(
 							allowedUser: userExists ? record.allowedUser : [...record.allowedUser, userId]
 						});
 						console.log('Updated', update.name, update.id, update.coachId);
+						if(onProgress) onProgress(++i, total);
 					} else {
+						if(onProgress) onProgress(++i, total);
 						// console.log('No update neccessary', record.name, record.id, record.coachId);
 					}
 				}
 			} catch (e) {
 				console.log('Search/Update failed!', directory.name, directory.id);
+				if(onProgress) onProgress(++i, total);
 			}
 		}
 	}

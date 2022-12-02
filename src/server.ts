@@ -9,7 +9,7 @@ export const PB_USER = process.env.PB_USER;
 export const PB_PASSWD = process.env.PB_PASSWD;
 
 const wss = new WebSocketServer({
-    port: 8080
+    port: (parseInt(process.env.PORT||"8080"))
 })
 
 type Handler = (client: MyWebSocket, data: {[key: string]: any})=>void

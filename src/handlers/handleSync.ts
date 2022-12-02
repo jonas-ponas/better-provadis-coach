@@ -1,7 +1,7 @@
 import pocketbaseEs from "pocketbase";
 import { Coach } from "../coach/Coach";
 import coachToPocketbase from "../pocketbase/coachToPocketbase";
-import { MyWebSocket, PB_PASSWD, PB_USER } from "../websocket";
+import { MyWebSocket, PB_PASSWD, PB_USER } from "../server";
 const PocketBase = require('pocketbase/cjs')
 
 export default function handleSync(client: MyWebSocket, data: {[key: string]: any}) {

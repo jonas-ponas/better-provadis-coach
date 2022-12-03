@@ -1,0 +1,11 @@
+node_modules
+.vscode
+img
+.devcontainer
+README.md
+.prettierrc.json
+.prettierignore
+.gitignore
+dist
+.env
+.git

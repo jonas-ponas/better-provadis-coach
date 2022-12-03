@@ -55,7 +55,7 @@ export default async function insertFiles(
 							allowedUser: userExists ? record.allowedUser : [...record.allowedUser, userId]
 						});
 						console.log('Updated', update.name, update.id, update.coachId);
-						fToPbMap.set(record.coachId, {pbId: record.id, name: record.name}); // Update Cache File
+						if(nameChanged || sizeChanged || wasModified) fToPbMap.set(record.coachId, {pbId: record.id, name: record.name}); // Update Cache File
 						if (onProgress) onProgress(++i, total);
 					} else {
 						// console.log('No update neccessary', record.name, record.id, record.coachId);

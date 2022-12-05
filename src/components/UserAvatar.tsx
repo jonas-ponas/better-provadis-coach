@@ -22,6 +22,15 @@ export default function UserAvatar(props: {}) {
         window.location.href = '/'
     }
 
+    function resetRootFolder() {
+        if(!client) return
+        client?.collection('users').update(client.authStore.model?.id||'', {
+            rootDirectory: null
+        }).then(() => {
+            setAnchorEl(null)
+        })
+    }
+
 	return (
 		<>
 			<IconButton aria-label='' onClick={handleClick} sx={{
@@ -39,7 +48,7 @@ export default function UserAvatar(props: {}) {
                     </ListItemIcon>
                     Information
                 </MenuItem>
-				<MenuItem onClick={() => setAnchorEl(null)} disabled={true}>
+				<MenuItem onClick={resetRootFolder} disabled={false}>
                     <ListItemIcon>
                         <FolderDeleteTwoTone />
                     </ListItemIcon>

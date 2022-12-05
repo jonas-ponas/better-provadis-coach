@@ -23,7 +23,7 @@ export default function Home(props: {}) {
 		// Get dir from url query
 		const dirQuery = new URL(window.location.href).searchParams.get('dir');
         const expand = 'parent,parent.parent,parent.parent.parent,parent.parent.parent.parent,parent.parent.parent.parent.parent,parent.parent.parent.parent.parent.parent'
-		console.log()
+		console.log(client?.authStore.token ,client?.authStore.model?.id)
 		if (!dirQuery) {
 			if(!client?.authStore.model?.rootDirectory) {
 				client?.collection('directory')
@@ -66,6 +66,13 @@ export default function Home(props: {}) {
 			});
 		
 	}, []);
+
+	function onConnected(error?: string) {
+		if(!error) {
+			setShowConnectDialog(false)
+			setShowSyncDialog(true)
+		}
+	}
 
 	function logout() {
 		client?.authStore.clear();
@@ -155,7 +162,7 @@ export default function Home(props: {}) {
 				</Box>
 			</Container>
             <SyncDialog open={showSyncDialog} onFinished={() => setShowSyncDialog(false)}/>
-			<ConnectDialog open={showConnectDialog} onClose={() => setShowConnectDialog(false)}/>
+			<ConnectDialog open={showConnectDialog} onClose={onConnected}/>
 		</Box>
 	);
 }

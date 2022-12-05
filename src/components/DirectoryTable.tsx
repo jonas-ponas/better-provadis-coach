@@ -78,10 +78,10 @@ export default function DirectoryTable({ record }: { record: Record }) {
 						) : (
 							<>
 								{directories.map((directory: Record) => (
-									<DirectoryItemRow record={directory} />
+									<DirectoryItemRow record={directory} key={directory.id}/>
 								))}
 								{files.map((file: Record) => (
-									<FileItemRow record={file} />
+									<FileItemRow record={file} key={file.id}/>
 								))}
 							</>
 						)

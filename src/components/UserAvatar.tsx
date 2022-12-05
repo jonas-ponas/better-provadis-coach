@@ -10,9 +10,8 @@ export default function UserAvatar(props: {}) {
 	const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 	const open = Boolean(anchorEl);
 
-	const avatar = client?.authStore.model?.avatar;
+    const avatar = `https://coach.***REMOVED***/api/files/${client?.authStore.model?.collectionId}/${client?.authStore.model?.id}/${client?.authStore.model?.avatar}`;
 	const firstLetter = (client?.authStore.model?.username[0] || '?').toUpperCase();
-	console.log(avatar);
 
 	function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
 		setAnchorEl(event.currentTarget);

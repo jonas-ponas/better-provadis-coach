@@ -1,13 +1,35 @@
 import * as React from 'react';
 import { Record } from 'pocketbase';
-import { IconButton, Link, ListItemIcon, Menu, MenuItem, TableCell, TableRow, useTheme } from '@mui/material';
+import { Icon, IconButton, Link, ListItemIcon, Menu, MenuItem, TableCell, TableRow, useTheme } from '@mui/material';
 import verbalizeFileSize from '../util/verbalizeFileSize';
 import verbalizeDate from '../util/verbalizeDate';
 import { InsertDriveFileTwoTone, MoreVert, StarTwoTone } from '@mui/icons-material';
+// File Icons
+import icons from '../icons/icons'
+
+const iconMapping: {[key: string]: string|undefined} = {
+	'pdf': icons.pdf,
+	'png': icons.img,
+	'jpg': icons.img,
+	'jpeg': icons.img,
+	'gif': icons.img,
+	'rkt': icons.rkt,
+	'java': icons.java,
+	'py': icons.py,
+	'zip': icons.zip,
+	'pptx': icons.ppt,
+	'doc': icons.doc,
+	'docx': icons.doc,
+	'mp4': icons.video,
+	'mov': icons.video
+}
 
 export default function FileItemRow({ record }: { record: Record }) {
 	const theme = useTheme();
 	const url = `https://coach.***REMOVED***/api/files/${record.collectionId}/${record.id}/${record.cachedFile}`;
+
+	const fileExtension = record.name.split('.').at(-1)
+	const icon = iconMapping[fileExtension]
 
 	const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 	const open = Boolean(anchorEl);
@@ -29,7 +51,7 @@ export default function FileItemRow({ record }: { record: Record }) {
 			onDoubleClick={() => window.open(url, '_blank')}
 		>
 			<TableCell>
-				<InsertDriveFileTwoTone />
+				{(icon && <Icon><img src={icon} /></Icon>) || <InsertDriveFileTwoTone />}
 			</TableCell>
 			<TableCell>
 				<Link

@@ -52,6 +52,7 @@ export default function handleSync(client: MyWebSocket, data: {[key: string]: an
             await coachToPocketbase.insertCacheFiles(pb, coach, fToPb, (i, t) => {
                 client.send(JSON.stringify({type: 'progress', phase: 'database', step: 3, detail: i, total: t}))
             })
+            success = true
         } catch(e) {
             console.error(e)
             client.send(JSON.stringify({type: 'error', msg: 'Internal Error (S3)'})) // ERROR S3

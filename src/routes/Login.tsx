@@ -1,11 +1,12 @@
-import React, {useContext, useEffect, useState} from 'react';
-import {Container, Box, Paper, Typography, useTheme, Divider, Button, Avatar} from '@mui/material';
+import React, { useContext, useEffect, useState } from 'react';
+import { Container, Box, Paper, Typography, useTheme, Divider, Button, Avatar } from '@mui/material';
 import PocketBaseContext from '../hooks/PocketbaseContext';
-import {AuthMethodsList, AuthProviderInfo} from 'pocketbase';
+import { AuthMethodsList, AuthProviderInfo } from 'pocketbase';
 
 // const GOOGLE_REDIRECT_URI = 'https://coach.***REMOVED***/callback'
-const GOOGLE_REDIRECT_URI = 'http://localhost:5173/callback'
-const GITHUB_REDIRECT_URI = 'https://coach.***REMOVED***/callback/dev'
+const GOOGLE_REDIRECT_URI = 'http://localhost:5173/callback';
+const GITHUB_REDIRECT_URI = 'https://coach.***REMOVED***/callback/dev';
+// const GITHUB_REDIRECT_URI = 'https://coach.***REMOVED***/callback'
 
 export default function Login(props: {}) {
 	const theme = useTheme();
@@ -97,52 +98,54 @@ export default function Login(props: {}) {
 							</Typography>
 						)}
 
-						<Box sx={{
-							display: 'flex',
-							flexDirection: 'column'
-						}}>
+						<Box
+							sx={{
+								display: 'flex',
+								flexDirection: 'column'
+							}}
+						>
 							{authMethods &&
-							authMethods.authProviders.map(v => {
-								console.log(v)
-								switch (v.name) {
-									case 'google':
-										return (
-											<Button
-												LinkComponent={'a'}
-												href={(v.authUrl+encodeURIComponent(GOOGLE_REDIRECT_URI))|| ''}
-												onClick={() => localStorage.setItem('provider', JSON.stringify(v))}
-												sx={{
-													bgcolor: theme.palette.common.white,
-													color: theme.palette.common.black,
-													m: theme.spacing(1),
-													border: "1px solid black"
-												}}
-											>
-												Sign in with Google
-											</Button>
-										);
-									case 'github':
-										return (
-											<Button
-												LinkComponent={'a'}
-												href={(v.authUrl+encodeURIComponent(GITHUB_REDIRECT_URI))|| ''}
-												onClick={() => localStorage.setItem('provider', JSON.stringify(v))}
-												sx={{
-													bgcolor: theme.palette.common.black,
-													m: theme.spacing(1),
-													color: theme.palette.common.white,
-													'&:hover': {
-														bgcolor: '#383838'
-													}
-												}}
-											>
-												Sign in with Github
-											</Button>
-										);
-									default:
-										return null;
-								}
-							})}
+								authMethods.authProviders.map(v => {
+									console.log(v);
+									switch (v.name) {
+										case 'google':
+											return (
+												<Button
+													LinkComponent={'a'}
+													href={v.authUrl + encodeURIComponent(GOOGLE_REDIRECT_URI) || ''}
+													onClick={() => localStorage.setItem('provider', JSON.stringify(v))}
+													sx={{
+														bgcolor: theme.palette.common.white,
+														color: theme.palette.common.black,
+														m: theme.spacing(1),
+														border: '1px solid black'
+													}}
+												>
+													Sign in with Google
+												</Button>
+											);
+										case 'github':
+											return (
+												<Button
+													LinkComponent={'a'}
+													href={v.authUrl + encodeURIComponent(GITHUB_REDIRECT_URI) || ''}
+													onClick={() => localStorage.setItem('provider', JSON.stringify(v))}
+													sx={{
+														bgcolor: theme.palette.common.black,
+														m: theme.spacing(1),
+														color: theme.palette.common.white,
+														'&:hover': {
+															bgcolor: '#383838'
+														}
+													}}
+												>
+													Sign in with Github
+												</Button>
+											);
+										default:
+											return null;
+									}
+								})}
 						</Box>
 					</Box>
 				</Paper>

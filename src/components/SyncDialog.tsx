@@ -10,7 +10,7 @@ export default function SyncDialog(props: { open: boolean; onFinished: (error?: 
 
 	function handleClose(event: {}, reason: string) {
 		if (dismissible) {
-			props.onFinished(error)
+			props.onFinished(error);
 		}
 		if ((reason && reason == 'escapeKeyDown') || reason == 'backDropClick') return;
 	}
@@ -29,21 +29,21 @@ export default function SyncDialog(props: { open: boolean; onFinished: (error?: 
 					justifyContent: 'center'
 				}}
 			>
-				{(!error) && <SyncProgress onFinish={handleFinish} />}
+				{!error && <SyncProgress onFinish={handleFinish} />}
 				{error && (
 					<Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            minWidth: 250
-          }}
-        >
+						sx={{
+							display: 'flex',
+							flexDirection: 'column',
+							justifyContent: 'center',
+							alignItems: 'center',
+							minWidth: 250
+						}}
+					>
 						<ErrorOutline
-              fontSize='large'
+							fontSize='large'
 							sx={{
-								color: theme.palette.error.main,
+								color: theme.palette.error.main
 							}}
 						/>
 						<Typography variant='body2' sx={{ mt: theme.spacing(2), color: theme.palette.error.main }}>

@@ -7,35 +7,39 @@ import PocketBaseContext from '../hooks/PocketbaseContext';
 
 export default function DirectoryItemRow({ record }: { record: Record }) {
 	const theme = useTheme();
-    const client = useContext(PocketBaseContext)
+	const client = useContext(PocketBaseContext);
 
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+	const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 	const open = Boolean(anchorEl);
-    function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
+	function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
 		setAnchorEl(event.currentTarget);
-	};
+	}
 
-    function setAsRootDirectory() {
-        client?.collection('users').update(client.authStore.model?.id||'', {
-            rootDirectory: record.id
-        }).then(() => {
-            setAnchorEl(null)
-        }).catch(e => {
-            console.error(e)
-        })
-    }
+	function setAsRootDirectory() {
+		client
+			?.collection('users')
+			.update(client.authStore.model?.id || '', {
+				rootDirectory: record.id
+			})
+			.then(() => {
+				setAnchorEl(null);
+			})
+			.catch(e => {
+				console.error(e);
+			});
+	}
 
-    function pinDirectory() {
-        // client?.collection('users').update(client.authStore.model?.id||'', {
-        //     pinned: record.id
-        // }).then(() => {
-        //     setAnchorEl(null)
-        // }).catch(e => {
-        //     console.error(e)
-        // })
-        setAnchorEl(null)
-    }
-	
+	function pinDirectory() {
+		// client?.collection('users').update(client.authStore.model?.id||'', {
+		//     pinned: record.id
+		// }).then(() => {
+		//     setAnchorEl(null)
+		// }).catch(e => {
+		//     console.error(e)
+		// })
+		setAnchorEl(null);
+	}
+
 	return (
 		<TableRow
 			sx={{
@@ -68,7 +72,7 @@ export default function DirectoryItemRow({ record }: { record: Record }) {
 					<MoreVert />
 				</IconButton>
 			</TableCell>
-            <Menu
+			<Menu
 				id='basic-menu'
 				anchorEl={anchorEl}
 				open={open}
@@ -83,9 +87,9 @@ export default function DirectoryItemRow({ record }: { record: Record }) {
 					</ListItemIcon>
 					Anheften
 				</MenuItem>
-                <MenuItem onClick={setAsRootDirectory} disabled={false}>
+				<MenuItem onClick={setAsRootDirectory} disabled={false}>
 					<ListItemIcon>
-						<AccountTreeTwoTone/>
+						<AccountTreeTwoTone />
 					</ListItemIcon>
 					Wurzelordner
 				</MenuItem>

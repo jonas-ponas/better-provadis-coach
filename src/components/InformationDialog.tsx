@@ -1,7 +1,7 @@
 import { useTheme, Dialog, DialogTitle, DialogContent, DialogContentText, Link } from '@mui/material';
 import React from 'react';
 
-export default function InformationDialog({ open, onClose }: { open: boolean, onClose: ()=>void}) {
+export default function InformationDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
 	const theme = useTheme();
 
 	return (
@@ -26,12 +26,12 @@ export default function InformationDialog({ open, onClose }: { open: boolean, on
 						<li>
 							<Link href='https://reactrouter.com/'>React Router</Link>
 						</li>
-                        <li>
-                            <Link href="https://mui.com/">Material UI</Link>
-                        </li>
-                        <li>
-                            <Link href="https://github.com/cozmo/jsQR">jsQR</Link>
-                        </li>
+						<li>
+							<Link href='https://mui.com/'>Material UI</Link>
+						</li>
+						<li>
+							<Link href='https://github.com/cozmo/jsQR'>jsQR</Link>
+						</li>
 					</ul>
 				</DialogContentText>
 			</DialogContent>

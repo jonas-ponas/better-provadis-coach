@@ -63,10 +63,12 @@ export default function Home(props: {}) {
 							})
 							.catch(e => {
 								console.log('Connect Coach!');
-								setError(<Alert variant='filled' severity='error'>
-								<AlertTitle>Kein Wurzel-Knoten gefunden!</AlertTitle>
-								Haben Sie einen Coach verbunden?
-							</Alert>)
+								setError(
+									<Alert variant='filled' severity='error'>
+										<AlertTitle>Kein Wurzel-Knoten gefunden!</AlertTitle>
+										Haben Sie einen Coach verbunden?
+									</Alert>
+								);
 								setShowConnectDialog(true);
 							});
 					});

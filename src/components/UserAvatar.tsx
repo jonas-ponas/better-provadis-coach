@@ -1,13 +1,15 @@
 import { FolderDeleteTwoTone, HelpCenterTwoTone, LogoutTwoTone } from '@mui/icons-material';
 import { Avatar, Menu, useTheme, MenuItem, IconButton, ListItemIcon } from '@mui/material';
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import PocketBaseContext from '../hooks/PocketbaseContext';
+import InformationDialog from './InformationDialog';
 
 export default function UserAvatar(props: {}) {
 	const theme = useTheme();
 	const client = useContext(PocketBaseContext);
 
 	const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+    const [showInfoDialog, setShowInfoDialog] = useState(false)
 	const open = Boolean(anchorEl);
 
     const avatar = `https://coach.***REMOVED***/api/files/${client?.authStore.model?.collectionId}/${client?.authStore.model?.id}/${client?.authStore.model?.avatar}`;
@@ -42,7 +44,7 @@ export default function UserAvatar(props: {}) {
                 }}/>
 			</IconButton>
 			<Menu open={open} anchorEl={anchorEl} onClose={() => setAnchorEl(null)}>
-				<MenuItem onClick={() => setAnchorEl(null)} disabled={true}>
+				<MenuItem onClick={() => setShowInfoDialog(true)} disabled={false}>
                     <ListItemIcon>
                         <HelpCenterTwoTone />
                     </ListItemIcon>
@@ -61,6 +63,7 @@ export default function UserAvatar(props: {}) {
                     Abmelden
                 </MenuItem>
 			</Menu>
+            <InformationDialog open={showInfoDialog} onClose={() => setShowInfoDialog(false)} />
 		</>
 	);
 }

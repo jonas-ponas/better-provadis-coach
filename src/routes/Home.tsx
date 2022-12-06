@@ -3,7 +3,6 @@ import React, {useContext, useEffect, useState} from 'react';
 import PocketBaseContext from '../hooks/PocketbaseContext';
 import { Record } from 'pocketbase';
 import DirectoryTable from '../components/DirectoryTable';
-import FolderTwoToneIcon from '@mui/icons-material/FolderTwoTone';
 import PathBreadcrumb from '../components/PathBreadcrump';
 import SyncDialog from '../components/SyncDialog';
 import {Link as RouterLink} from 'react-router-dom'

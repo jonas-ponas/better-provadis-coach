@@ -1,75 +1,101 @@
-import {Container, useTheme, Typography, Button, Box, Avatar, Alert, AlertTitle, Link} from '@mui/material';
-import React, {useContext, useEffect, useState} from 'react';
+// <reference path='../records.d.ts' />
+import { Alert, AlertTitle, Avatar, Box, Button, Container, Link, Typography, useTheme } from '@mui/material';
+import React, { useContext, useEffect, useState } from 'react';
 import PocketBaseContext from '../hooks/PocketbaseContext';
 import { Record } from 'pocketbase';
 import DirectoryTable from '../components/DirectoryTable';
 import PathBreadcrumb from '../components/PathBreadcrump';
 import SyncDialog from '../components/SyncDialog';
-import {Link as RouterLink} from 'react-router-dom'
+import { Link as RouterLink } from 'react-router-dom';
 import ConnectDialog from '../components/ConnectDialog';
 import UserAvatar from '../components/UserAvatar';
+import { DirectoryRecord } from '../records';
 
 export default function Home(props: {}) {
 	const theme = useTheme();
 	const client = useContext(PocketBaseContext);
 
-	const [root, setRoot] = useState<Record | undefined>(undefined);
-    const [showSyncDialog, setShowSyncDialog] = useState(false)
-	const [showConnectDialog, setShowConnectDialog] = useState(false)
-	const [error, setError] = useState<undefined|JSX.Element>(undefined)
+	const [root, setRoot] = useState<DirectoryRecord | undefined>(undefined);
+	const [showSyncDialog, setShowSyncDialog] = useState(false);
+	const [showConnectDialog, setShowConnectDialog] = useState(false);
+	const [error, setError] = useState<undefined | JSX.Element>(undefined);
 
 	useEffect(() => {
 		// Get dir from url query
 		const dirQuery = new URL(window.location.href).searchParams.get('dir');
-        const expand = 'parent,parent.parent,parent.parent.parent,parent.parent.parent.parent,parent.parent.parent.parent.parent,parent.parent.parent.parent.parent.parent'
-		console.log(client?.authStore.token ,client?.authStore.model?.id)
+		const expand =
+			'parent,parent.parent,parent.parent.parent,parent.parent.parent.parent,parent.parent.parent.parent.parent,parent.parent.parent.parent.parent.parent';
+		console.log(client?.authStore.token, client?.authStore.model?.id);
 		if (!dirQuery) {
-			if(!client?.authStore.model?.rootDirectory) {
-				client?.collection('directory')
-				.getFirstListItem('parent = null', {
-					expand
-				})
-				.then(record => {
-					setRoot(record);
-				}).catch(e => {
-					client.collection('state').getFirstListItem(`user.id = ${client.authStore.model?.id}`).then((record) => {
-						setError(<Alert variant='filled' severity='error'>
-						<AlertTitle>Kein Wurzel-Knoten gefunden!</AlertTitle>
-						Haben Sie einen Coach verbunden?<br/>
-						<Link sx={{
-							color: 'inherit',
-							fontWeight: 'bold',
-							textDecorationColor: 'inherit'
-						}} component={RouterLink} to='/connect'>Hier</Link> einen Coach verbinden
-					</Alert>)
-					}).catch((e) => {
-						console.log('Connect Coach!')
-						setShowConnectDialog(true)
-					})					
-				})
+			if (!client?.authStore.model?.rootDirectory) {
+				client
+					?.collection('directory')
+					.getFirstListItem<DirectoryRecord>('parent = null', {
+						expand
+					})
+					.then(record => {
+						setRoot(record);
+					})
+					.catch(e => {
+						client
+							.collection('state')
+							.getFirstListItem(`user.id = ${client.authStore.model?.id}`)
+							.then(() => {
+								setError(
+									<Alert variant='filled' severity='error'>
+										<AlertTitle>Kein Wurzel-Knoten gefunden!</AlertTitle>
+										Haben Sie einen Coach verbunden?
+										<br />
+										<Link
+											sx={{
+												color: 'inherit',
+												fontWeight: 'bold',
+												textDecorationColor: 'inherit'
+											}}
+											component={RouterLink}
+											to='/connect'
+										>
+											Hier
+										</Link>{' '}
+										einen Coach verbinden
+									</Alert>
+								);
+							})
+							.catch(e => {
+								console.log('Connect Coach!');
+								setError(<Alert variant='filled' severity='error'>
+								<AlertTitle>Kein Wurzel-Knoten gefunden!</AlertTitle>
+								Haben Sie einen Coach verbunden?
+							</Alert>)
+								setShowConnectDialog(true);
+							});
+					});
 			} else {
-				client?.collection('directory').getOne(client?.authStore.model.rootDirectory, {
-					expand
-				}).then((record) => {
-					setRoot(record)
-				})
+				client
+					?.collection('directory')
+					.getOne<DirectoryRecord>(client?.authStore.model.rootDirectory, {
+						expand
+					})
+					.then(record => {
+						setRoot(record);
+					});
 			}
 			return;
-		} 
-		client?.collection('directory')
-			.getOne(dirQuery, {
+		}
+		client
+			?.collection('directory')
+			.getOne<DirectoryRecord>(dirQuery, {
 				expand
 			})
 			.then(record => {
 				setRoot(record);
 			});
-		
 	}, []);
 
 	function onConnected(error?: string) {
-		if(!error) {
-			setShowConnectDialog(false)
-			setShowSyncDialog(true)
+		setShowConnectDialog(false);
+		if (!error) {
+			setShowSyncDialog(true);
 		}
 	}
 
@@ -107,16 +133,19 @@ export default function Home(props: {}) {
 							alignItems: 'center'
 						}}
 					>
-						<Avatar src='/provadis-logo.png'  sx={{
-                            bgcolor: theme.palette.common.white,
-                            // height: 24,
-                            // width: 24
-                        }}/>
+						<Avatar
+							src='/provadis-logo.png'
+							sx={{
+								bgcolor: theme.palette.common.white
+								// height: 24,
+								// width: 24
+							}}
+						/>
 						<Typography
 							variant='h5'
 							sx={{
 								fontWeight: 'bold',
-                                ml: theme.spacing(1)
+								ml: theme.spacing(1)
 							}}
 						>
 							Expert Giggle
@@ -126,27 +155,36 @@ export default function Home(props: {}) {
 				<Box
 					sx={{
 						mt: theme.spacing(1),
-                        display: 'flex',
+						display: 'flex',
 						justifyContent: 'space-between',
 						alignItems: 'center'
 					}}
 				>
 					<PathBreadcrumb directory={root} />
-					<Box sx={{
-                        display: 'flex',
-					}}>
+					<Box
+						sx={{
+							display: 'flex'
+						}}
+					>
 						<Button
 							variant='outlined'
 							size='small'
-                            onClick={() => setShowSyncDialog(true)}
+							onClick={() => setShowSyncDialog(true)}
 							sx={{
 								mr: theme.spacing(2)
 							}}
 						>
-							Sync now
+							Synchronisieren
 						</Button>
-						{/* <Button onClick={logout} variant='contained' size='small' LinkComponent='a' href='#'>
-							Logout
+						{/* <Button
+							variant='outlined'
+							size='small'
+							onClick={() => setShowConnectDialog(true)}
+							sx={{
+								mr: theme.spacing(2)
+							}}
+						>
+							Verbinden
 						</Button> */}
 						<UserAvatar />
 					</Box>
@@ -157,11 +195,11 @@ export default function Home(props: {}) {
 					}}
 				>
 					{error}
-					{(root) && <DirectoryTable record={root} />}
+					{root && <DirectoryTable record={root} />}
 				</Box>
 			</Container>
-            <SyncDialog open={showSyncDialog} onFinished={() => setShowSyncDialog(false)}/>
-			<ConnectDialog open={showConnectDialog} onClose={onConnected}/>
+			<SyncDialog open={showSyncDialog} onFinished={() => setShowSyncDialog(false)} />
+			<ConnectDialog open={showConnectDialog} onClose={onConnected} />
 		</Box>
 	);
 }

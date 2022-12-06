@@ -31,7 +31,7 @@ pb.admins
 		let success = false
 		try {
 			// console.log(user.id);
-			const user = await coach.getUserInfo()
+			const userinfo = await coach.getUserInfo()
 			// Insert Directories
 			const dirs = await coach.getDirectories();
 			const ctoPb = await coachToPocketbase.insertDirectories(dirs, pb, user.id);

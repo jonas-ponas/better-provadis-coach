@@ -7,7 +7,7 @@ function getBreadcrumb(record: Record): JSX.Element[] {
 	if (!record.expand?.parent) {
 		if (record.name) return [];
 	}
-	return [...getBreadcrumb(record.expand.parent as Record), <Link href={`?dir=${record.id}`}>{record.name}</Link>];
+	return [...getBreadcrumb(record.expand.parent as Record), <Link href={`?dir=${record.id}`} key={record.id}>{record.name}</Link>];
 }
 
 export default function PathBreadcrumb({ directory }: { directory: Record | undefined }) {

@@ -88,7 +88,12 @@ export class Coach {
 		);
 	}
 
-	public async getUserInfo() {
+	public async getUserInfo(): Promise<{
+		coach: {name: string, version: string, id: string},
+		domain: {id: number, name: string},
+		user: {id: number, firstname: string, familyname: string},
+		token: {access_token: string, client_id: string, expires: number, refresh_token: string, scope: string, token_type: string}
+	}> {
 		console.debug('Getting Oauth User-Info...');
 		// await this.checkAccessToken()
 		const options = {

@@ -31,9 +31,12 @@ export default function handleSync(client: MyWebSocket, data: {[key: string]: an
 		})
         client.send(JSON.stringify({type: 'progress', phase: 'coach', step: 2}))
         let success = false
+        let username
         try {
             const user = await coach.getUserInfo()
             client.send(JSON.stringify({type: 'progress', phase: 'coach', step: 3}))
+            console.log('Syncing Files for: ', [user.user.firstname, user.user.familyname].join(' '))
+            username = user.user.firstname+" "+user.user.familyname;
             const dirs = await coach.getDirectories()
             client.send(JSON.stringify({type: 'progress', phase: 'coach', step: 4}))
             const files = await coach.getFiles()
@@ -50,25 +53,28 @@ export default function handleSync(client: MyWebSocket, data: {[key: string]: an
                 client.send(JSON.stringify({type: 'progress', phase: 'database', step: 3, detail: i, total: t}))
             })
         } catch(e) {
+            console.error(e)
             client.send(JSON.stringify({type: 'error', msg: 'Internal Error (S3)'})) // ERROR S3
             client.close(1011)
         } finally {
             const currentState = coach.exportFromState();
-			// console.log(currentState)
 			const data: any = {
 				refreshToken: currentState.refreshToken,
 				token: currentState.token,
 				expires: new Date((currentState.expires||0)).toISOString(),
 				url: currentState.url,
 				coachUserId: currentState.userId,	
+                lastSync: success ? new Date().toISOString : state.lastSync,
+                coachUsername: username||state.coachUsername
 			}
 			if(success) data.lastSync = new Date().toISOString()
 			console.log(data)
 			await pb.collection('state').update(state.id, data);
-			client.send(JSON.stringify({type: 'progress', phase: 'done'}))
+			client.send(JSON.stringify({type: 'progress', phase: 'done', withError: !success}))
         }
     }).catch((e) => {
         console.error(e)
         client.send(JSON.stringify({type: 'error', msg: 'Internal Error (S2)'})) // ERROR S2
+        client.close(1011)
     })
 }

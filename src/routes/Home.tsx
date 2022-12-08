@@ -1,8 +1,18 @@
 // <reference path='../records.d.ts' />
-import { Alert, AlertTitle, Avatar, Box, Button, Container, Link, Typography, useTheme } from '@mui/material';
+import {
+	Alert,
+	AlertTitle,
+	Avatar,
+	Box,
+	Button,
+	Container,
+	Icon,
+	Link,
+	Typography,
+	useTheme
+} from '@mui/material';
 import React, { useContext, useEffect, useState } from 'react';
 import PocketBaseContext from '../hooks/PocketbaseContext';
-import { Record } from 'pocketbase';
 import DirectoryTable from '../components/DirectoryTable';
 import PathBreadcrumb from '../components/PathBreadcrump';
 import SyncDialog from '../components/SyncDialog';
@@ -10,6 +20,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import ConnectDialog from '../components/ConnectDialog';
 import UserAvatar from '../components/UserAvatar';
 import { DirectoryRecord } from '../records';
+import { BugReportOutlined } from '@mui/icons-material';
 
 export default function Home(props: {}) {
 	const theme = useTheme();
@@ -152,6 +163,22 @@ export default function Home(props: {}) {
 						>
 							Expert Giggle
 						</Typography>
+					</Box>
+					<Box>
+						<Button
+							LinkComponent={'a'}
+							href='https://github.com/jonas-ponas/expert-giggle-frontend/'
+							target='_blank'
+							variant='outlined'
+							sx={{
+								borderColor: theme.palette.common.black,
+								color: theme.palette.common.black
+							}}
+							size='small'
+							startIcon={<BugReportOutlined />}
+						>
+							Bug Report
+						</Button>
 					</Box>
 				</Box>
 				<Box

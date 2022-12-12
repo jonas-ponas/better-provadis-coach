@@ -1,15 +1,18 @@
 import pocketbaseEs from "pocketbase";
 import { Coach } from "../coach/Coach";
+import logger from "../logger";
 import coachToPocketbase from "../pocketbase/coachToPocketbase";
 import { MyWebSocket, PB_PASSWD, PB_USER } from "../server";
 const PocketBase = require('pocketbase/cjs')
 
 export default function handleSync(client: MyWebSocket, data: {[key: string]: any}) {
     if(!client.isAuthorized || !client.userId) {
+        logger.log('warn', `Client not authorized`)
         client.send(JSON.stringify({type: 'error', msg: 'Unauthorized'}))
         return
     }
     if(!PB_USER || !PB_PASSWD) {
+        logger.log('error', `S1 PocketBase Service User not specified!`)
         client.send(JSON.stringify({type: 'error', msg: 'Internal Error (S1)'})) // ERROR S1
         client.close(1011, "Internal Error")
         return
@@ -28,14 +31,14 @@ export default function handleSync(client: MyWebSocket, data: {[key: string]: an
 			domainId: state.domainId,
 			clientId: process.env.CLIENT_ID || '',
 			clientSecret: process.env.CLIENT_SECRET || ''
-		})
+		}, logger)
         client.send(JSON.stringify({type: 'progress', phase: 'coach', step: 2}))
         let success = false
         let username
         try {
             const user = await coach.getUserInfo()
             client.send(JSON.stringify({type: 'progress', phase: 'coach', step: 3}))
-            console.log('Syncing Files for: ', [user.user.firstname, user.user.familyname].join(' '))
+            logger.log('info', 'Syncing Files for: ', [user.user.firstname, user.user.familyname].join(' '))
             username = user.user.firstname+" "+user.user.familyname;
             const dirs = await coach.getDirectories()
             client.send(JSON.stringify({type: 'progress', phase: 'coach', step: 4}))
@@ -54,7 +57,7 @@ export default function handleSync(client: MyWebSocket, data: {[key: string]: an
             })
             success = true
         } catch(e) {
-            console.error(e)
+            logger.log('warn', "S3" + e)
             client.send(JSON.stringify({type: 'error', msg: 'Internal Error (S3)'})) // ERROR S3
             client.close(1011)
         } finally {
@@ -68,13 +71,13 @@ export default function handleSync(client: MyWebSocket, data: {[key: string]: an
                 lastSync: success ? new Date().toISOString : state.lastSync,
                 coachUsername: username||state.coachUsername
 			}
-			if(success) data.lastSync = new Date().toISOString()
-			console.log(data)
+			if(success) data.lastSync = (new Date()).toISOString()
+			logger.log('debug', JSON.stringify(data))
 			await pb.collection('state').update(state.id, data);
 			client.send(JSON.stringify({type: 'progress', phase: 'done', withError: !success}))
         }
     }).catch((e) => {
-        console.error(e)
+        logger.log('error', 'S2 Could not authorize PocketBase Service User. Check Credentials!')
         client.send(JSON.stringify({type: 'error', msg: 'Internal Error (S2)'})) // ERROR S2
         client.close(1011)
     })

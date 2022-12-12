@@ -1,5 +1,6 @@
 // import pocketbaseEs, { ClientResponseError } from "pocketbase";
 import {Directory} from '../coach/Coach';
+import logger from '../logger';
 
 export default async function insertDirectories(
 	directories: Directory[],
@@ -23,7 +24,7 @@ export default async function insertDirectories(
 			});
 			cToPbMap.set(directory.id, create.id);
 			updateDirs.push(directory);
-			console.log('Created', create.name, create.id, create.coachId);
+			logger.log('debug', `Created ${create.name} ${create.id} ${create.coachId}`);
 			if(onProgress) onProgress(++i, total)
 		} catch (e: any) {
 			try {
@@ -40,15 +41,14 @@ export default async function insertDirectories(
 							timestamp: directory.modified.timestamp,
 							allowedUser: userExists ? record.allowedUser : [...record.allowedUser, userId]
 						});
-						console.log('Updated', update.name, update.id, update.coachId);
+						logger.log('debug', `Updated ${update.name} ${update.id} ${update.coachId}`);
 						if(onProgress) onProgress(++i, total);
 					} else {
 						if(onProgress) onProgress(++i, total);
-						// console.log('No update neccessary', record.name, record.id, record.coachId);
 					}
 				}
 			} catch (e) {
-				console.log('Search/Update failed!', directory.name, directory.id);
+				logger.log('warn', `Search/Update failed (${directory.name}, ${directory.id}): ${e}`);
 				if(onProgress) onProgress(++i, total);
 			}
 		}
@@ -63,11 +63,11 @@ export default async function insertDirectories(
 				if (record?.id) {
 					parentId = record.id;
 				} else {
-					console.log('Cannot find parent', directory.parent_id, 'for', directory.name, directory.id);
+					logger.log('debug', `Cannot find parent ${directory.parent_id} for ${directory.name} ${directory.id}`);
 					continue;
 				}
 			} catch (e) {
-				console.log('Failed find parent', directory.parent_id, 'for', directory.name, directory.id);
+				logger.log('warn', `Failed find parent ${directory.parent_id} for ${directory.name} ${directory.id}: ${e}`);
 				continue;
 			}
 		}
@@ -75,9 +75,9 @@ export default async function insertDirectories(
 			const update = await pb.collection('directory').update(id, {
 				parent: parentId
 			});
-			console.log('Updated Parent for', update.name, update.id);
+			logger.log('debug', `Updated Parent for ${update.name} ${update.id}`);
 		} catch (e) {
-			console.log('Failed to update', directory.name, directory.id);
+			logger.log('warn', `Failed to update ${directory.name} ${directory.id}: ${e}`);
 		}
 	}
 	return cToPbMap;

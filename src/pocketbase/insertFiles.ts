@@ -1,4 +1,5 @@
 import {File} from '../coach/Coach';
+import logger from '../logger';
 // import pocketbaseEs from "pocketbase"
 
 export default async function insertFiles(
@@ -20,7 +21,7 @@ export default async function insertFiles(
 				const record = await pb.collection('directory').getFirstListItem(`coachId=${file.directory.id}`);
 				parentId = record.id;
 			} catch (e) {
-				console.log('Cannot find parent', file.directory.name, file.directory.id, 'for', file.name, file.id);
+				logger.log('debug', `Cannot find parent ${file.directory.name} ${file.directory.id} for ${file.name} ${file.id}`);
 				continue;
 			}
 		}
@@ -33,10 +34,9 @@ export default async function insertFiles(
 				parent: parentId,
 				allowedUser: userId ? [userId] : []
 			};
-			// console.log(data)
 			const create = await pb.collection('file').create(data);
 			fToPbMap.set(create.coachId, {name: create.name, pbId: create.id});
-			console.log('Created', create.name, create.id, create.coachId);
+			logger.log('debug', `Created ${create.name} ${create.id} ${create.coachId}`);
 			if (onProgress) onProgress(++i, total);
 		} catch (e) {
 			try {
@@ -54,16 +54,15 @@ export default async function insertFiles(
 							size: file.size,
 							allowedUser: userExists ? record.allowedUser : [...record.allowedUser, userId]
 						});
-						console.log('Updated', update.name, update.id, update.coachId);
+						logger.log('debug', `Updated ${update.name} ${update.id} ${update.coachId}`);
 						if(nameChanged || sizeChanged || wasModified) fToPbMap.set(record.coachId, {pbId: record.id, name: record.name}); // Update Cache File
 						if (onProgress) onProgress(++i, total);
 					} else {
-						// console.log('No update neccessary', record.name, record.id, record.coachId);
 						if (onProgress) onProgress(++i, total);
 					}
 				}
 			} catch (e) {
-				console.log('Create/Search/Update failed!', file.name + '.' + file.mime, file.id);
+				logger.log('warn', `Create/Search/Update failed! ${file.name}.${file.mime} ${file.id}`);
 				console.error(e);
 				if (onProgress) onProgress(++i, total);
 

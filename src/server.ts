@@ -3,19 +3,24 @@ import handleInit from "./handlers/handleInit";
 import handleLogin from "./handlers/handleLogin";
 import handleSync from "./handlers/handleSync";
 import dotenv from 'dotenv'
+import logger from "./logger";
 dotenv.config()
 
 export const PB_USER = process.env.PB_USER;
 export const PB_PASSWD = process.env.PB_PASSWD;
 
+const PORT = (parseInt(process.env.PORT||"8080"))
+
 const wss = new WebSocketServer({
-    port: (parseInt(process.env.PORT||"8080"))
+    port: PORT
 })
 
 type Handler = (client: MyWebSocket, data: {[key: string]: any})=>void
 
 export interface MyWebSocket extends WebSocket {
-    [key: string]: any
+    remoteAdress: string
+    isAuthorized: boolean
+    userId: any
 }
 
 const handlers: {[key: string]: Handler} = {
@@ -24,18 +29,18 @@ const handlers: {[key: string]: Handler} = {
     "login": handleLogin
 }
 
-const clients = new Map<string, {isAuthenticated: boolean}>()
-
 function handleMessage(client: MyWebSocket) {
     return function(data: RawData, isBinary: boolean) {
         let json
         try {
             json = JSON.parse(data.toString('utf8'))
             if(json.type && Object.keys(handlers).includes(json.type)) {
+                logger.log('verbose', 'Incoming ' + JSON.stringify(json))
                 return handlers[json.type](client, json)
             }
             return client.send(JSON.stringify({type: 'error', msg:'Unknown message type.'}))
         } catch(e) {
+            logger.log('warn', 'Unsupported Data: ' + data.toString('utf-8'))
             client.close(1003, "Unsupported Data")
             client.send(JSON.stringify({type: 'error', msg: 'Provide JSON.'}))
             return
@@ -44,19 +49,29 @@ function handleMessage(client: MyWebSocket) {
     }
 }
 
+wss.on('listening', () => {
+    logger.log('info', `Websocket listening running on port ${PORT}`)
+})
+
 wss.on('connection', (client: MyWebSocket, request) => {
-    console.log('client connected')
+    logger.log('info', `Client ${request.socket.remoteAddress} connected`)
     
     client.isAuthorized = false
+    client.remoteAdress = request.socket.remoteAddress||'none'
     setTimeout(() => {
-        if(!client.isAuthorized) client.close(3000, "Login Timeout")
+        if(!client.isAuthorized) {
+            logger.log('info', `Client ${request.socket.remoteAddress} did not authorize in time`)
+            client.close(3000, "Login Timeout")
+        }
     }, 10 * 1000) 
 
     client.on('message', handleMessage(client))
 
     client.on('close', () => {
-        console.log('client disconnected')
+        logger.log('info', `Client ${request.socket.remoteAddress} disconnected`)
     })
 })
 
-console.log('Websocket running on port 8080')
+wss.on('error', (error) => {
+    logger.log('error', error)
+})

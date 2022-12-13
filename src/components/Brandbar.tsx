@@ -3,8 +3,8 @@ import React from 'react';
 import { usePocketbase } from '../util/PocketbaseContext';
 
 export default function Brandbar(props: {}) {
-    const theme = useTheme()
-	const client = usePocketbase()
+	const theme = useTheme();
+	const client = usePocketbase();
 
 	return (
 		<Box

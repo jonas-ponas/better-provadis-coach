@@ -30,7 +30,7 @@ export default function SettingsTable({ state, rootDir }: { state: Record | null
 	const client = usePocketbase();
 	const [showConnectDialog, setShowConnectDialog] = useState(false);
 	const [syncNow, setSyncNow] = useState(false);
-	const [snackbar, setSnackbar] = useState<{text: string, type: string}|undefined>(undefined)
+	const [snackbar, setSnackbar] = useState<{ text: string; type: string } | undefined>(undefined);
 
 	function handleClose(success?: boolean) {
 		setShowConnectDialog(false);
@@ -46,17 +46,17 @@ export default function SettingsTable({ state, rootDir }: { state: Record | null
 
 	async function onRootDirRemove() {
 		if (!client?.authStore.model?.id) {
-			setSnackbar({type: 'error', text: 'Fehler beim Entfernen!'})
+			setSnackbar({ type: 'error', text: 'Fehler beim Entfernen!' });
 			return;
 		}
 		try {
 			await client.collection('users').update(client.authStore.model.id, {
 				rootDirectory: null
 			});
-			navigate(0)
-		} catch(e) {
-			if(e instanceof Error) {
-				setSnackbar({type: 'error', text: e.name})
+			navigate(0);
+		} catch (e) {
+			if (e instanceof Error) {
+				setSnackbar({ type: 'error', text: e.name });
 			}
 		}
 	}
@@ -145,10 +145,7 @@ export default function SettingsTable({ state, rootDir }: { state: Record | null
 				</Table>
 			</TableContainer>
 			<ConnectDialog open={showConnectDialog} onClose={handleClose} />
-			<Snackbar
-				open={snackbar != undefined}
-				autoHideDuration={10000}
-				onClose={() => setSnackbar(undefined)}>
+			<Snackbar open={snackbar != undefined} autoHideDuration={10000} onClose={() => setSnackbar(undefined)}>
 				<Alert
 					variant='filled'
 					onClose={() => setSnackbar(undefined)}

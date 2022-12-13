@@ -23,17 +23,17 @@ export default function Navigation(props: {}) {
 					</ListItemIcon>
 					<ListItemText primary='Dateien' />
 				</ListItemButton>
-				<Tooltip title="Kommt bald (vielleicht)"  placement='right' followCursor={true}>
+				<Tooltip title='Kommt bald (vielleicht)' placement='right' followCursor={true}>
 					<span>
-					<ListItemButton disabled={true} LinkComponent={RouterLink} href='/schedule'>
-					<ListItemIcon>
-						<Icon name='calendar-todo' style='line' size='lg' />
-					</ListItemIcon>
-					<ListItemText primary='Stundenplan' />
-				</ListItemButton>
+						<ListItemButton disabled={true} LinkComponent={RouterLink} href='/schedule'>
+							<ListItemIcon>
+								<Icon name='calendar-todo' style='line' size='lg' />
+							</ListItemIcon>
+							<ListItemText primary='Stundenplan' />
+						</ListItemButton>
 					</span>
 				</Tooltip>
-				<Tooltip title="Kommt bald (vielleicht)" placement='right' followCursor={true}>
+				<Tooltip title='Kommt bald (vielleicht)' placement='right' followCursor={true}>
 					<span>
 						<ListItemButton disabled={true} LinkComponent={RouterLink} href='/news'>
 							<ListItemIcon>

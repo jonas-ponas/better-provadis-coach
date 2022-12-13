@@ -3,11 +3,8 @@ import PocketBase from 'pocketbase';
 
 const PocketBaseContext = React.createContext<null | PocketBase>(null);
 
-const usePocketbase = () => useContext(PocketBaseContext)
+const usePocketbase = () => useContext(PocketBaseContext);
 
-const PocketBaseProvider = PocketBaseContext.Provider
+const PocketBaseProvider = PocketBaseContext.Provider;
 
-export {
-    PocketBaseProvider,
-    usePocketbase
-};
+export { PocketBaseProvider, usePocketbase };

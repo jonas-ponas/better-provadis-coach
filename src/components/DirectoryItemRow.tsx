@@ -9,14 +9,14 @@ import Icon from './Icon';
 
 export default function DirectoryItemRow({ record }: { record: Record }) {
 	const theme = useTheme();
-	const client = usePocketbase()
+	const client = usePocketbase();
 	const navigate = useNavigate();
 	const location = useLocation();
 
 	const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 	const open = Boolean(anchorEl);
 
-	const isRootDirectory = client?.authStore.model?.rootDirectory == record.id
+	const isRootDirectory = client?.authStore.model?.rootDirectory == record.id;
 
 	function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
 		setAnchorEl(event.currentTarget);
@@ -48,26 +48,25 @@ export default function DirectoryItemRow({ record }: { record: Record }) {
 	}
 
 	return (
-		<TableRow key={location.key}
+		<TableRow
+			key={location.key}
 			sx={{
 				'&:hover': {
 					bgcolor: theme.palette.grey[100],
 					cursor: 'pointer'
 				}
 			}}
-			onDoubleClick={() => navigate('/dir/'+record.id)}
-		>
+			onDoubleClick={() => navigate('/dir/' + record.id)}>
 			<TableCell padding='checkbox'>
-				<Icon name={isRootDirectory ? 'folder-user' : 'folder'} style='line' size='xl'/>
+				<Icon name={isRootDirectory ? 'folder-user' : 'folder'} style='line' size='xl' />
 			</TableCell>
 			<TableCell>
 				<Link
-					onClick={() => navigate('/dir/'+record.id)}
+					onClick={() => navigate('/dir/' + record.id)}
 					sx={{
 						color: theme.palette.common.black,
 						textDecorationColor: theme.palette.grey[500]
-					}}
-				>
+					}}>
 					{record.name}
 				</Link>
 				{/* {record.name} */}
@@ -76,7 +75,7 @@ export default function DirectoryItemRow({ record }: { record: Record }) {
 			<TableCell>{verbalizeDate(record.timestamp)}</TableCell>
 			<TableCell>
 				<IconButton onClick={handleClick}>
-					<Icon name='more-2' style='line'/>
+					<Icon name='more-2' style='line' />
 				</IconButton>
 			</TableCell>
 			<Menu
@@ -86,17 +85,16 @@ export default function DirectoryItemRow({ record }: { record: Record }) {
 				onClose={() => setAnchorEl(null)}
 				MenuListProps={{
 					'aria-labelledby': 'basic-button'
-				}}
-			>
+				}}>
 				<MenuItem onClick={pinDirectory} disabled={true}>
 					<ListItemIcon>
-						<Icon name='pushpin-2' style='line' size='lg'/>
+						<Icon name='pushpin-2' style='line' size='lg' />
 					</ListItemIcon>
 					Anheften
 				</MenuItem>
 				<MenuItem onClick={setAsRootDirectory} disabled={false}>
 					<ListItemIcon>
-						<Icon name='folder-user' style='line' size='lg'/>
+						<Icon name='folder-user' style='line' size='lg' />
 					</ListItemIcon>
 					Wurzelordner
 				</MenuItem>

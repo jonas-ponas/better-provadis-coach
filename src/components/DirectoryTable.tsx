@@ -23,16 +23,16 @@ import Icon from './Icon';
 
 export default function DirectoryTable({ record }: { record: Record }) {
 	const theme = useTheme();
-	const client = usePocketbase()
-	const navigate = useNavigate()
+	const client = usePocketbase();
+	const navigate = useNavigate();
 
 	const [directories, setDirectories] = useState<Record[] | undefined>(undefined);
 	const [files, setFiles] = useState<Record[] | undefined>(undefined);
 	const [error, setError] = useState<string | undefined>(undefined);
 
 	useEffect(() => {
-		setDirectories(undefined)
-		setFiles(undefined)
+		setDirectories(undefined);
+		setFiles(undefined);
 		const p1 = client?.collection('file').getFullList(undefined, {
 			filter: `parent.id = "${record.id}"`
 		});
@@ -57,22 +57,23 @@ export default function DirectoryTable({ record }: { record: Record }) {
 				<TableHead>
 					<TableRow>
 						<TableCell padding='checkbox'>
-						{record.parent && (
-								<IconButton sx={{
-									height: 24,
-									widht: 24
-								}} onClick={() => navigate('/dir/' + record.parent)}>
-									<Icon name='arrow-up' style='line'/>
+							{record.parent && (
+								<IconButton
+									sx={{
+										height: 24,
+										widht: 24
+									}}
+									onClick={() => navigate('/dir/' + record.parent)}>
+									<Icon name='arrow-up' style='line' />
 								</IconButton>
 							)}
 						</TableCell>
 						<TableCell colSpan={40}>
-							
-							<PathBreadcrumb directory={record}/>
+							<PathBreadcrumb directory={record} />
 						</TableCell>
 					</TableRow>
 					<TableRow>
-						<TableCell padding='checkbox'/>
+						<TableCell padding='checkbox' />
 						<TableCell>Name</TableCell>
 						<TableCell>Größe</TableCell>
 						<TableCell>Zuletzt geändert</TableCell>
@@ -87,8 +88,7 @@ export default function DirectoryTable({ record }: { record: Record }) {
 								sx={{
 									textAlign: 'center',
 									color: theme.palette.grey[400]
-								}}
-							>
+								}}>
 								<Typography variant='body2'>Verzeichnis ist leer</Typography>
 							</TableCell>
 						) : (
@@ -107,8 +107,7 @@ export default function DirectoryTable({ record }: { record: Record }) {
 							sx={{
 								textAlign: 'center',
 								color: theme.palette.grey[400]
-							}}
-						>
+							}}>
 							{error ? error : 'Lade Daten ...'}
 						</TableCell>
 					)}

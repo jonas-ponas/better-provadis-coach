@@ -32,7 +32,7 @@ export default function Sync(props: { syncNow?: boolean; callback?: () => void; 
 	const [step, setStep] = useState<number>(0);
 	const [progress, setProgress] = useState<number>(0);
 	const [error, setError] = useState<undefined | string>(undefined);
-	const [snackbar, setSnackbar] = useState<{type: string, text: string}|undefined>(undefined)
+	const [snackbar, setSnackbar] = useState<{ type: string; text: string } | undefined>(undefined);
 
 	useEffect(() => {
 		if (props.syncNow) {
@@ -41,9 +41,9 @@ export default function Sync(props: { syncNow?: boolean; callback?: () => void; 
 	}, [props.syncNow]);
 
 	function handleSync() {
-		let url
-		if(import.meta.env.MODE == 'production') url = 'wss://coach.***REMOVED***/ws'
-		else url = import.meta.env.VITE_WEBSOCKET_URI
+		let url;
+		if (import.meta.env.MODE == 'production') url = 'wss://coach.***REMOVED***/ws';
+		else url = import.meta.env.VITE_WEBSOCKET_URI;
 		setPhase('connect');
 		setIsSyncing(true);
 		if (!client?.authStore.isValid) {
@@ -74,7 +74,7 @@ export default function Sync(props: { syncNow?: boolean; callback?: () => void; 
 					if (json.phase == 'done') {
 						setProgress(100);
 						setPhase('done');
-						setSnackbar({type: 'success', text: 'Erfolgreich Synchronisiert.'})
+						setSnackbar({ type: 'success', text: 'Erfolgreich Synchronisiert.' });
 						setTimeout(() => {
 							setIsSyncing(false);
 							if (props.callback) props.callback();
@@ -87,8 +87,8 @@ export default function Sync(props: { syncNow?: boolean; callback?: () => void; 
 					break;
 				case 'error':
 					setError(json.msg);
-					setSnackbar({type: 'error', text: json.msg})
-					setIsSyncing(false)
+					setSnackbar({ type: 'error', text: json.msg });
+					setIsSyncing(false);
 					break;
 				default:
 					console.log('Unknown Data', json);
@@ -125,10 +125,7 @@ export default function Sync(props: { syncNow?: boolean; callback?: () => void; 
 					{phase == 'database' ? ` ${progress}%` : ''}
 				</Typography>
 			)}
-			<Snackbar
-				open={snackbar != undefined}
-				autoHideDuration={10000}
-				onClose={() => setSnackbar(undefined)}>
+			<Snackbar open={snackbar != undefined} autoHideDuration={10000} onClose={() => setSnackbar(undefined)}>
 				<Alert
 					variant='filled'
 					onClose={() => setSnackbar(undefined)}

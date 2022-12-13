@@ -21,7 +21,7 @@ const router = (client: pocketbaseEs) =>
 			},
 			children: [
 				{
-					path:'/',
+					path: '/',
 					element: <Navigate to='/dir' />
 				},
 				{
@@ -45,51 +45,57 @@ const router = (client: pocketbaseEs) =>
 						} else {
 							try {
 								const record = await client
-								.collection('directory')
-								.getFirstListItem<DirectoryRecord>(`parent = null`);
+									.collection('directory')
+									.getFirstListItem<DirectoryRecord>(`parent = null`);
 								throw redirect('/dir/' + record.id);
-							} catch(e) {
-								if(e instanceof Error) {
-									console.log(e)
-									if((e as ClientResponseError).status == 404) {
-										console.log('hier!')
+							} catch (e) {
+								if (e instanceof Error) {
+									console.log(e);
+									if ((e as ClientResponseError).status == 404) {
+										console.log('hier!');
 										throw json({
 											name: 'Kein Wurzel-Ordner gefunden',
 											description: `Es wurde kein Wurzelordner gefunden. Haben Sie einen Coach verbunden?
 											(Ein Coach kann in den Einstellungen mit Expert-Giggle verbunden werden)`
-										})
+										});
 									}
 								}
 								throw e;
 							}
-							
 						}
 					},
-					errorElement: <ErrorAlert title='Fehler' description='Das angeforderte Verzeichnis wurde nicht gefunden.' />
+					errorElement: (
+						<ErrorAlert title='Fehler' description='Das angeforderte Verzeichnis wurde nicht gefunden.' />
+					)
 				},
 				{
 					path: '/settings',
 					element: <UserSettings />,
 					loader: async () => {
-						let rootDir = null
-						if(client.authStore.model?.rootDirectory) {
-							rootDir = await client.collection('directory').getOne(client.authStore.model?.rootDirectory)
+						let rootDir = null;
+						if (client.authStore.model?.rootDirectory) {
+							rootDir = await client
+								.collection('directory')
+								.getOne(client.authStore.model?.rootDirectory);
 						}
 						try {
-							let state = await client.collection('state').getFirstListItem(`user.id = "${client.authStore.model?.id||''}"`)
+							let state = await client
+								.collection('state')
+								.getFirstListItem(`user.id = "${client.authStore.model?.id || ''}"`);
 							return {
-								state, rootDir
-							}
-						} catch(e) {
-							if(e instanceof Error) {
-								if((e as ClientResponseError).status == 404) {
+								state,
+								rootDir
+							};
+						} catch (e) {
+							if (e instanceof Error) {
+								if ((e as ClientResponseError).status == 404) {
 									return {
 										state: null,
 										rootDir
-									}
+									};
 								}
 							}
-							throw e
+							throw e;
 						}
 					}
 				}
@@ -109,7 +115,7 @@ const router = (client: pocketbaseEs) =>
 				const url = new URL(request.request.url);
 				const code = url.searchParams.get('code');
 				const state = url.searchParams.get('state');
-				console.log(localStorage.getItem('provider'))
+				console.log(localStorage.getItem('provider'));
 				const provider = JSON.parse(localStorage.getItem('provider') || '{}');
 				if (!code || !state || !provider)
 					throw new Error('Der O-Auth Provider hat nicht genug Parameter zurückgeliefert!');

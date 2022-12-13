@@ -4,10 +4,10 @@ import { AuthMethodsList } from 'pocketbase';
 import Icon from '../components/Icon';
 import { useLoaderData } from 'react-router-dom';
 
-const REDIRECT_URI: {[key: string]: string} = {
-	'google': import.meta.env.VITE_GOOGLE_REDIRECT_URI||'',
-	'github': import.meta.env.VITE_GITHUB_REDIRECT_URI||''
-}
+const REDIRECT_URI: { [key: string]: string } = {
+	google: import.meta.env.VITE_GOOGLE_REDIRECT_URI || '',
+	github: import.meta.env.VITE_GITHUB_REDIRECT_URI || ''
+};
 
 export default function Login(props: {}) {
 	const theme = useTheme();
@@ -70,9 +70,11 @@ export default function Login(props: {}) {
 							}}>
 							{authMethodList &&
 								authMethodList.authProviders.map(v => {
-									
-									let redirectUrl = import.meta.env.MODE == 'production' ? 'https://coach.***REMOVED***/callback' : REDIRECT_URI[v.name]||'' 
-									let combinedAuthUrl = v.authUrl + encodeURIComponent(redirectUrl)
+									let redirectUrl =
+										import.meta.env.MODE == 'production'
+											? 'https://coach.***REMOVED***/callback'
+											: REDIRECT_URI[v.name] || '';
+									let combinedAuthUrl = v.authUrl + encodeURIComponent(redirectUrl);
 									switch (v.name) {
 										case 'google':
 											return (
@@ -80,7 +82,12 @@ export default function Login(props: {}) {
 													key={v.name}
 													LinkComponent={'a'}
 													href={combinedAuthUrl}
-													onClick={() => localStorage.setItem('provider', JSON.stringify({...v, redirectUrl}))}
+													onClick={() =>
+														localStorage.setItem(
+															'provider',
+															JSON.stringify({ ...v, redirectUrl })
+														)
+													}
 													sx={{
 														bgcolor: theme.palette.common.white,
 														color: theme.palette.common.black,
@@ -97,7 +104,12 @@ export default function Login(props: {}) {
 													key={v.name}
 													LinkComponent={'a'}
 													href={combinedAuthUrl}
-													onClick={() => localStorage.setItem('provider', JSON.stringify({...v, redirectUrl}))}
+													onClick={() =>
+														localStorage.setItem(
+															'provider',
+															JSON.stringify({ ...v, redirectUrl })
+														)
+													}
 													sx={{
 														bgcolor: theme.palette.common.black,
 														m: theme.spacing(1),

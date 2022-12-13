@@ -1,32 +1,18 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { Container, Box, Paper, Typography, useTheme, Divider, Button, Avatar } from '@mui/material';
-import PocketBaseContext from '../hooks/PocketbaseContext';
-import { AuthMethodsList, AuthProviderInfo } from 'pocketbase';
+import React from 'react';
+import { Container, Box, Paper, Typography, useTheme, Button, Avatar } from '@mui/material';
+import { AuthMethodsList } from 'pocketbase';
+import Icon from '../components/Icon';
+import { useLoaderData } from 'react-router-dom';
 
-// const GOOGLE_REDIRECT_URI = 'https://coach.***REMOVED***/callback'
-const GOOGLE_REDIRECT_URI = 'http://localhost:5173/callback';
-const GITHUB_REDIRECT_URI = 'https://coach.***REMOVED***/callback/dev';
-// const GITHUB_REDIRECT_URI = 'https://coach.***REMOVED***/callback'
+const REDIRECT_URI: {[key: string]: string} = {
+	'google': import.meta.env.VITE_GOOGLE_REDIRECT_URI||'',
+	'github': import.meta.env.VITE_GITHUB_REDIRECT_URI||''
+}
 
 export default function Login(props: {}) {
 	const theme = useTheme();
-	const client = useContext(PocketBaseContext);
-
-	const [authMethods, setAuthMethods] = useState<undefined | AuthMethodsList>(undefined);
-	const [error, setError] = useState<undefined | string>(undefined);
-
-	useEffect(() => {
-		client
-			?.collection('users')
-			.listAuthMethods()
-			.then(methods => {
-				setAuthMethods(methods);
-			})
-			.catch(e => {
-				setError(e.message);
-			});
-	}, []);
-
+	const loaderData = useLoaderData();
+	const authMethodList = loaderData as AuthMethodsList;
 	return (
 		<Box
 			sx={{
@@ -35,15 +21,8 @@ export default function Login(props: {}) {
 				bgcolor: theme.palette.primary.dark,
 				display: 'flex',
 				justifyContent: 'center'
-			}}
-		>
-			<Container
-				component='main'
-				maxWidth='sm'
-				sx={{
-					mt: '20vh'
-				}}
-			>
+			}}>
+			<Container component='main' maxWidth='sm' sx={{ mt: '20vh' }}>
 				<Paper
 					elevation={0}
 					sx={{
@@ -52,23 +31,20 @@ export default function Login(props: {}) {
 						alignItems: 'center',
 						flexDirection: 'column',
 						bgcolor: theme.palette.grey[50]
-					}}
-				>
+					}}>
 					<Box
 						sx={{
 							p: theme.spacing(2),
 							display: 'flex',
 							alignItems: 'center',
 							flexDirection: 'column'
-						}}
-					>
+						}}>
 						<Box
 							sx={{
 								display: 'flex',
 								alignItems: 'center',
 								mb: theme.spacing(1)
-							}}
-						>
+							}}>
 							<Avatar
 								src='/provadis-logo.png'
 								sx={{
@@ -80,56 +56,48 @@ export default function Login(props: {}) {
 								sx={{
 									fontWeight: 'bold',
 									ml: theme.spacing(1)
-								}}
-							>
+								}}>
 								Expert Giggle
 							</Typography>
 						</Box>
-						<Typography variant='body2'>Das deutlich bessere UI für den Provadis-Coach</Typography>
+						<Typography variant='body2'>Die deutlich bessere UI für den Provadis-Coach</Typography>
 					</Box>
-					<Box
-						sx={{
-							p: theme.spacing(2)
-						}}
-					>
-						{error && (
-							<Typography variant='body1' color={theme.palette.error.main}>
-								{error}
-							</Typography>
-						)}
-
+					<Box sx={{ p: theme.spacing(2) }}>
 						<Box
 							sx={{
 								display: 'flex',
 								flexDirection: 'column'
-							}}
-						>
-							{authMethods &&
-								authMethods.authProviders.map(v => {
-									console.log(v);
+							}}>
+							{authMethodList &&
+								authMethodList.authProviders.map(v => {
+									
+									let redirectUrl = import.meta.env.MODE == 'production' ? 'https://coach.***REMOVED***/callback' : REDIRECT_URI[v.name]||'' 
+									let combinedAuthUrl = v.authUrl + encodeURIComponent(redirectUrl)
 									switch (v.name) {
 										case 'google':
 											return (
 												<Button
+													key={v.name}
 													LinkComponent={'a'}
-													href={v.authUrl + encodeURIComponent(GOOGLE_REDIRECT_URI) || ''}
-													onClick={() => localStorage.setItem('provider', JSON.stringify(v))}
+													href={combinedAuthUrl}
+													onClick={() => localStorage.setItem('provider', JSON.stringify({...v, redirectUrl}))}
 													sx={{
 														bgcolor: theme.palette.common.white,
 														color: theme.palette.common.black,
 														m: theme.spacing(1),
 														border: '1px solid black'
 													}}
-												>
+													startIcon={<Icon name='google' style='line' />}>
 													Sign in with Google
 												</Button>
 											);
 										case 'github':
 											return (
 												<Button
+													key={v.name}
 													LinkComponent={'a'}
-													href={v.authUrl + encodeURIComponent(GITHUB_REDIRECT_URI) || ''}
-													onClick={() => localStorage.setItem('provider', JSON.stringify(v))}
+													href={combinedAuthUrl}
+													onClick={() => localStorage.setItem('provider', JSON.stringify({...v, redirectUrl}))}
 													sx={{
 														bgcolor: theme.palette.common.black,
 														m: theme.spacing(1),
@@ -138,7 +106,7 @@ export default function Login(props: {}) {
 															bgcolor: '#383838'
 														}
 													}}
-												>
+													startIcon={<Icon name='github' style='line' />}>
 													Sign in with Github
 												</Button>
 											);

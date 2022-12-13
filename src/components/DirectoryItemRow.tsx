@@ -3,14 +3,21 @@ import { Record } from 'pocketbase';
 import { IconButton, Link, ListItemIcon, Menu, MenuItem, TableCell, TableRow, useTheme } from '@mui/material';
 import { AccountTreeTwoTone, FolderTwoTone, MoreVert, PinTwoTone, PushPinTwoTone } from '@mui/icons-material';
 import verbalizeDate from '../util/verbalizeDate';
-import PocketBaseContext from '../hooks/PocketbaseContext';
+import { usePocketbase } from '../util/PocketbaseContext';
+import { useLocation, useNavigate } from 'react-router-dom';
+import Icon from './Icon';
 
 export default function DirectoryItemRow({ record }: { record: Record }) {
 	const theme = useTheme();
-	const client = useContext(PocketBaseContext);
+	const client = usePocketbase()
+	const navigate = useNavigate();
+	const location = useLocation();
 
 	const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 	const open = Boolean(anchorEl);
+
+	const isRootDirectory = client?.authStore.model?.rootDirectory == record.id
+
 	function handleClick(event: React.MouseEvent<HTMLButtonElement>) {
 		setAnchorEl(event.currentTarget);
 	}
@@ -41,21 +48,21 @@ export default function DirectoryItemRow({ record }: { record: Record }) {
 	}
 
 	return (
-		<TableRow
+		<TableRow key={location.key}
 			sx={{
 				'&:hover': {
 					bgcolor: theme.palette.grey[100],
 					cursor: 'pointer'
 				}
 			}}
-			onDoubleClick={() => (window.location.href = `?dir=${record.id}`)}
+			onDoubleClick={() => navigate('/dir/'+record.id)}
 		>
-			<TableCell>
-				<FolderTwoTone />
+			<TableCell padding='checkbox'>
+				<Icon name={isRootDirectory ? 'folder-user' : 'folder'} style='line' size='xl'/>
 			</TableCell>
 			<TableCell>
 				<Link
-					href={`?dir=${record.id}`}
+					onClick={() => navigate('/dir/'+record.id)}
 					sx={{
 						color: theme.palette.common.black,
 						textDecorationColor: theme.palette.grey[500]
@@ -69,7 +76,7 @@ export default function DirectoryItemRow({ record }: { record: Record }) {
 			<TableCell>{verbalizeDate(record.timestamp)}</TableCell>
 			<TableCell>
 				<IconButton onClick={handleClick}>
-					<MoreVert />
+					<Icon name='more-2' style='line'/>
 				</IconButton>
 			</TableCell>
 			<Menu
@@ -83,13 +90,13 @@ export default function DirectoryItemRow({ record }: { record: Record }) {
 			>
 				<MenuItem onClick={pinDirectory} disabled={true}>
 					<ListItemIcon>
-						<PushPinTwoTone />
+						<Icon name='pushpin-2' style='line' size='lg'/>
 					</ListItemIcon>
 					Anheften
 				</MenuItem>
 				<MenuItem onClick={setAsRootDirectory} disabled={false}>
 					<ListItemIcon>
-						<AccountTreeTwoTone />
+						<Icon name='folder-user' style='line' size='lg'/>
 					</ListItemIcon>
 					Wurzelordner
 				</MenuItem>

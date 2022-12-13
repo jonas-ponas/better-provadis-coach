@@ -2,16 +2,20 @@ import * as React from 'react';
 import { Record } from 'pocketbase';
 import { Breadcrumbs, useTheme, Typography, Link, Box, IconButton } from '@mui/material';
 import FolderTwoToneIcon from '@mui/icons-material/FolderTwoTone';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
 
-function getBreadcrumb(record: Record): JSX.Element[] {
-	if (!record.expand?.parent) {
-		if (record.name) return [];
-	}
-	return [...getBreadcrumb(record.expand.parent as Record), <Link href={`?dir=${record.id}`} key={record.id}>{record.name}</Link>];
-}
+
 
 export default function PathBreadcrumb({ directory }: { directory: Record | undefined }) {
 	const theme = useTheme();
+	const navigate = useNavigate()
+
+	function getBreadcrumb(record: Record): JSX.Element[] {
+		if (!record.expand?.parent) {
+			if (record.name) return [];
+		}
+		return [...getBreadcrumb(record.expand.parent as Record), <Link component={RouterLink} to={`/dir/${record.id}`} variant='body2'  key={record.id}>{record.name}</Link>];
+	}
 
 	return (
 		<Box
@@ -20,10 +24,7 @@ export default function PathBreadcrumb({ directory }: { directory: Record | unde
 				alignItems: 'center'
 			}}
 		>
-			<IconButton size='small' href='?dir='>
-				<FolderTwoToneIcon />
-			</IconButton>
-			<Typography variant='body1' color='grey'>
+			<Typography variant='body2' color='grey'>
 				/
 			</Typography>
 			{directory && (
@@ -36,7 +37,7 @@ export default function PathBreadcrumb({ directory }: { directory: Record | unde
 				>
 					{directory.expand?.parent && getBreadcrumb(directory.expand.parent as Record).map(v => v)}
 					{directory.name !== 'root' && (
-						<Typography variant='body1' color='initial'>
+						<Typography variant='body2' color='initial'>
 							{directory.name}
 						</Typography>
 					)}

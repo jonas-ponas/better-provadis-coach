@@ -1,10 +1,30 @@
 import React from 'react';
-import { List, ListItemButton, ListItemIcon, ListItemText, Paper, Tooltip, useTheme } from '@mui/material';
+import { Box, List, ListItemButton, ListItemIcon, ListItemText, Paper, Tooltip, useTheme } from '@mui/material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import Icon from './Icon';
 import { usePocketbase } from '../util/PocketbaseContext';
+import icons from '../icons/icons';
 
-export default function Navigation(props: {}) {
+interface MenuItem {
+	name: string
+	icon: string
+	href?: string
+	disabled?: boolean
+	onClick?: string
+}
+
+const primaryMenu: MenuItem[] = [
+	{ name: 'Dateien', icon: 'folders', href: '/dir' },
+	{ name: 'Stundenplan', icon: 'calendar-todo', href: '/schedule', disabled: true },
+	{ name: 'News', icon: 'rss', href: '/news', disabled: true }
+];
+
+const secondaryMenu: MenuItem[] = [
+	{ name: 'Einstellungen', icon: 'user-settings', href: '/settings' },
+	{ name: 'Abmelden', icon: 'logout-box', onClick: 'logout' }
+];
+
+export default function Navigation({ iconsOnly }: { iconsOnly?: boolean }) {
 	const theme = useTheme();
 	const client = usePocketbase();
 	const navigate = useNavigate();
@@ -14,50 +34,42 @@ export default function Navigation(props: {}) {
 		navigate('/login');
 	}
 
+	function mapping(v: MenuItem) {
+		const functions: {[key: string]: (()=>void)} = {
+			'logout': logout
+		}
+		return (
+			<ListItemButton disabled={v?.disabled || false} LinkComponent={RouterLink} href={v?.href||''} onClick={functions[(v?.onClick||'')]||(()=>{})}>
+				{iconsOnly ? (
+					<Icon name={v.icon} style='line' size='lg' />
+				) : (
+					<>
+						<ListItemIcon>
+							<Icon name={v.icon} style='line' size='lg' />
+						</ListItemIcon>
+						<ListItemText primary={v.name} />
+					</>
+				)}
+			</ListItemButton>
+		);
+	}
+
 	return (
 		<nav>
-			<List component={Paper}>
-				<ListItemButton LinkComponent={RouterLink} href='/dir'>
-					<ListItemIcon>
-						<Icon name='folders' style='line' size='lg' />
-					</ListItemIcon>
-					<ListItemText primary='Dateien' />
-				</ListItemButton>
-				<Tooltip title='Kommt bald (vielleicht)' placement='right' followCursor={true}>
-					<span>
-						<ListItemButton disabled={true} LinkComponent={RouterLink} href='/schedule'>
-							<ListItemIcon>
-								<Icon name='calendar-todo' style='line' size='lg' />
-							</ListItemIcon>
-							<ListItemText primary='Stundenplan' />
-						</ListItemButton>
-					</span>
-				</Tooltip>
-				<Tooltip title='Kommt bald (vielleicht)' placement='right' followCursor={true}>
-					<span>
-						<ListItemButton disabled={true} LinkComponent={RouterLink} href='/news'>
-							<ListItemIcon>
-								<Icon name='rss' style='line' size='lg' />
-							</ListItemIcon>
-							<ListItemText primary='Coach News' />
-						</ListItemButton>
-					</span>
-				</Tooltip>
-			</List>
-			<List component={Paper} sx={{ mt: theme.spacing(2) }}>
-				<ListItemButton LinkComponent={RouterLink} href='/settings'>
-					<ListItemIcon>
-						<Icon name='user-settings' style='line' size='lg' />
-					</ListItemIcon>
-					<ListItemText primary='Einstellungen' />
-				</ListItemButton>
-				<ListItemButton onClick={logout}>
-					<ListItemIcon>
-						<Icon name='logout-box' style='line' size='lg' />
-					</ListItemIcon>
-					<ListItemText primary='Abmelden' />
-				</ListItemButton>
-			</List>
+			<Box sx={iconsOnly ? { display: 'flex', flexDirection: 'row' } : {}}>
+				<List component={Paper} sx={iconsOnly ? { display: 'flex', flexDirection: 'row' } : {}}>
+					{primaryMenu.map(mapping)}
+				</List>
+				<List
+					component={Paper}
+					sx={
+						iconsOnly
+							? { display: 'flex', flexDirection: 'row', ml: theme.spacing(2) }
+							: { mt: theme.spacing(2) }
+					}>
+					{secondaryMenu.map(mapping)}
+				</List>
+			</Box>
 		</nav>
 	);
 }

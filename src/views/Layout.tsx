@@ -1,5 +1,5 @@
-import { Avatar, Box, Grid, Link, Typography, useTheme } from '@mui/material';
-import React from 'react';
+import { Avatar, Box, Grid, Link, Typography, useMediaQuery, useTheme } from '@mui/material';
+import React, { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 
 import 'remixicon/fonts/remixicon.css';
@@ -9,9 +9,20 @@ import Navigation from '../components/Navigation';
 
 export default function Layout(props: {}) {
 	const theme = useTheme();
-
-	const contentHeight = `calc(100vh - 55px - ${theme.spacing(0.5)})`; // FIXME
-	const contentWidth = `calc(100vw - ${theme.spacing(2)} - ${theme.spacing(2)})`;
+	const isSmallDevice = useMediaQuery(theme.breakpoints.down('md'));
+	const mediaQueries = {
+		lg: useMediaQuery(theme.breakpoints.only('lg')),
+		md: useMediaQuery(theme.breakpoints.only('md')),
+		sm: useMediaQuery(theme.breakpoints.only('sm')),
+		xs: useMediaQuery(theme.breakpoints.only('xs')),
+		xl: useMediaQuery(theme.breakpoints.only('xl'))
+	}
+	
+	useEffect(() => {
+		console.log('isSmallDevice', isSmallDevice);
+		console.log('mediaQueries', mediaQueries)
+	}, [isSmallDevice, mediaQueries])
+	
 	return (
 		<Box
 			sx={{
@@ -20,9 +31,6 @@ export default function Layout(props: {}) {
 				width: '100vw',
 				maxHeight: '100%',
 				maxWidth: '100%'
-				// overflowX: 'hidden',
-
-				// width: '100vw'
 			}}>
 			<Brandbar />
 			<Grid
@@ -35,8 +43,17 @@ export default function Layout(props: {}) {
 					ml: 0
 				}}
 				columnSpacing={2}>
-				<Grid item lg={2} md={3} sm={1}>
-					<Navigation />
+				<Grid
+					item
+					lg={2}
+					md={3}
+					sm={12} // isSmall
+					xs={12} // isSmall
+					sx={{
+						// minWidth: 72,
+						// width: isSmallDevice ? 72 : '100%'
+					}}>
+					<Navigation iconsOnly={isSmallDevice} />
 					<Box
 						sx={{
 							display: 'flex',
@@ -44,7 +61,7 @@ export default function Layout(props: {}) {
 							alignItems: 'center',
 							mt: theme.spacing(1)
 						}}>
-						<Link
+						{!isSmallDevice && <Link
 							variant='body2'
 							sx={{
 								color: theme.palette.grey[400],
@@ -53,14 +70,15 @@ export default function Layout(props: {}) {
 							href='https://github.com/jonas-ponas/expert-giggle-frontend/issues/new/choose'
 							target='_blank'>
 							Fehler melden / Feedback
-						</Link>
+						</Link>}
 					</Box>
 				</Grid>
 				<Grid
 					item
 					lg={10}
 					md={9}
-					sm={11}
+					sm={12} // isSmall
+					xs={12} // isSmall
 					sx={{
 						height: `calc(100vh - (2 * ${theme.spacing(2)}) - 55px)`,
 						overflowY: 'auto'

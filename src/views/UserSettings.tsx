@@ -1,19 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
 	Alert,
 	AlertTitle,
 	Avatar,
 	Box,
-	Button,
 	Chip,
-	Grid,
-	Paper,
-	Table,
-	TableBody,
-	TableCell,
-	TableContainer,
-	TableHead,
-	TableRow,
 	Typography,
 	useTheme
 } from '@mui/material';
@@ -21,15 +12,20 @@ import { useLoaderData, useNavigate } from 'react-router-dom';
 import { usePocketbase } from '../util/PocketbaseContext';
 import CoachDataTable from '../components/CoachDataTable';
 import Icon from '../components/Icon';
-import { Record } from 'pocketbase';
+import { ExternalAuth, Record } from 'pocketbase';
 import SettingsTable from '../components/SettingsTable';
 
 export default function UserSettings(props: {}) {
 	const theme = useTheme();
-	const { rootDir, state } = useLoaderData() as { rootDir: Record; state: Record };
+	const { rootDir, state, authProviders } = useLoaderData() as {
+		rootDir: Record;
+		state: Record;
+		authProviders: ExternalAuth[];
+	};
 	const client = usePocketbase();
 	const navigate = useNavigate();
 
+	const authProvider = authProviders[0].provider;
 	const avatar = `https://coach.***REMOVED***/api/files/${client?.authStore.model?.collectionId}/${client?.authStore.model?.id}/${client?.authStore.model?.avatar}`;
 
 	return (
@@ -43,9 +39,17 @@ export default function UserSettings(props: {}) {
 				<Avatar src={avatar} alt={(client?.authStore.model?.username || 'u').toUpperCase()} />
 				<Box sx={{ ml: theme.spacing(2) }}>
 					<Typography variant='h6'>{client?.authStore.model?.username}</Typography>
-					<Typography variant='body2' sx={{ color: theme.palette.grey[500] }}>
-						Authentisiert mit Google oder Github lul
-					</Typography>
+					<Chip
+						icon={
+							<Box sx={{ height: '1em', color: 'inherit' }}>
+								<Icon name={authProvider} style='line' size='fw' />
+							</Box>
+						}
+						label={authProvider == 'github' ? 'Github' : authProvider == 'google' ? 'Google' : 'unbekannt'}
+						variant='outlined'
+						color='info'
+						size='small'
+					/>
 				</Box>
 			</Box>
 			<Box

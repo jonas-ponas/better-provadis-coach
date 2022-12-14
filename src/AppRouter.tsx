@@ -6,12 +6,11 @@ import Layout from './views/Layout';
 import Login from './views/Login';
 import ErrorAlert from './components/Error';
 import UserSettings from './views/UserSettings';
-import { ThreeMpOutlined } from '@mui/icons-material';
 
 const expand =
 	'parent,parent.parent,parent.parent.parent,parent.parent.parent.parent,parent.parent.parent.parent.parent,parent.parent.parent.parent.parent.parent';
 
-const router = (client: pocketbaseEs) =>
+export default (client: pocketbaseEs) =>
 	createBrowserRouter([
 		{
 			path: '/',
@@ -82,9 +81,13 @@ const router = (client: pocketbaseEs) =>
 							let state = await client
 								.collection('state')
 								.getFirstListItem(`user.id = "${client.authStore.model?.id || ''}"`);
+							let authProviders = await client
+								.collection('users')
+								.listExternalAuths(client.authStore.model?.id||'');
 							return {
 								state,
-								rootDir
+								rootDir,
+								authProviders
 							};
 						} catch (e) {
 							if (e instanceof Error) {
@@ -129,5 +132,3 @@ const router = (client: pocketbaseEs) =>
 			)
 		}
 	]);
-
-export default router;

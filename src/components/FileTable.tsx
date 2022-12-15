@@ -239,11 +239,11 @@ export default function FileTable({ directory }: { directory: DirectoryRecord })
 					<PathBreadcrumb directory={directory} textVariant='body1' />
 				</Box>
 			</Box>
-			<SortableTable header={tableHeaders} data={data} onRowClick={onRowClick} size='small' />
+			<SortableTable header={tableHeaders} data={data} onRowClick={onRowClick} size='small' initialSortKey='timestamp'/>
 			<Menu open={menuAnchorEl !== null} onClose={() => setMenuAnchorEl(null)} anchorEl={menuAnchorEl?.target}>
 				<MenuItem onClick={onSetRootDir}>
 					<ListItemIcon>
-						<Icon name='folder-user' style='line' size='lg' />
+						<Icon name='folder-user' style='line' size='lg'/>
 					</ListItemIcon>
 					Wurzelknoten
 				</MenuItem>

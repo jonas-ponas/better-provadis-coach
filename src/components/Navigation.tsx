@@ -1,16 +1,15 @@
 import React from 'react';
-import { Box, List, ListItemButton, ListItemIcon, ListItemText, Paper, Tooltip, useTheme } from '@mui/material';
+import { Box, List, ListItemButton, ListItemIcon, ListItemText, Paper, useTheme } from '@mui/material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import Icon from './Icon';
 import { usePocketbase } from '../util/PocketbaseContext';
-import icons from '../icons/icons';
 
 interface MenuItem {
-	name: string
-	icon: string
-	href?: string
-	disabled?: boolean
-	onClick?: string
+	name: string;
+	icon: string;
+	href?: string;
+	disabled?: boolean;
+	onClick?: string;
 }
 
 const primaryMenu: MenuItem[] = [
@@ -35,11 +34,16 @@ export default function Navigation({ iconsOnly }: { iconsOnly?: boolean }) {
 	}
 
 	function mapping(v: MenuItem) {
-		const functions: {[key: string]: (()=>void)} = {
-			'logout': logout
-		}
+		const functions: { [key: string]: () => void } = {
+			logout: logout
+		};
 		return (
-			<ListItemButton key={v.name} disabled={v?.disabled || false} LinkComponent={RouterLink} href={v?.href||''} onClick={functions[(v?.onClick||'')]||(()=>{})}>
+			<ListItemButton
+				key={v.name}
+				disabled={v?.disabled || false}
+				LinkComponent={RouterLink}
+				href={v?.href || ''}
+				onClick={functions[v?.onClick || ''] || (() => {})}>
 				{iconsOnly ? (
 					<Icon name={v.icon} style='line' size='lg' />
 				) : (

@@ -1,4 +1,4 @@
-import React, { MutableRefObject, useContext, useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
 	Alert,
 	AlertColor,
@@ -7,7 +7,6 @@ import {
 	Dialog,
 	DialogActions,
 	DialogContent,
-	DialogContentText,
 	DialogTitle,
 	Snackbar,
 	TextField,
@@ -17,7 +16,6 @@ import {
 import jsQr from 'jsqr';
 import { usePocketbase } from '../util/PocketbaseContext';
 import Icon from './Icon';
-import { TextIncrease } from '@mui/icons-material';
 
 export default function ConnectDialog(props: { open: boolean; onClose: (success?: boolean) => void }) {
 	const theme = useTheme();
@@ -26,16 +24,12 @@ export default function ConnectDialog(props: { open: boolean; onClose: (success?
 	const inputRef = useRef<HTMLInputElement>(null);
 	const textFieldRef = useRef<HTMLTextAreaElement>(null);
 	const [data, setData] = useState<string>('');
-	const [showSnackbar, setShowSnackbar] = useState<{ type: string; message: string } | undefined>(undefined);
+	const [showSnackbar, setShowSnackbar] = useState<{ type: string; message: string } | null>(null);
 
 	function onChangeImage(event: React.ChangeEvent<HTMLInputElement>) {
 		const input = inputRef.current;
-		if (!input) {
-			console.log('no input');
-			return;
-		}
-		if (!input.files || !input.files[0]) {
-			console.log('no input.files, input.files[0]');
+		if (!input || !input.files || !input.files[0]) {
+			setShowSnackbar({ type: 'error', message: 'Fehler beim Auslesen des Qr-Codes (1)' });
 			return;
 		}
 		createImageBitmap(input.files[0]).then(bmp => {
@@ -46,13 +40,12 @@ export default function ConnectDialog(props: { open: boolean; onClose: (success?
 			xtc?.drawImage(bmp, 0, 0);
 			const qrcodeImage = xtc?.getImageData(0, 0, bmp.width, bmp.height);
 			if (!qrcodeImage?.data) {
-				setShowSnackbar({ type: 'error', message: 'Fehler beim Auslesen des Qr-Codes' });
-				console.log('no qrcodeimage.data');
+				setShowSnackbar({ type: 'error', message: 'Fehler beim Auslesen des Qr-Codes (2)' });
 				return;
 			}
 			const data = jsQr(qrcodeImage?.data, qrcodeImage.width, qrcodeImage.height);
 			if (!data) {
-				setShowSnackbar({ type: 'error', message: 'Fehler beim Auslesen des Qr-Codes' });
+				setShowSnackbar({ type: 'error', message: 'Fehler beim Auslesen des Qr-Codes (3)' });
 				return;
 			}
 			const qrcode = JSON.parse(data.data);
@@ -142,13 +135,10 @@ export default function ConnectDialog(props: { open: boolean; onClose: (success?
 					</Button>
 				</DialogActions>
 			</Dialog>
-			<Snackbar
-				open={showSnackbar != undefined}
-				autoHideDuration={10000}
-				onClose={() => setShowSnackbar(undefined)}>
+			<Snackbar open={showSnackbar !== null} autoHideDuration={10000} onClose={() => setShowSnackbar(null)}>
 				<Alert
 					variant='filled'
-					onClose={() => setShowSnackbar(undefined)}
+					onClose={() => setShowSnackbar(null)}
 					severity={(showSnackbar?.type || 'info') as AlertColor}
 					sx={{ width: '100%' }}>
 					{showSnackbar?.message}

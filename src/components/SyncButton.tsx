@@ -1,5 +1,5 @@
-import { Alert, AlertColor, Box, Button, CircularProgress, Paper, Snackbar, Typography, useTheme } from '@mui/material';
 import React, { useEffect, useState } from 'react';
+import { Alert, AlertColor, Box, Button, CircularProgress, Snackbar, Typography, useTheme } from '@mui/material';
 import { usePocketbase } from '../util/PocketbaseContext';
 import Icon from './Icon';
 
@@ -91,6 +91,7 @@ export default function Sync(props: { syncNow?: boolean; callback?: () => void; 
 					setIsSyncing(false);
 					break;
 				default:
+					setSnackbar({ type: 'error', text: 'Unbekannte Nachricht Empfangen' });
 					console.log('Unknown Data', json);
 			}
 		};

@@ -83,7 +83,7 @@ export default (client: pocketbaseEs) =>
 								.getFirstListItem(`user.id = "${client.authStore.model?.id || ''}"`);
 							let authProviders = await client
 								.collection('users')
-								.listExternalAuths(client.authStore.model?.id||'');
+								.listExternalAuths(client.authStore.model?.id || '');
 							return {
 								state,
 								rootDir,

@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from 'react';
 import {
 	Paper,
 	Table,
@@ -9,7 +10,6 @@ import {
 	TableSortLabel,
 	useTheme
 } from '@mui/material';
-import React, { useEffect, useState } from 'react';
 
 export interface SortableTableProps {
 	header: {
@@ -18,7 +18,7 @@ export interface SortableTableProps {
 		sortable?: boolean;
 		fixedWidth?: number | string;
 		padding?: 'checkbox' | 'none' | 'normal';
-		align?: 'right'
+		align?: 'right';
 		stringify?: (value: any) => string | JSX.Element;
 		generator?: (row: any) => string | JSX.Element;
 		comparator?: (a: any, b: any) => number;
@@ -87,7 +87,7 @@ export default function SortableTable(props: SortableTableProps) {
 								padding={padding}
 								key={key + 'header'}
 								width={fixedWidth}
-								align={align||'left'}
+								align={align || 'left'}
 								sortDirection={sortKey == key ? order : undefined}>
 								{sortable ? (
 									<TableSortLabel

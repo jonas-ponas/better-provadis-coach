@@ -1,5 +1,16 @@
-import { IconButton, Link, useTheme, Icon as MuiIcon, TableContainer, Paper, Box, Menu, MenuItem, ListItemIcon } from '@mui/material';
 import React, { useEffect, useState } from 'react';
+import {
+	IconButton,
+	Link,
+	useTheme,
+	Icon as MuiIcon,
+	TableContainer,
+	Paper,
+	Box,
+	Menu,
+	MenuItem,
+	ListItemIcon
+} from '@mui/material';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { DirectoryRecord, FileRecord } from '../records';
 import { usePocketbase } from '../util/PocketbaseContext';
@@ -44,7 +55,7 @@ export default function FileTable({ directory }: { directory: DirectoryRecord })
 	const navigate = useNavigate();
 
 	const [data, setData] = useState<RowData[]>([]);
-	const [menuAnchorEl, setMenuAnchorEl] = useState<null|{target: HTMLElement, id: string}>(null)
+	const [menuAnchorEl, setMenuAnchorEl] = useState<null | { target: HTMLElement; id: string }>(null);
 
 	useEffect(() => {
 		setData([]);
@@ -81,7 +92,7 @@ export default function FileTable({ directory }: { directory: DirectoryRecord })
 				setData([...transformFiles, ...transformDirectories]);
 			})
 			.catch(e => {
-				// setError(e.message);
+				// TODO: Error Handling
 			});
 	}, [directory]);
 
@@ -93,24 +104,24 @@ export default function FileTable({ directory }: { directory: DirectoryRecord })
 	}
 
 	function onMenuClick(recordId: string) {
-		return function(event: React.MouseEvent) {
-			event.stopPropagation()
-			if(event.currentTarget instanceof HTMLElement) {
-				setMenuAnchorEl({target: event.currentTarget, id: recordId})
+		return function (event: React.MouseEvent) {
+			event.stopPropagation();
+			if (event.currentTarget instanceof HTMLElement) {
+				setMenuAnchorEl({ target: event.currentTarget, id: recordId });
 			}
-		}
+		};
 	}
 
 	async function onSetRootDir(event: React.MouseEvent) {
-		if(menuAnchorEl === null) return;
+		if (menuAnchorEl === null) return;
 		try {
 			await client?.collection('users').update(client.authStore.model!!.id, {
 				rootDirectory: menuAnchorEl.id
-			})
-		} catch(e) {
-			console.error(e)
+			});
+		} catch (e) {
+			console.error(e);
 		} finally {
-			setMenuAnchorEl(null)
+			setMenuAnchorEl(null);
 		}
 	}
 
@@ -195,7 +206,7 @@ export default function FileTable({ directory }: { directory: DirectoryRecord })
 			align: 'right',
 			padding: 'checkbox',
 			generator(row) {
-				if(row.type == 'file') return <></>;
+				if (row.type == 'file') return <></>;
 				return (
 					<IconButton onClick={onMenuClick(row.id)}>
 						<Icon name='more-2' style='line' />
@@ -229,13 +240,10 @@ export default function FileTable({ directory }: { directory: DirectoryRecord })
 				</Box>
 			</Box>
 			<SortableTable header={tableHeaders} data={data} onRowClick={onRowClick} size='small' />
-			<Menu
-				open={menuAnchorEl !== null}
-				onClose={() => setMenuAnchorEl(null)}
-				anchorEl={menuAnchorEl?.target}>
+			<Menu open={menuAnchorEl !== null} onClose={() => setMenuAnchorEl(null)} anchorEl={menuAnchorEl?.target}>
 				<MenuItem onClick={onSetRootDir}>
 					<ListItemIcon>
-						<Icon name='folder-user' style='line' size='lg'/>
+						<Icon name='folder-user' style='line' size='lg' />
 					</ListItemIcon>
 					Wurzelknoten
 				</MenuItem>

@@ -1,6 +1,5 @@
-import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, useTheme } from '@mui/material';
 import React from 'react';
-import Sync from './SyncButton';
+import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, useTheme } from '@mui/material';
 
 export default function CoachDataTable({
 	data,

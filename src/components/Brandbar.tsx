@@ -1,5 +1,5 @@
-import { Avatar, Box, Typography, useTheme } from '@mui/material';
 import React from 'react';
+import { Avatar, Box, Typography, useTheme } from '@mui/material';
 import { usePocketbase } from '../util/PocketbaseContext';
 
 export default function Brandbar(props: {}) {
@@ -11,7 +11,6 @@ export default function Brandbar(props: {}) {
 			sx={{
 				bgcolor: theme.palette.primary.main,
 				color: theme.palette.primary.contrastText,
-				// width: `calc(100vw - ${theme.spacing(2)} - ${theme.spacing(2)} - ${theme.spacing(1)})`,
 				height: 50,
 				display: 'flex',
 				pl: theme.spacing(2),

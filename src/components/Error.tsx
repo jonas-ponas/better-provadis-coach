@@ -1,6 +1,5 @@
-import { Alert, AlertTitle } from '@mui/material';
-import { ClientResponseError } from 'pocketbase';
 import React from 'react';
+import { Alert, AlertTitle } from '@mui/material';
 import { isRouteErrorResponse, useRouteError } from 'react-router-dom';
 import Icon from './Icon';
 
@@ -13,8 +12,6 @@ export default function Error({ title, description }: { title: string; descripti
 		message = error.data.description;
 	}
 
-	console.log(error);
-	console.log(name, message);
 	return (
 		<Alert variant='filled' severity='error' icon={<Icon name='error-warning' style='line' />}>
 			<AlertTitle>{name}</AlertTitle>

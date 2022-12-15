@@ -1,14 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import {
-	Alert,
-	AlertTitle,
-	Avatar,
-	Box,
-	Chip,
-	Typography,
-	useTheme
-} from '@mui/material';
-import { useLoaderData, useNavigate } from 'react-router-dom';
+import React from 'react';
+import { Alert, AlertTitle, Avatar, Box, Chip, Typography, useTheme } from '@mui/material';
+import { useLoaderData } from 'react-router-dom';
 import { usePocketbase } from '../util/PocketbaseContext';
 import CoachDataTable from '../components/CoachDataTable';
 import Icon from '../components/Icon';
@@ -23,7 +15,6 @@ export default function UserSettings(props: {}) {
 		authProviders: ExternalAuth[];
 	};
 	const client = usePocketbase();
-	const navigate = useNavigate();
 
 	const authProvider = authProviders[0].provider;
 	const avatar = `https://coach.***REMOVED***/api/files/${client?.authStore.model?.collectionId}/${client?.authStore.model?.id}/${client?.authStore.model?.avatar}`;

@@ -18,6 +18,7 @@ export interface SortableTableProps {
 		sortable?: boolean;
 		fixedWidth?: number | string;
 		padding?: 'checkbox' | 'none' | 'normal';
+		align?: 'right'
 		stringify?: (value: any) => string | JSX.Element;
 		generator?: (row: any) => string | JSX.Element;
 		comparator?: (a: any, b: any) => number;
@@ -80,12 +81,13 @@ export default function SortableTable(props: SortableTableProps) {
 		<Table size={props.size || 'medium'}>
 			<TableHead>
 				<TableRow>
-					{props.header.map(({ title, key, sortable, fixedWidth, padding }) => {
+					{props.header.map(({ title, key, align, sortable, fixedWidth, padding }) => {
 						return (
 							<TableCell
 								padding={padding}
 								key={key + 'header'}
 								width={fixedWidth}
+								align={align||'left'}
 								sortDirection={sortKey == key ? order : undefined}>
 								{sortable ? (
 									<TableSortLabel

@@ -1,12 +1,4 @@
-import {
-	IconButton,
-	Link,
-	useTheme,
-	Icon as MuiIcon,
-	TableContainer,
-	Paper,
-	Box
-} from '@mui/material';
+import { IconButton, Link, useTheme, Icon as MuiIcon, TableContainer, Paper, Box, Menu, MenuItem, ListItemIcon } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { DirectoryRecord, FileRecord } from '../records';
@@ -52,6 +44,7 @@ export default function FileTable({ directory }: { directory: DirectoryRecord })
 	const navigate = useNavigate();
 
 	const [data, setData] = useState<RowData[]>([]);
+	const [menuAnchorEl, setMenuAnchorEl] = useState<null|{target: HTMLElement, id: string}>(null)
 
 	useEffect(() => {
 		setData([]);
@@ -96,6 +89,28 @@ export default function FileTable({ directory }: { directory: DirectoryRecord })
 		if (row.type == 'directory') {
 			return navigate(`/dir/${row.id}`);
 		} else {
+		}
+	}
+
+	function onMenuClick(recordId: string) {
+		return function(event: React.MouseEvent) {
+			event.stopPropagation()
+			if(event.currentTarget instanceof HTMLElement) {
+				setMenuAnchorEl({target: event.currentTarget, id: recordId})
+			}
+		}
+	}
+
+	async function onSetRootDir(event: React.MouseEvent) {
+		if(menuAnchorEl === null) return;
+		try {
+			await client?.collection('users').update(client.authStore.model!!.id, {
+				rootDirectory: menuAnchorEl.id
+			})
+		} catch(e) {
+			console.error(e)
+		} finally {
+			setMenuAnchorEl(null)
 		}
 	}
 
@@ -173,6 +188,20 @@ export default function FileTable({ directory }: { directory: DirectoryRecord })
 			stringify(value: string) {
 				return verbalizeDate(new Date(value));
 			}
+		},
+		{
+			title: '',
+			key: 'action',
+			align: 'right',
+			padding: 'checkbox',
+			generator(row) {
+				if(row.type == 'file') return <></>;
+				return (
+					<IconButton onClick={onMenuClick(row.id)}>
+						<Icon name='more-2' style='line' />
+					</IconButton>
+				);
+			}
 		}
 	];
 
@@ -183,21 +212,34 @@ export default function FileTable({ directory }: { directory: DirectoryRecord })
 					display: 'flex',
 					p: theme.spacing(1)
 				}}>
-				{directory.parent ? <IconButton
-					sx={{
-						height: 24,
-						width: 24
-					}}
-					onClick={() => navigate('/dir/' + directory.parent)}>
-					<Icon name='folder-upload' style='line' />
-				</IconButton>
-				: <Box sx={{width: 24}}/>
-				}
-				<Box sx={{ml: theme.spacing(1)}}>
-				<PathBreadcrumb directory={directory} textVariant='body2' />
+				{directory.parent ? (
+					<IconButton
+						sx={{
+							height: 24,
+							width: 24
+						}}
+						onClick={() => navigate('/dir/' + directory.parent)}>
+						<Icon name='folder-upload' style='line' />
+					</IconButton>
+				) : (
+					<Box sx={{ width: 24 }} />
+				)}
+				<Box sx={{ ml: theme.spacing(1) }}>
+					<PathBreadcrumb directory={directory} textVariant='body1' />
 				</Box>
 			</Box>
 			<SortableTable header={tableHeaders} data={data} onRowClick={onRowClick} size='small' />
+			<Menu
+				open={menuAnchorEl !== null}
+				onClose={() => setMenuAnchorEl(null)}
+				anchorEl={menuAnchorEl?.target}>
+				<MenuItem onClick={onSetRootDir}>
+					<ListItemIcon>
+						<Icon name='folder-user' style='line' size='lg'/>
+					</ListItemIcon>
+					Wurzelknoten
+				</MenuItem>
+			</Menu>
 		</TableContainer>
 	);
 }

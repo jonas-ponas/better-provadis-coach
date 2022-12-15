@@ -19,7 +19,6 @@ export default function Files(props: {}) {
 				sx={{
 					mt: theme.spacing(1)
 				}}>
-				{/* <DirectoryTable record={loaderData} /> */}
 				<FileTable directory={loaderData} />
 			</Box>
 		</Box>

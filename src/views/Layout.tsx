@@ -1,5 +1,5 @@
 import { Avatar, Box, Grid, Link, Typography, useMediaQuery, useTheme } from '@mui/material';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Outlet } from 'react-router-dom';
 
 import 'remixicon/fonts/remixicon.css';
@@ -10,18 +10,6 @@ import Navigation from '../components/Navigation';
 export default function Layout(props: {}) {
 	const theme = useTheme();
 	const isSmallDevice = useMediaQuery(theme.breakpoints.down('md'));
-	const mediaQueries = {
-		lg: useMediaQuery(theme.breakpoints.only('lg')),
-		md: useMediaQuery(theme.breakpoints.only('md')),
-		sm: useMediaQuery(theme.breakpoints.only('sm')),
-		xs: useMediaQuery(theme.breakpoints.only('xs')),
-		xl: useMediaQuery(theme.breakpoints.only('xl'))
-	}
-	
-	useEffect(() => {
-		console.log('isSmallDevice', isSmallDevice);
-		console.log('mediaQueries', mediaQueries)
-	}, [isSmallDevice, mediaQueries])
 	
 	return (
 		<Box

@@ -39,7 +39,7 @@ export default function Navigation({ iconsOnly }: { iconsOnly?: boolean }) {
 			'logout': logout
 		}
 		return (
-			<ListItemButton disabled={v?.disabled || false} LinkComponent={RouterLink} href={v?.href||''} onClick={functions[(v?.onClick||'')]||(()=>{})}>
+			<ListItemButton key={v.name} disabled={v?.disabled || false} LinkComponent={RouterLink} href={v?.href||''} onClick={functions[(v?.onClick||'')]||(()=>{})}>
 				{iconsOnly ? (
 					<Icon name={v.icon} style='line' size='lg' />
 				) : (

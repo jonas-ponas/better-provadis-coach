@@ -1,10 +1,9 @@
-import { Box, Button, Paper, Typography, useTheme } from '@mui/material';
+import { Box, useTheme } from '@mui/material';
 import React, { useState } from 'react';
 import { useLoaderData, useNavigate } from 'react-router-dom';
-import DirectoryTable from '../components/DirectoryTable';
 import { DirectoryRecord } from '../records';
-import { Record } from 'pocketbase';
 import SyncButton from '../components/SyncButton';
+import FileTable from '../components/FileTable';
 
 export default function Files(props: {}) {
 	const theme = useTheme();
@@ -20,7 +19,8 @@ export default function Files(props: {}) {
 				sx={{
 					mt: theme.spacing(1)
 				}}>
-				<DirectoryTable record={loaderData} />
+				{/* <DirectoryTable record={loaderData} /> */}
+				<FileTable directory={loaderData} />
 			</Box>
 		</Box>
 	);

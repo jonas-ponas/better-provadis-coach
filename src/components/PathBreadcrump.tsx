@@ -1,10 +1,9 @@
 import * as React from 'react';
 import { Record } from 'pocketbase';
 import { Breadcrumbs, useTheme, Typography, Link, Box, IconButton } from '@mui/material';
-import FolderTwoToneIcon from '@mui/icons-material/FolderTwoTone';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 
-export default function PathBreadcrumb({ directory }: { directory: Record | undefined }) {
+export default function PathBreadcrumb({ directory, textVariant }: { directory: Record | undefined, textVariant?: 'body1'|'body2' }) {
 	const theme = useTheme();
 	const navigate = useNavigate();
 
@@ -14,7 +13,7 @@ export default function PathBreadcrumb({ directory }: { directory: Record | unde
 		}
 		return [
 			...getBreadcrumb(record.expand.parent as Record),
-			<Link component={RouterLink} to={`/dir/${record.id}`} variant='body2' key={record.id}>
+			<Link component={RouterLink} to={`/dir/${record.id}`} variant={textVariant||'body1'} key={record.id}>
 				{record.name}
 			</Link>
 		];
@@ -26,7 +25,7 @@ export default function PathBreadcrumb({ directory }: { directory: Record | unde
 				display: 'flex',
 				alignItems: 'center'
 			}}>
-			<Typography variant='body2' color='grey'>
+			<Typography variant={textVariant||'body1'} color='grey'>
 				/
 			</Typography>
 			{directory && (
@@ -38,7 +37,7 @@ export default function PathBreadcrumb({ directory }: { directory: Record | unde
 					}}>
 					{directory.expand?.parent && getBreadcrumb(directory.expand.parent as Record).map(v => v)}
 					{directory.name !== 'root' && (
-						<Typography variant='body2' color='initial'>
+						<Typography variant={textVariant||'body1'} color='initial'>
 							{directory.name}
 						</Typography>
 					)}

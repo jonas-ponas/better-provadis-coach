@@ -9,6 +9,11 @@ dotenv.config()
 export const PB_USER = process.env.PB_USER;
 export const PB_PASSWD = process.env.PB_PASSWD;
 
+if (!PB_PASSWD || !PB_USER) {
+	logger.error('PocketBase Service User Credentials Missing. Check Environment Variables!');
+	process.exit(1);
+}
+
 const PORT = (parseInt(process.env.PORT||"8080"))
 
 const wss = new WebSocketServer({

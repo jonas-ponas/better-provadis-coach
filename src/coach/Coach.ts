@@ -76,13 +76,13 @@ export class Coach {
 		if (response.status != 200) {
 			try {
 				const json = await response.json();
-				throw new Error(`Request failed (${json['error']}: ${json['error_description']})`);
+				throw new Error(`Could not retrieve new access-token. Request failed (${json['error']}: ${json['error_description']})`);
 			} catch (e) {
-				throw new Error('Request failed (' + response.statusText + ')');
+				throw new Error('Could not retrieve new access-token. Request failed (' + response.statusText + ')');
 			}
 		}
 		const json = (await response.json()) as any;
-		if (!json['success']) throw new Error(`Could not retrieve new Access Token. (Returned success=false)`);
+		if (!json['success']) throw new Error(`Could not retrieve new access-token. (Returned success=false)`);
 		this.accessToken = {
 			token: json['access_token'],
 			expires: new Date().getTime() + parseInt(json['expires_in']) * 1000

@@ -32,10 +32,12 @@ export default async function insertDirectories(
 				if (record?.id) {
 					cToPbMap.set(record.coachId, record.id);
 					let nameChanged = directory.name != record?.name;
-					let wasModified =
-						new Date(directory.modified.timestamp).getTime() != new Date(record?.timestamp).getTime();
+					let dateNew = new Date(directory.modified.timestamp.endsWith('.000Z') ? directory.modified.timestamp : directory.modified.timestamp + '.000Z')
+					let dateOld = new Date(record?.timestamp)
+					let wasModified = dateNew.getTime() !== dateOld.getTime()
 					let userExists = userId == undefined ? true : record.allowedUser.includes(userId);
 					if (nameChanged || wasModified || !userExists) {
+						logger.verbose(`wasModified: ${directory.modified.timestamp} !== ${record?.timestamp}`)
 						const update = await pb.collection('directory').update(record.id, {
 							name: directory.name,
 							timestamp: directory.modified.timestamp,

@@ -43,7 +43,9 @@ export default async function insertFiles(
 				const record = await pb.collection('file').getFirstListItem(`coachId = ${file.id}`);
 				if (record?.id) {
 					let nameChanged = file.name + '.' + file.mime != record?.name;
-					let wasModified = new Date(file.timestamp).getTime() != new Date(record?.timestamp).getTime();
+					let dateNew = new Date(file.timestamp.split('.')[0] + '.000Z')
+					let dateOld = new Date(record?.timestamp)
+					let wasModified = dateNew.getTime() !== dateOld.getTime()
 					let sizeChanged = file.size != record?.size;
 					let userExists = userId == undefined ? true : record.allowedUser.includes(userId);
 					// let parentChanged  = ?
@@ -55,7 +57,10 @@ export default async function insertFiles(
 							allowedUser: userExists ? record.allowedUser : [...record.allowedUser, userId]
 						});
 						logger.log('debug', `Updated ${update.name} ${update.id} ${update.coachId}`);
-						if(nameChanged || sizeChanged || wasModified) fToPbMap.set(record.coachId, {pbId: record.id, name: record.name}); // Update Cache File
+						if(sizeChanged) {
+							fToPbMap.set(record.coachId, {pbId: record.id, name: record.name});
+							logger.verbose('File size changed')
+						} // Update Cache File
 						if (onProgress) onProgress(++i, total);
 					} else {
 						if (onProgress) onProgress(++i, total);

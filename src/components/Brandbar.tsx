@@ -1,6 +1,7 @@
 import React from 'react';
 import { Avatar, Box, Typography, useTheme } from '@mui/material';
 import { usePocketbase } from '../util/PocketbaseContext';
+import Searchbar from './Searchbar';
 
 export default function Brandbar(props: {}) {
 	const theme = useTheme();
@@ -13,6 +14,8 @@ export default function Brandbar(props: {}) {
 				color: theme.palette.primary.contrastText,
 				height: 50,
 				display: 'flex',
+				justifyContent: 'space-between',
+				alignItems: 'center',
 				pl: theme.spacing(2),
 				pr: theme.spacing(2),
 				boxShadow: theme.shadows[5]
@@ -33,6 +36,9 @@ export default function Brandbar(props: {}) {
 				<Typography variant='h6' sx={{ fontWeight: 'bold', ml: theme.spacing(1) }}>
 					Expert Giggle
 				</Typography>
+			</Box>
+			<Box> 
+				<Searchbar />
 			</Box>
 		</Box>
 	);

@@ -20,4 +20,21 @@ const icons = {
 	doc
 };
 
+export const iconMapping: { [key: string]: string | undefined } = {
+	pdf: icons.pdf,
+	png: icons.img,
+	jpg: icons.img,
+	jpeg: icons.img,
+	gif: icons.img,
+	rkt: icons.rkt,
+	java: icons.java,
+	py: icons.py,
+	zip: icons.zip,
+	pptx: icons.ppt,
+	doc: icons.doc,
+	docx: icons.doc,
+	mp4: icons.video,
+	mov: icons.video
+};
+
 export default icons;

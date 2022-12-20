@@ -1,11 +1,12 @@
-import pocketbaseEs, { ClientResponseError } from 'pocketbase';
+import pocketbaseEs, { ClientResponseError, ExternalAuth } from 'pocketbase';
 import { createBrowserRouter, json, Navigate, redirect } from 'react-router-dom';
-import { DirectoryRecord } from './records';
+import { DirectoryRecord, StateRecord, UserRecord } from './records';
 import Files from './views/Files';
 import Layout from './views/Layout';
 import Login from './views/Login';
 import ErrorAlert from './components/Error';
 import UserSettings from './views/UserSettings';
+import Search, { loadSearch } from './views/Search';
 
 const expand =
 	'parent,parent.parent,parent.parent.parent,parent.parent.parent.parent,parent.parent.parent.parent.parent,parent.parent.parent.parent.parent.parent';
@@ -15,8 +16,16 @@ export default (client: pocketbaseEs) =>
 		{
 			path: '/',
 			element: <Layout />,
-			loader: () => {
+			loader: async () => {
 				if (!client.authStore.isValid) throw redirect('/login');
+				try {
+					// await client.collection('users').authRefresh();
+					return null;
+				} catch (e) {
+					if (e instanceof ClientResponseError && e.status === 401) {
+						throw redirect('/login');
+					}
+				}
 			},
 			children: [
 				{
@@ -49,9 +58,7 @@ export default (client: pocketbaseEs) =>
 								throw redirect('/dir/' + record.id);
 							} catch (e) {
 								if (e instanceof Error) {
-									console.log(e);
 									if ((e as ClientResponseError).status == 404) {
-										console.log('hier!');
 										throw json({
 											name: 'Kein Wurzel-Ordner gefunden',
 											description: `Es wurde kein Wurzelordner gefunden. Haben Sie einen Coach verbunden?
@@ -70,38 +77,41 @@ export default (client: pocketbaseEs) =>
 				{
 					path: '/settings',
 					element: <UserSettings />,
+					errorElement: <ErrorAlert title='Fehler!' description='Es ist ein Fehler aufgetreten!' />,
 					loader: async () => {
-						let rootDir = null;
+						let rootDir: DirectoryRecord | null = null;
+						let authProviders: ExternalAuth[] = [];
+						let state: StateRecord | null = null;
 						if (client.authStore.model?.rootDirectory) {
-							rootDir = await client
-								.collection('directory')
-								.getOne(client.authStore.model?.rootDirectory);
+							try {
+								rootDir = await client
+									.collection('directory')
+									.getOne(client.authStore.model?.rootDirectory);
+							} catch (e) {}
 						}
 						try {
-							let state = await client
-								.collection('state')
-								.getFirstListItem(`user.id = "${client.authStore.model?.id || ''}"`);
-							let authProviders = await client
+							authProviders = await client
 								.collection('users')
-								.listExternalAuths(client.authStore.model?.id || '');
-							return {
-								state,
-								rootDir,
-								authProviders
-							};
-						} catch (e) {
-							if (e instanceof Error) {
-								if ((e as ClientResponseError).status == 404) {
-									return {
-										state: null,
-										rootDir
-									};
-								}
-							}
-							throw e;
-						}
+								.listExternalAuths(client.authStore.model!!.id);
+						} catch (e) {}
+
+						try {
+							state = await client
+								.collection('state')
+								.getFirstListItem(`user.id = "${client.authStore.model!!.id}"`);
+						} catch (e) {}
+						return {
+							state,
+							rootDir,
+							authProviders
+						};
 					}
-				}
+				},
+				{
+					path: '/search',
+					element: <Search />,
+					loader: loadSearch(client)
+				} // Add here
 			]
 		},
 		{
@@ -118,13 +128,20 @@ export default (client: pocketbaseEs) =>
 				const url = new URL(request.request.url);
 				const code = url.searchParams.get('code');
 				const state = url.searchParams.get('state');
-				console.log(localStorage.getItem('provider'));
 				const provider = JSON.parse(localStorage.getItem('provider') || '{}');
 				if (!code || !state || !provider)
 					throw new Error('Der O-Auth Provider hat nicht genug Parameter zurückgeliefert!');
-				await client
+				let response = await client
 					?.collection('users')
-					.authWithOAuth2(provider.name, code, provider.codeVerifier, provider.redirectUrl);
+					.authWithOAuth2<UserRecord>(provider.name, code, provider.codeVerifier, provider.redirectUrl);
+				const avatarUrlChanged = response.record.avatarUrl === '' && response.meta?.avatarUrl;
+				const nameChanged = response.record.name !== response.meta?.name;
+				if (nameChanged || avatarUrlChanged) {
+					client.collection('users').update(response.record.id, {
+						avatarUrl: response.meta?.avatarUrl || response.record.avatarUrl,
+						name: response.meta?.name || response.record.name
+					});
+				}
 				throw redirect('/');
 			},
 			errorElement: (

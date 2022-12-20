@@ -11,7 +11,7 @@ import {
 	MenuItem,
 	ListItemIcon
 } from '@mui/material';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { useNavigate, Link as RouterLink, useLocation } from 'react-router-dom';
 import { DirectoryRecord, FileRecord } from '../records';
 import { usePocketbase } from '../util/PocketbaseContext';
 import verbalizeDate from '../util/verbalizeDate';
@@ -19,24 +19,8 @@ import verbalizeFileSize from '../util/verbalizeFileSize';
 import Icon from './Icon';
 import SortableTable, { SortableTableProps } from './SortableTable';
 
-import icons from '../icons/icons';
+import icons, { iconMapping } from '../icons/icons';
 import PathBreadcrumb from './PathBreadcrump';
-const iconMapping: { [key: string]: string | undefined } = {
-	pdf: icons.pdf,
-	png: icons.img,
-	jpg: icons.img,
-	jpeg: icons.img,
-	gif: icons.img,
-	rkt: icons.rkt,
-	java: icons.java,
-	py: icons.py,
-	zip: icons.zip,
-	pptx: icons.ppt,
-	doc: icons.doc,
-	docx: icons.doc,
-	mp4: icons.video,
-	mov: icons.video
-};
 
 type RowData = {
 	id: string;
@@ -53,6 +37,7 @@ export default function FileTable({ directory }: { directory: DirectoryRecord })
 	const theme = useTheme();
 	const client = usePocketbase();
 	const navigate = useNavigate();
+	const location = useLocation();
 
 	const [data, setData] = useState<RowData[]>([]);
 	const [menuAnchorEl, setMenuAnchorEl] = useState<null | { target: HTMLElement; id: string }>(null);
@@ -239,11 +224,19 @@ export default function FileTable({ directory }: { directory: DirectoryRecord })
 					<PathBreadcrumb directory={directory} textVariant='body1' />
 				</Box>
 			</Box>
-			<SortableTable header={tableHeaders} data={data} onRowClick={onRowClick} size='small' initialSortKey='timestamp'/>
+			<SortableTable
+				header={tableHeaders}
+				uniqueKey='id'
+				data={data}
+				onRowClick={onRowClick}
+				size='small'
+				initialSortKey='timestamp'
+				highlight={location.hash !== '' ? location.hash.slice(1) : ''}
+			/>
 			<Menu open={menuAnchorEl !== null} onClose={() => setMenuAnchorEl(null)} anchorEl={menuAnchorEl?.target}>
 				<MenuItem onClick={onSetRootDir}>
 					<ListItemIcon>
-						<Icon name='folder-user' style='line' size='lg'/>
+						<Icon name='folder-user' style='line' size='lg' />
 					</ListItemIcon>
 					Wurzelknoten
 				</MenuItem>

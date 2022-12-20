@@ -23,11 +23,13 @@ export interface SortableTableProps {
 		generator?: (row: any) => string | JSX.Element;
 		comparator?: (a: any, b: any) => number;
 	}[];
+	uniqueKey: string;
 	data: any[];
 	onRowClick?: (row: any) => void;
 	initialSortKey?: string;
 	initialSortOrder?: 'desc' | 'asc';
 	size?: 'small' | 'medium';
+	highlight?: string;
 }
 
 export default function SortableTable(props: SortableTableProps) {
@@ -106,20 +108,23 @@ export default function SortableTable(props: SortableTableProps) {
 			</TableHead>
 			<TableBody>
 				{data.sort(sortFunction).map((row, index) => {
+					console.log(`${props.highlight} == ${row[props.uniqueKey]} = ${props.highlight == row[props.uniqueKey]}`)
 					return (
 						<TableRow
-							key={index}
+							key={row[props.uniqueKey]}
+							id={row[props.uniqueKey]}
 							onClick={() => {
 								if (props.onRowClick) props.onRowClick(row);
 							}}
-							sx={
-								props.onRowClick && {
-									'&:hover': {
-										bgcolor: theme.palette.grey[100],
-										cursor: 'pointer'
-									}
-								}
-							}>
+							sx={{
+								bgcolor: props.highlight == row[props.uniqueKey] ? theme.palette.action.selected : 'inherit',
+								'&:hover': props.onRowClick
+									? {
+											bgcolor: theme.palette.action.hover,
+											cursor: 'pointer'
+									  }
+									: {}
+							}}>
 							{props.header.map(cell => {
 								if (cell.generator) {
 									return <TableCell key={cell.key + `${index}`}>{cell.generator(row)}</TableCell>;

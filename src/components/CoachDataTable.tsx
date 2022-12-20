@@ -1,12 +1,13 @@
 import React from 'react';
 import { Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, useTheme } from '@mui/material';
+import { StateRecord } from '../records';
 
 export default function CoachDataTable({
 	data,
 	syncNow,
 	callback
 }: {
-	data: { [key: string]: any };
+	data: StateRecord;
 	syncNow?: boolean;
 	callback?: () => void;
 }) {
@@ -37,7 +38,7 @@ export default function CoachDataTable({
 					</TableRow>
 					<TableRow>
 						<TableCell>Letzte Synchronisierung</TableCell>
-						<TableCell>{new Date(data?.lastSync).toLocaleString('de-de')}</TableCell>
+						<TableCell>{data?.lastSync ? new Date(data?.lastSync).toLocaleString('de-de') : 'undefined'}</TableCell>
 					</TableRow>
 					<TableRow>
 						<TableCell>Zugriffs-Token</TableCell>
@@ -77,6 +78,12 @@ export default function CoachDataTable({
 								}}>
 								{data?.refreshToken}
 							</Box>
+						</TableCell>
+					</TableRow>
+					<TableRow>
+						<TableCell>Letzter Antwort-Hash</TableCell>
+						<TableCell>
+							{data?.lastFilesHash}
 						</TableCell>
 					</TableRow>
 				</TableBody>

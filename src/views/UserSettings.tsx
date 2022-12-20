@@ -6,19 +6,19 @@ import CoachDataTable from '../components/CoachDataTable';
 import Icon from '../components/Icon';
 import { ExternalAuth, Record } from 'pocketbase';
 import SettingsTable from '../components/SettingsTable';
+import { DirectoryRecord, StateRecord } from '../records';
 
 export default function UserSettings(props: {}) {
 	const theme = useTheme();
 	const { rootDir, state, authProviders } = useLoaderData() as {
-		rootDir: Record;
-		state: Record;
+		rootDir: DirectoryRecord;
+		state: StateRecord;
 		authProviders: ExternalAuth[];
 	};
 	const client = usePocketbase();
-
-	const authProvider = authProviders[0].provider;
-	const avatar = `https://coach.***REMOVED***/api/files/${client?.authStore.model?.collectionId}/${client?.authStore.model?.id}/${client?.authStore.model?.avatar}`;
-
+	const authProvider = authProviders ? authProviders[0].provider : 'none'
+	let avatar = client?.authStore.model?.avatarUrl
+	console.log()
 	return (
 		<Box>
 			<Box
@@ -29,7 +29,7 @@ export default function UserSettings(props: {}) {
 				}}>
 				<Avatar src={avatar} alt={(client?.authStore.model?.username || 'u').toUpperCase()} />
 				<Box sx={{ ml: theme.spacing(2) }}>
-					<Typography variant='h6'>{client?.authStore.model?.username}</Typography>
+					<Typography variant='h6'>{client?.authStore.model?.name}</Typography>
 					<Chip
 						icon={
 							<Box sx={{ height: '1em', color: 'inherit' }}>

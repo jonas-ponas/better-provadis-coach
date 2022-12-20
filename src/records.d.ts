@@ -3,6 +3,7 @@ import { Record } from 'pocketbase';
 export interface UserRecord extends Record {
 	name: string;
 	avatar: string | undefined;
+	avatarUrl: string | undefined;
 	favorites: string[];
 	rootDirectory: string | undefined;
 }
@@ -35,4 +36,5 @@ export interface StateRecord extends Record {
 	coachUserId: number | undefined;
 	lastSync: string | undefined;
 	coachUsername: string | undefined;
+	lastFilesHash: string | undefined;
 }

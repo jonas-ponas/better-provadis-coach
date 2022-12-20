@@ -78,7 +78,7 @@ export default function Search(props: {}) {
 				return (
 					<Link
 						component={RouterLink}
-						to={`/dir/${row.type === 'file' ?  `${row.directoryId}#${row.id}` : row.id}`}
+						to={`/dir/${row.type === 'file' ? `${row.directoryId}#${row.id}` : row.id}`}
 						sx={{
 							color: theme.palette.text.primary,
 							textDecorationColor: theme.palette.text.primary
@@ -104,12 +104,11 @@ export default function Search(props: {}) {
 	];
 
 	function getPath(record: DirectoryRecord): string {
-		if(record.name == 'root') return ""
+		if (record.name == 'root') return '';
 		if (!record.expand?.parent) {
-			if (record.name) return "... /" + record.name;
+			if (record.name) return '... /' + record.name;
 		}
-		return getPath(record.expand.parent as DirectoryRecord)+ "/" + record.name
-;
+		return getPath(record.expand.parent as DirectoryRecord) + '/' + record.name;
 	}
 
 	const data = [
@@ -138,7 +137,7 @@ export default function Search(props: {}) {
 
 	return (
 		<Box component={Paper}>
-			<SortableTable header={tableHeaders} data={data} uniqueKey='id'/>
+			<SortableTable header={tableHeaders} data={data} uniqueKey='id' />
 		</Box>
 	);
 }

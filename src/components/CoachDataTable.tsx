@@ -38,7 +38,9 @@ export default function CoachDataTable({
 					</TableRow>
 					<TableRow>
 						<TableCell>Letzte Synchronisierung</TableCell>
-						<TableCell>{data?.lastSync ? new Date(data?.lastSync).toLocaleString('de-de') : 'undefined'}</TableCell>
+						<TableCell>
+							{data?.lastSync ? new Date(data?.lastSync).toLocaleString('de-de') : 'undefined'}
+						</TableCell>
 					</TableRow>
 					<TableRow>
 						<TableCell>Zugriffs-Token</TableCell>
@@ -82,9 +84,7 @@ export default function CoachDataTable({
 					</TableRow>
 					<TableRow>
 						<TableCell>Letzter Antwort-Hash</TableCell>
-						<TableCell>
-							{data?.lastFilesHash}
-						</TableCell>
+						<TableCell>{data?.lastFilesHash}</TableCell>
 					</TableRow>
 				</TableBody>
 			</Table>

@@ -15,7 +15,7 @@ export interface FileRecord extends Record {
 	coachId: number;
 	parent: string;
 	cachedFile?: string;
-	allowerUser: string[];
+	allowedUser: string[];
 }
 
 export interface DirectoryRecord extends Record {

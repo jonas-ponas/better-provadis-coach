@@ -108,7 +108,9 @@ export default function SortableTable(props: SortableTableProps) {
 			</TableHead>
 			<TableBody>
 				{data.sort(sortFunction).map((row, index) => {
-					console.log(`${props.highlight} == ${row[props.uniqueKey]} = ${props.highlight == row[props.uniqueKey]}`)
+					console.log(
+						`${props.highlight} == ${row[props.uniqueKey]} = ${props.highlight == row[props.uniqueKey]}`
+					);
 					return (
 						<TableRow
 							key={row[props.uniqueKey]}
@@ -117,7 +119,8 @@ export default function SortableTable(props: SortableTableProps) {
 								if (props.onRowClick) props.onRowClick(row);
 							}}
 							sx={{
-								bgcolor: props.highlight == row[props.uniqueKey] ? theme.palette.action.selected : 'inherit',
+								bgcolor:
+									props.highlight == row[props.uniqueKey] ? theme.palette.action.selected : 'inherit',
 								'&:hover': props.onRowClick
 									? {
 											bgcolor: theme.palette.action.hover,

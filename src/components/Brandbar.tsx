@@ -37,7 +37,7 @@ export default function Brandbar(props: {}) {
 					Expert Giggle
 				</Typography>
 			</Box>
-			<Box> 
+			<Box>
 				<Searchbar />
 			</Box>
 		</Box>

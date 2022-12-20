@@ -16,9 +16,9 @@ export default function UserSettings(props: {}) {
 		authProviders: ExternalAuth[];
 	};
 	const client = usePocketbase();
-	const authProvider = authProviders ? authProviders[0].provider : 'none'
-	let avatar = client?.authStore.model?.avatarUrl
-	console.log()
+	const authProvider = authProviders ? authProviders[0].provider : 'none';
+	let avatar = client?.authStore.model?.avatarUrl;
+	console.log();
 	return (
 		<Box>
 			<Box

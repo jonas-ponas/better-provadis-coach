@@ -4,9 +4,40 @@ import { useLoaderData } from 'react-router-dom';
 import { usePocketbase } from '../util/PocketbaseContext';
 import CoachDataTable from '../components/CoachDataTable';
 import Icon from '../components/Icon';
-import { ExternalAuth, Record } from 'pocketbase';
+import pocketbaseEs, { ExternalAuth, Record } from 'pocketbase';
 import SettingsTable from '../components/SettingsTable';
 import { DirectoryRecord, StateRecord } from '../records';
+
+export function loadUserSettings(client: pocketbaseEs) {
+	return async () => {
+		let rootDir: DirectoryRecord | null = null;
+		let authProviders: ExternalAuth[] = [];
+		let state: StateRecord | null = null;
+		if (client.authStore.model?.rootDirectory) {
+			try {
+				rootDir = await client
+					.collection('directory')
+					.getOne(client.authStore.model?.rootDirectory);
+			} catch (e) {}
+		}
+		try {
+			authProviders = await client
+				.collection('users')
+				.listExternalAuths(client.authStore.model!!.id);
+		} catch (e) {}
+
+		try {
+			state = await client
+				.collection('state')
+				.getFirstListItem(`user.id = "${client.authStore.model!!.id}"`);
+		} catch (e) {}
+		return {
+			state,
+			rootDir,
+			authProviders
+		};
+	}
+}
 
 export default function UserSettings(props: {}) {
 	const theme = useTheme();

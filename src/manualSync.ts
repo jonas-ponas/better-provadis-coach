@@ -7,12 +7,13 @@ dotenv.config();
 const USERNAME = process.env.USERNAME;
 const PB_USER = process.env.PB_USER;
 const PB_PASSWD = process.env.PB_PASSWD;
-if(!USERNAME || !PB_USER || !PB_PASSWD) {
+const PB_URL = process.env.PB_URL
+if(!USERNAME || !PB_USER || !PB_PASSWD || !PB_URL) {
 	console.log("Missing Environment Variables")
 	process.exit(1)
 }
 
-const pb = new PocketBase('https://coach.***REMOVED***/');
+const pb = new PocketBase(PB_URL);
 // pb.autoCancellation(false);
 pb.admins
 	.authWithPassword(PB_USER, PB_PASSWD)
@@ -37,10 +38,10 @@ pb.admins
 			const ctoPb = await coachToPocketbase.insertDirectories(dirs, pb, user.id);
 			
 			// Insert Files
-			const files = await (await coach.getFiles()).slice(400, -1)
+			const files = await (await coach.getFiles())
 			const ftoPb = await coachToPocketbase.insertFiles(files, pb, user.id, ctoPb);
 
-			await coachToPocketbase.insertCacheFiles(pb, coach, ftoPb)
+			// await coachToPocketbase.insertCacheFiles(pb, coach, ftoPb)
 
 			success = true
 		} catch (e) {

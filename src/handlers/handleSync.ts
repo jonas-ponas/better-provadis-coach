@@ -3,7 +3,7 @@ import pocketbaseEs, { Record } from "pocketbase";
 import { Coach } from "../coach/Coach";
 import logger from "../logger";
 import coachToPocketbase from "../pocketbase/coachToPocketbase";
-import { MyWebSocket, PB_PASSWD, PB_USER } from "../server";
+import { MyWebSocket, PB_PASSWD, PB_USER, PB_URL } from "../server";
 const PocketBase = require('pocketbase/cjs')
 
 export default function handleSync(client: MyWebSocket, data: {[key: string]: any}) {
@@ -12,14 +12,14 @@ export default function handleSync(client: MyWebSocket, data: {[key: string]: an
         client.send(JSON.stringify({type: 'error', msg: 'Unauthorized'}))
         return
     }
-    if(!PB_USER || !PB_PASSWD) {
-        logger.log('error', `S1 PocketBase Service User not specified!`)
+    if(!PB_USER || !PB_PASSWD || !PB_URL) {
+        logger.log('error', `S1 PocketBase Service User/Url not specified!`)
         client.send(JSON.stringify({type: 'error', msg: 'Internal Error (S1)'})) // ERROR S1
         client.close(1011, "Internal Error")
         return
     }
     client.send(JSON.stringify({type:'progress', phase: 'auth'}))
-    const pb: pocketbaseEs = new PocketBase('https://coach.***REMOVED***/');
+    const pb: pocketbaseEs = new PocketBase(PB_URL);
     pb.admins.authWithPassword(PB_USER, PB_PASSWD).then(async (value) => {
         let coach: Coach
         let state: Record

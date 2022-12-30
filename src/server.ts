@@ -8,8 +8,9 @@ dotenv.config()
 
 export const PB_USER = process.env.PB_USER;
 export const PB_PASSWD = process.env.PB_PASSWD;
+export const PB_URL = process.env.PB_URL;
 
-if (!PB_PASSWD || !PB_USER) {
+if (!PB_PASSWD || !PB_USER || !PB_URL) {
 	logger.error('PocketBase Service User Credentials Missing. Check Environment Variables!');
 	process.exit(1);
 }

@@ -1,7 +1,5 @@
-import pocketbaseEs from 'pocketbase';
 import logger from '../logger';
-import {MyWebSocket} from '../server';
-const PocketBase = require('pocketbase/cjs');
+import {MyWebSocket, PB_URL} from '../server';
 
 export default function handleLogin(client: MyWebSocket, data: {[key: string]: any}) {
     if(client.isAuthorized) {
@@ -9,7 +7,7 @@ export default function handleLogin(client: MyWebSocket, data: {[key: string]: a
         client.send(JSON.stringify({type: 'login', msg: 'Login OK'}));
         return
     }
-	fetch(`https://coach.***REMOVED***/api/collections/users/records/${data.userId}`, {
+	fetch(`${PB_URL?.endsWith('/') ? PB_URL.slice(0, PB_URL.length - 1) : PB_URL}/api/collections/users/records/${data.userId}`, {
 		method: 'GET',
 		headers: {
 			Authorization: data.token

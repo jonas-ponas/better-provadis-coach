@@ -17,22 +17,24 @@ import {
 	useTheme
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import { Record } from 'pocketbase';
+import pocketbaseEs, { Record } from 'pocketbase';
 
 import Icon from './Icon';
 import ConnectDialog from './ConnectDialog';
 import Sync from './SyncButton';
 import { usePocketbase } from '../util/PocketbaseContext';
+import ConfirmationDialog from './ConfirmationDialog';
 
 export default function SettingsTable({ state, rootDir }: { state: Record | null; rootDir: Record | undefined }) {
 	const theme = useTheme();
 	const navigate = useNavigate();
-	const client = usePocketbase();
+	const client: pocketbaseEs = usePocketbase();
 	const [showConnectDialog, setShowConnectDialog] = useState(false);
+	const [showRemoveConfirmation, setShowRemoveConfirmation] = useState(false);
 	const [syncNow, setSyncNow] = useState(false);
 	const [snackbar, setSnackbar] = useState<{ text: string; type: string } | undefined>(undefined);
 
-	function handleClose(success?: boolean) {
+	function handleCloseConnectDialog(success?: boolean) {
 		setShowConnectDialog(false);
 		if (success) {
 			setSyncNow(true);
@@ -42,6 +44,22 @@ export default function SettingsTable({ state, rootDir }: { state: Record | null
 	function onSyncFinished() {
 		setSyncNow(false);
 		navigate(0);
+	}
+
+	async function handleRemoveCoachConfirmed() {
+		if (!client?.authStore.model?.id) {
+			setSnackbar({ type: 'error', text: 'Fehler beim Entfernen!' });
+			return;
+		}
+		try {
+			const state = await client.collection('state').getFirstListItem(`user.id = '${client.authStore.model.id}'`);
+			await client.collection('state').delete(state.id);
+			navigate(0);
+		} catch (e) {
+			if (e instanceof Error) {
+				setSnackbar({ type: 'error', text: e.name });
+			}
+		}
 	}
 
 	async function onRootDirRemove() {
@@ -60,6 +78,8 @@ export default function SettingsTable({ state, rootDir }: { state: Record | null
 			}
 		}
 	}
+
+	const isCoachConnected = state !== null;
 
 	return (
 		<>
@@ -113,10 +133,10 @@ export default function SettingsTable({ state, rootDir }: { state: Record | null
 						<TableRow>
 							<TableCell>Coach</TableCell>
 							<TableCell>
-								{state == null ? (
-									<Chip label='Nicht verbunden' variant='filled' color='error' size='small' />
-								) : (
+								{isCoachConnected ? (
 									<Chip label='Verbunden' variant='filled' color='success' size='small' />
+								) : (
+									<Chip label='Nicht verbunden' variant='filled' color='error' size='small' />
 								)}
 							</TableCell>
 							<TableCell>
@@ -125,18 +145,32 @@ export default function SettingsTable({ state, rootDir }: { state: Record | null
 										display: 'flex',
 										flexDirection: 'row'
 									}}>
-									<Button
-										variant='contained'
-										size='small'
-										disabled={state != null}
-										startIcon={<Icon size='xss' name='link' />}
-										onClick={() => setShowConnectDialog(true)}
-										sx={{
-											height: 32,
-											mr: theme.spacing(1)
-										}}>
-										Verbinden
-									</Button>
+									{isCoachConnected ? (
+										<Button
+											variant='contained'
+											size='small'
+											color='error'
+											startIcon={<Icon size='xss' name='link-unlink-m' />}
+											onClick={() => setShowRemoveConfirmation(true)}
+											sx={{
+												height: 32,
+												mr: theme.spacing(1)
+											}}>
+											Entfernen
+										</Button>
+									) : (
+										<Button
+											variant='contained'
+											size='small'
+											startIcon={<Icon size='xss' name='link' />}
+											onClick={() => setShowConnectDialog(true)}
+											sx={{
+												height: 32,
+												mr: theme.spacing(1)
+											}}>
+											Verbinden
+										</Button>
+									)}
 									<Sync callback={onSyncFinished} syncNow={syncNow} disabled={state == null} />
 								</Box>
 							</TableCell>
@@ -144,7 +178,16 @@ export default function SettingsTable({ state, rootDir }: { state: Record | null
 					</TableBody>
 				</Table>
 			</TableContainer>
-			<ConnectDialog open={showConnectDialog} onClose={handleClose} />
+			<ConnectDialog open={showConnectDialog} onClose={handleCloseConnectDialog} />
+			<ConfirmationDialog
+				open={showRemoveConfirmation}
+				title='Coach-Verbindung entfernen?'
+				content={
+					'Möchten Sie wirklich ihre Coach-Verbindung entfernen? Dadurch können Sie keine neuen Dateien synchronisieren, bis Sie die Coach neu verbinden!'
+				}
+				onClose={() => setShowRemoveConfirmation(false)}
+				onConfirm={handleRemoveCoachConfirmed}
+			/>
 			<Snackbar open={snackbar != undefined} autoHideDuration={10000} onClose={() => setSnackbar(undefined)}>
 				<Alert
 					variant='filled'

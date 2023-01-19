@@ -75,7 +75,7 @@ export default function Layout(props: {}) {
 										<Link
 											variant='body2'
 											sx={linkStyle}
-											href={`https://github.com/jonas-ponas/expert-giggle-frontend/releases/tag/v${uiVersion}`}
+											href={`https://github.com/jonas-ponas/expert-giggle-frontend`}
 											target='_blank'>
 											{uiVersion}
 										</Link>

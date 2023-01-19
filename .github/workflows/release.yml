@@ -15,30 +15,23 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           default_bump: patch
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.PAT_TOKEN }}
-      - name: Build and push
+      - name: Build image
+        run: | 
+          docker build \
+          --build-arg UI_VERSION=${{steps.tag_version.outputs.new_tag}} \
+          --build-arg PB_VERSION=$PB_VERSION \
+          -t ghcr.io/jonas-ponas/expert-giggle-frontend:${{steps.tag_version.outputs.new_tag}}
+          -t ghcr.io/jonas-ponas/expert-giggle-frontend:latest
+      - name: Push image
         if: success()
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          file: ./Dockerfile
-          platforms: linux/amd64,linux/arm64
-          push: false
-          tags: | 
-            ghcr.io/jonas-ponas/expert-giggle-frontend:latest
-            ghcr.io/jonas-ponas/expert-giggle-frontend:${{steps.tag_version.outputs.new_tag}}
-          build-args: |
-            UI_VERSION=${{steps.tag_version.outputs.new_tag}}
-            PB_VERSION=$PB_VERSION
+        run: |
+          docker push ghcr.io/jonas-ponas/expert-giggle-frontend:${{steps.tag_version.outputs.new_tag}}
       - name: Create a GitHub release
         if: success()
         uses: ncipollo/release-action@v1

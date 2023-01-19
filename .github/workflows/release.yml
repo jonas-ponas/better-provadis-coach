@@ -20,19 +20,19 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.PAT_TOKEN }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build image
         run: | 
           docker build \
-          --build-arg UI_VERSION=${{steps.tag_version.outputs.new_tag}} \
+          --build-arg UI_VERSION=${{steps.tag_version.outputs.new_version}} \
           --build-arg PB_VERSION=$PB_VERSION \
-          -t ghcr.io/jonas-ponas/expert-giggle-frontend:${{steps.tag_version.outputs.new_tag}} \
+          -t ghcr.io/jonas-ponas/expert-giggle-frontend:${{steps.tag_version.outputs.new_version}} \
           -t ghcr.io/jonas-ponas/expert-giggle-frontend:latest \
           .
       - name: Push image
         if: success()
         run: |
-          docker push ghcr.io/jonas-ponas/expert-giggle-frontend:${{steps.tag_version.outputs.new_tag}}
+          docker push -a ghcr.io/jonas-ponas/expert-giggle-frontend
       - name: Create a GitHub release
         if: success()
         uses: ncipollo/release-action@v1

@@ -15,7 +15,7 @@ jobs:
       - name: Get version id 
         id: vars
         run: |
-          echo "version_id=${{  github.ref_name }}_$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT      
+          echo "version_id=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT      
       - name: Login to GitHub Container Registry
         if: github.ref == 'refs/heads/main' # Only push if on main
         uses: docker/login-action@v1

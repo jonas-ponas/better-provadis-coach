@@ -18,9 +18,12 @@ jobs:
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
-        password: ${{ secrets.PAT_TOKEN }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Set outputs
+      id: vars
+      run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag ghcr.io/jonas-ponas/expert-giggle:latest
+      run: docker build --file Dockerfile --tag ghcr.io/jonas-ponas/expert-giggle:latest --tag ghcr.io/jonas-ponas/export-giggle:${{ steps.vars.outputs.sha_short }} . 
     - name: Push the Docker image
       run: docker push ghcr.io/jonas-ponas/expert-giggle:latest
     

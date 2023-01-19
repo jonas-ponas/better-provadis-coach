@@ -26,8 +26,9 @@ jobs:
           docker build \
           --build-arg UI_VERSION=${{steps.tag_version.outputs.new_tag}} \
           --build-arg PB_VERSION=$PB_VERSION \
-          -t ghcr.io/jonas-ponas/expert-giggle-frontend:${{steps.tag_version.outputs.new_tag}}
-          -t ghcr.io/jonas-ponas/expert-giggle-frontend:latest
+          -t ghcr.io/jonas-ponas/expert-giggle-frontend:${{steps.tag_version.outputs.new_tag}} \
+          -t ghcr.io/jonas-ponas/expert-giggle-frontend:latest \
+          .
       - name: Push image
         if: success()
         run: |

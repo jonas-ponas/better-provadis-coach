@@ -1,14 +1,27 @@
-import React from 'react';
-import { Box, Grid, Link, useMediaQuery, useTheme } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Box, Grid, Link, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { Outlet } from 'react-router-dom';
 import Brandbar from '../components/Brandbar';
 import Navigation from '../components/Navigation';
 
 import 'remixicon/fonts/remixicon.css';
+import { getVersions } from '../util/getVersion';
 
 export default function Layout(props: {}) {
 	const theme = useTheme();
 	const isSmallDevice = useMediaQuery(theme.breakpoints.down('md'));
+	const [[uiVersion, pbVersion], setVersions] = useState<[string, string]>(['v?', 'v?']);
+
+	useEffect(() => {
+		getVersions().then(versions => {
+			setVersions(versions);
+		});
+	}, []);
+
+	const linkStyle = {
+		color: theme.palette.grey[400],
+		textDecorationColor: theme.palette.grey[400]
+	};
 
 	return (
 		<Box
@@ -40,16 +53,35 @@ export default function Layout(props: {}) {
 							mt: theme.spacing(1)
 						}}>
 						{!isSmallDevice && (
-							<Link
-								variant='body2'
-								sx={{
-									color: theme.palette.grey[400],
-									textDecorationColor: theme.palette.grey[400]
-								}}
-								href='https://github.com/jonas-ponas/expert-giggle-frontend/issues/new/choose'
-								target='_blank'>
-								Fehler melden / Feedback
-							</Link>
+							<>
+								<Link
+									variant='body2'
+									sx={linkStyle}
+									href='https://github.com/jonas-ponas/expert-giggle-frontend/issues/new/choose'
+									target='_blank'>
+									Fehler melden / Feedback
+								</Link>
+								<Box sx={{}}>
+									<Typography sx={{ ...linkStyle, display: 'inline-flex', gap: 1 }} variant='body2'>
+										Version:
+										<Link
+											variant='body2'
+											sx={linkStyle}
+											href={`https://github.com/pocketbase/pocketbase/releases/tag/v${pbVersion}`}
+											target='_blank'>
+											{pbVersion}
+										</Link>
+										/
+										<Link
+											variant='body2'
+											sx={linkStyle}
+											href={`https://github.com/jonas-ponas/expert-giggle-frontend/releases/tag/v${uiVersion}`}
+											target='_blank'>
+											{uiVersion}
+										</Link>
+									</Typography>
+								</Box>
+							</>
 						)}
 					</Box>
 				</Grid>

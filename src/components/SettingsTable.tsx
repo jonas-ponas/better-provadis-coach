@@ -28,7 +28,7 @@ import ConfirmationDialog from './ConfirmationDialog';
 export default function SettingsTable({ state, rootDir }: { state: Record | null; rootDir: Record | undefined }) {
 	const theme = useTheme();
 	const navigate = useNavigate();
-	const client: pocketbaseEs = usePocketbase();
+	const client = usePocketbase();
 	const [showConnectDialog, setShowConnectDialog] = useState(false);
 	const [showRemoveConfirmation, setShowRemoveConfirmation] = useState(false);
 	const [syncNow, setSyncNow] = useState(false);

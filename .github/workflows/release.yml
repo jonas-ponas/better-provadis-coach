@@ -1,0 +1,48 @@
+name: Build and Release Docker Image
+on: 
+  workflow_dispatch:
+env:
+  PB_VERSION: 0.11.3
+  
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          default_bump: patch
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.PAT_TOKEN }}
+      - name: Build and push
+        if: success()
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: false
+          tags: | 
+            ghcr.io/jonas-ponas/expert-giggle-frontend:latest
+            ghcr.io/jonas-ponas/expert-giggle-frontend:${{steps.tag_version.outputs.new_tag}}
+          build-args: |
+            UI_VERSION=${{steps.tag_version.outputs.new_tag}}
+            PB_VERSION=$PB_VERSION
+      - name: Create a GitHub release
+        if: success()
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.tag_version.outputs.new_tag}}
+          name: Release ${{ steps.tag_version.outputs.new_tag}}
+          body: ${{ steps.tag_version.outputs.changelog}}

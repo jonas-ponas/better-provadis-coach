@@ -9,28 +9,28 @@ export default async function insertCacheFiles(
 	onProgress?: (i: number, t: number) => void
 ) {
 	if (!pb.authStore.isValid) throw Error('Pocketbase-AuthStore not valid');
-	logger.log('debug', `Cache-Files to Update: ${fToPbMap.size}`)
+	logger.debug(`Cache-Files to Update: ${fToPbMap.size}`);
 	const total = fToPbMap.size;
-    let i = 0;
+	let i = 0;
 	for (const [coachId, {pbId, name}] of fToPbMap) {
 		let blob;
 		try {
 			blob = await coach.getFileContents(coachId);
 		} catch (e) {
-			logger.log('warn', `Failed download from Coach ${name}. ${e}`);
-			continue
+			logger.warn(`Failed download from Coach ${name}. ${e}`);
+			continue;
 		}
 		try {
 			const formData = new FormData();
 			formData.append('cachedFile', blob, name);
 
 			const response = await pb.collection('file').update(pbId, formData);
-			logger.log('debug', `Uploaded file ${name}`);
-			if(onProgress) onProgress(++i, total);
+			logger.debug(`Uploaded file ${name}`);
+			if (onProgress) onProgress(++i, total);
 		} catch (e) {
-			logger.log('warn', `Failed upload ${name} ${pbId} ${e}`)
-            if(onProgress) onProgress(++i, total);
-			continue
+			logger.warn(`Failed upload ${name} ${pbId} ${e}`);
+			if (onProgress) onProgress(++i, total);
+			continue;
 		}
 	}
 }

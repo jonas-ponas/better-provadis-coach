@@ -7,13 +7,13 @@ export default async function insertDirectories(
 	pb: any,
 	userId?: string,
 	cToPbMap?: Map<number, string>,
-	onProgress?: (i: number, t: number)=>void
+	onProgress?: (i: number, t: number) => void
 ) {
 	cToPbMap = cToPbMap || new Map<number, string>();
 	const updateDirs: Directory[] = [];
 	if (!pb.authStore.isValid) throw Error('Pocketbase-AuthStore not valid');
 	const total = directories.length;
-	let i = 0
+	let i = 0;
 	for (const directory of directories) {
 		try {
 			const create = await pb.collection('directory').create({
@@ -24,34 +24,38 @@ export default async function insertDirectories(
 			});
 			cToPbMap.set(directory.id, create.id);
 			updateDirs.push(directory);
-			logger.log('debug', `Created ${create.name} ${create.id} ${create.coachId}`);
-			if(onProgress) onProgress(++i, total)
+			logger.debug(`Created ${create.name} ${create.id} ${create.coachId}`);
+			if (onProgress) onProgress(++i, total);
 		} catch (e: any) {
 			try {
 				const record = await pb.collection('directory').getFirstListItem(`coachId = ${directory.id}`);
 				if (record?.id) {
 					cToPbMap.set(record.coachId, record.id);
 					let nameChanged = directory.name != record?.name;
-					let dateNew = new Date(directory.modified.timestamp.endsWith('.000Z') ? directory.modified.timestamp : directory.modified.timestamp + '.000Z')
-					let dateOld = new Date(record?.timestamp)
-					let wasModified = dateNew.getTime() !== dateOld.getTime()
+					let dateNew = new Date(
+						directory.modified.timestamp.endsWith('.000Z')
+							? directory.modified.timestamp
+							: directory.modified.timestamp + '.000Z'
+					);
+					let dateOld = new Date(record?.timestamp);
+					let wasModified = dateNew.getTime() !== dateOld.getTime();
 					let userExists = userId == undefined ? true : record.allowedUser.includes(userId);
 					if (nameChanged || wasModified || !userExists) {
-						logger.verbose(`wasModified: ${directory.modified.timestamp} !== ${record?.timestamp}`)
+						logger.verbose(`wasModified: ${directory.modified.timestamp} !== ${record?.timestamp}`);
 						const update = await pb.collection('directory').update(record.id, {
 							name: directory.name,
 							timestamp: directory.modified.timestamp,
 							allowedUser: userExists ? record.allowedUser : [...record.allowedUser, userId]
 						});
-						logger.log('debug', `Updated ${update.name} ${update.id} ${update.coachId}`);
-						if(onProgress) onProgress(++i, total);
+						logger.debug(`Updated ${update.name} ${update.id} ${update.coachId}`);
+						if (onProgress) onProgress(++i, total);
 					} else {
-						if(onProgress) onProgress(++i, total);
+						if (onProgress) onProgress(++i, total);
 					}
 				}
 			} catch (e) {
-				logger.log('warn', `Search/Update failed (${directory.name}, ${directory.id}): ${e}`);
-				if(onProgress) onProgress(++i, total);
+				logger.warn(`Search/Update failed (${directory.name}, ${directory.id}): ${e}`);
+				if (onProgress) onProgress(++i, total);
 			}
 		}
 	}
@@ -65,11 +69,11 @@ export default async function insertDirectories(
 				if (record?.id) {
 					parentId = record.id;
 				} else {
-					logger.log('debug', `Cannot find parent ${directory.parent_id} for ${directory.name} ${directory.id}`);
+					logger.debug(`Cannot find parent ${directory.parent_id} for ${directory.name} ${directory.id}`);
 					continue;
 				}
 			} catch (e) {
-				logger.log('warn', `Failed find parent ${directory.parent_id} for ${directory.name} ${directory.id}: ${e}`);
+				logger.warn(`Failed find parent ${directory.parent_id} for ${directory.name} ${directory.id}: ${e}`);
 				continue;
 			}
 		}
@@ -77,9 +81,9 @@ export default async function insertDirectories(
 			const update = await pb.collection('directory').update(id, {
 				parent: parentId
 			});
-			logger.log('debug', `Updated Parent for ${update.name} ${update.id}`);
+			logger.debug(`Updated Parent for ${update.name} ${update.id}`);
 		} catch (e) {
-			logger.log('warn', `Failed to update ${directory.name} ${directory.id}: ${e}`);
+			logger.warn(`Failed to update ${directory.name} ${directory.id}: ${e}`);
 		}
 	}
 	return cToPbMap;

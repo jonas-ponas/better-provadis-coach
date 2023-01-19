@@ -46,20 +46,23 @@ export class Coach {
 		this.clientId = options.clientId;
 		this.clientSecret = options.clientSecret;
 
-		if(logger) this.logger = logger
-		
-		this.log('debug', 'Initializing Coach...' + JSON.stringify({
-			url: this.url,
-			access_token: this.accessToken || {},
-			refresh_token: this.refreshToken || {},
-			domain_id: this.domainId,
-			clientId: this.clientId,
-			clientSecret: this.clientSecret
-		}));
+		if (logger) this.logger = logger;
+
+		this.logger?.debug(
+			'Initializing Coach...' +
+				JSON.stringify({
+					url: this.url,
+					access_token: this.accessToken || {},
+					refresh_token: this.refreshToken || {},
+					domain_id: this.domainId,
+					clientId: this.clientId,
+					clientSecret: this.clientSecret
+				})
+		);
 	}
 
 	private async getNewAccessToken() {
-		this.log('debug', 'Refreshing Token...');
+		this.logger?.debug('Refreshing Token...');
 		const response = await fetch(`https://${this.url}/oauth/token`, {
 			method: 'POST',
 			headers: {
@@ -76,7 +79,9 @@ export class Coach {
 		if (response.status != 200) {
 			try {
 				const json = await response.json();
-				throw new Error(`Could not retrieve new access-token. Request failed (${json['error']}: ${json['error_description']})`);
+				throw new Error(
+					`Could not retrieve new access-token. Request failed (${json['error']}: ${json['error_description']})`
+				);
 			} catch (e) {
 				throw new Error('Could not retrieve new access-token. Request failed (' + response.statusText + ')');
 			}
@@ -90,8 +95,7 @@ export class Coach {
 		this.refreshToken = {
 			token: json['refresh_token']
 		};
-		this.log(
-			'debug',
+		this.logger?.debug(
 			`Refreshed Access- and Refresh-Token. Expires ${new Date(this.accessToken.expires).toISOString()}`
 		);
 	}
@@ -109,7 +113,7 @@ export class Coach {
 			token_type: string;
 		};
 	}> {
-		this.log('debug', 'Getting Oauth User-Info...');
+		this.logger?.debug('Getting Oauth User-Info...');
 		// await this.checkAccessToken()
 		const options = {
 			method: 'POST',
@@ -143,13 +147,13 @@ export class Coach {
 				token: json.token?.access_token,
 				expires: json.token?.expires
 			};
-			this.log('debug', 'Updated Access-Token via User-Info ' + this.accessToken.token);
+			this.logger?.debug('Updated Access-Token via User-Info ' + this.accessToken.token);
 		}
 		if (json?.token?.refresh_token) {
 			this.refreshToken = {
 				token: json.token?.refresh_token
 			};
-			this.log('debug', 'Updated Refresh-Token via User-Info ' + this.refreshToken.token);
+			this.logger?.debug('Updated Refresh-Token via User-Info ' + this.refreshToken.token);
 		}
 		if (json?.user?.id) {
 			this.userId = json.user.id;
@@ -174,11 +178,11 @@ export class Coach {
 			token: json['coach']['login_token'] || '',
 			expires: (json['coach']['expires'] || 0) * 1000
 		};
-		this.log('debug', 'Updated Coach-Login-Token ' + JSON.stringify(this.coachToken));
+		this.logger?.debug('Updated Coach-Login-Token ' + JSON.stringify(this.coachToken));
 	}
 
 	public async getFiles(): Promise<File[]> {
-		this.log('debug', 'Getting Files...');
+		this.logger?.debug('Getting Files...');
 		await this.checkAccessToken();
 		await this.checkCoachToken();
 
@@ -221,12 +225,12 @@ export class Coach {
 				download_url: v?.file_download || ''
 			};
 		});
-		this.log('debug', 'Received Files ' + files.length);
+		this.logger?.debug('Received Files ' + files.length);
 		return files;
 	}
 
 	public async getDirectories(): Promise<Directory[]> {
-		this.log('debug', 'Getting Directories...');
+		this.logger?.debug('Getting Directories...');
 		await this.checkAccessToken();
 		await this.checkCoachToken();
 
@@ -255,12 +259,12 @@ export class Coach {
 			throw new Error('Request failed (success=false)');
 		}
 		let directories = this.parseDirectory(json['data']);
-		this.log('debug', 'Received Directories' + directories.length);
+		this.logger?.debug('Received Directories' + directories.length);
 		return directories;
 	}
 
 	public async getNews(): Promise<NewsItem[]> {
-		this.log('debug', 'Getting News...');
+		this.logger?.debug('Getting News...');
 		await this.checkAccessToken();
 		await this.checkCoachToken();
 
@@ -300,7 +304,7 @@ export class Coach {
 				source: parseInt(v?.source_id) || -1
 			};
 		});
-		this.log('debug', 'Received News-Items ' + newsItems.length);
+		this.logger?.debug('Received News-Items ' + newsItems.length);
 		return newsItems;
 	}
 
@@ -331,30 +335,36 @@ export class Coach {
 		clientId: string,
 		logger?: Logger
 	): Promise<Coach> {
-		let coach = new Coach({
-			...qrcode,
-			clientSecret,
-			clientId
-		}, logger);
+		let coach = new Coach(
+			{
+				...qrcode,
+				clientSecret,
+				clientId
+			},
+			logger
+		);
 		try {
 			const data = await coach.getUserInfo();
-			coach.log('debug', `Got User-Info: ${data.user.firstname} ${data.user.familyname} ${data.user.id}`);
+			logger?.debug(`Got User-Info: ${data.user.firstname} ${data.user.familyname} ${data.user.id}`);
 			return coach;
 		} catch (e) {
 			throw e;
 		}
 	}
 
-	public static async createFromState(state: {
-		token: string;
-		expires: number;
-		refreshToken: string;
-		url?: string;
-		userId?: string;
-		domainId?: number;
-		clientSecret: string;
-		clientId: string;
-	}, logger?: Logger) {
+	public static async createFromState(
+		state: {
+			token: string;
+			expires: number;
+			refreshToken: string;
+			url?: string;
+			userId?: string;
+			domainId?: number;
+			clientSecret: string;
+			clientId: string;
+		},
+		logger?: Logger
+	) {
 		let coach = new Coach(state, logger);
 		try {
 			if (state.refreshToken == '') {
@@ -383,13 +393,13 @@ export class Coach {
 	  Below are Helper functions
 	 ----------------------------  */
 	private log(level: string, message: string) {
-		if (this.logger) this.logger.log('verbose', message);
+		if (this.logger) this.logger.verbose(message);
 	}
 
 	private async checkAccessToken() {
-		this.log('debug', 'Check Access Token...');
+		this.logger?.debug('Check Access Token...');
 		if ((this.accessToken?.expires || 0) < new Date().getTime()) {
-			this.log('debug', 'Access-Token expired. Getting new Access-Token');
+			this.logger?.debug('Access-Token expired. Getting new Access-Token');
 			if ((this.refreshToken?.token || '') == '') {
 				throw new Error('Refresh-Token nicht verfügbar');
 			}
@@ -399,9 +409,9 @@ export class Coach {
 	}
 
 	private async checkCoachToken() {
-		this.log('debug', 'Check Coach-Login Token...');
+		this.logger?.debug('Check Coach-Login Token...');
 		if ((this.coachToken?.expires || 0) < new Date().getTime()) {
-			this.log('debug', 'Coach-Login-Token expired. Getting new Coach-Login-Token...');
+			this.logger?.debug('Coach-Login-Token expired. Getting new Coach-Login-Token...');
 			await this.getResource();
 		}
 		return true;

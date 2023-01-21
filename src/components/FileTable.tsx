@@ -191,9 +191,11 @@ export default function FileTable({ directory }: { directory: DirectoryRecord })
 			align: 'right',
 			padding: 'checkbox',
 			generator(row) {
-				if (row.type == 'file') return <></>;
 				return (
-					<IconButton onClick={onMenuClick(row.id)}>
+					<IconButton
+						sx={{ p: 0, visibility: row.type == 'file' ? 'hidden' : 'visible' }}
+						disabled={row.type == 'file'}
+						onClick={onMenuClick(row.id)}>
 						<Icon name='more-2' style='line' />
 					</IconButton>
 				);

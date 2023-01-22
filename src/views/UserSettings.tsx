@@ -1,12 +1,12 @@
 import React from 'react';
-import { Alert, AlertTitle, Avatar, Box, Chip, Typography, useTheme } from '@mui/material';
+import { Alert, AlertTitle, Avatar, Box, Chip, Paper, TableContainer, Typography, useTheme } from '@mui/material';
 import { useLoaderData } from 'react-router-dom';
 import { usePocketbase } from '../util/PocketbaseContext';
-import CoachDataTable from '../components/CoachDataTable';
 import Icon from '../components/Icon';
 import pocketbaseEs, { ExternalAuth, Record } from 'pocketbase';
 import SettingsTable from '../components/SettingsTable';
 import { DirectoryRecord, StateRecord } from '../records';
+import SortableTable, { SortableTableProps } from '../components/SortableTable';
 
 export function loadUserSettings(client: pocketbaseEs) {
 	return async () => {
@@ -15,28 +15,22 @@ export function loadUserSettings(client: pocketbaseEs) {
 		let state: StateRecord | null = null;
 		if (client.authStore.model?.rootDirectory) {
 			try {
-				rootDir = await client
-					.collection('directory')
-					.getOne(client.authStore.model?.rootDirectory);
+				rootDir = await client.collection('directory').getOne(client.authStore.model?.rootDirectory);
 			} catch (e) {}
 		}
 		try {
-			authProviders = await client
-				.collection('users')
-				.listExternalAuths(client.authStore.model!!.id);
+			authProviders = await client.collection('users').listExternalAuths(client.authStore.model!!.id);
 		} catch (e) {}
 
 		try {
-			state = await client
-				.collection('state')
-				.getFirstListItem(`user.id = "${client.authStore.model!!.id}"`);
+			state = await client.collection('state').getFirstListItem(`user.id = "${client.authStore.model!!.id}"`);
 		} catch (e) {}
 		return {
 			state,
 			rootDir,
 			authProviders
 		};
-	}
+	};
 }
 
 export default function UserSettings(props: {}) {
@@ -49,7 +43,20 @@ export default function UserSettings(props: {}) {
 	const client = usePocketbase();
 	const authProvider = authProviders ? authProviders[0].provider : 'none';
 	let avatar = client?.authStore.model?.avatarUrl;
-	console.log();
+
+	const stateList = [
+		{ key: 'Benutzername / ID', value: `${state?.coachUsername} / ${state?.coachUserId}` },
+		{ key: 'URL / Domänen-ID', value: `${state?.url} / ${state?.domainId}` },
+		{
+			key: 'Letzte Synchronisierung',
+			value: state?.lastSync ? new Date(state?.lastSync).toLocaleString('de-de') : 'undefined'
+		},
+		{
+			key: 'Letzter Antwort-Hash',
+			value: state?.lastFilesHash
+		}
+	];
+
 	return (
 		<Box>
 			<Box
@@ -84,7 +91,37 @@ export default function UserSettings(props: {}) {
 				sx={{
 					mt: theme.spacing(2)
 				}}>
-				{state != null && <CoachDataTable data={state} />}
+				{state != null && (
+					<Box component={Paper}>
+						<Typography
+							variant='body2'
+							fontWeight='bold'
+							sx={{
+								pl: theme.spacing(2),
+								pt: theme.spacing(1)
+							}}>
+							Gespeicherte Daten
+						</Typography>
+						<SortableTable
+							size='small'
+							header={[
+								{
+									title: 'Einstellung',
+									key: 'key',
+									fixedWidth: 230,
+									sortable: true
+								},
+								{
+									title: 'Wert',
+									key: 'value',
+									sortable: true
+								}
+							]}
+							uniqueKey={'key'}
+							data={stateList}
+						/>
+					</Box>
+				)}
 				{state == null && (
 					<Alert variant='filled' severity='warning'>
 						<AlertTitle>Kein Coach verbunden!</AlertTitle>

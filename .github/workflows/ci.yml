@@ -32,6 +32,10 @@ jobs:
           -t ghcr.io/jonas-ponas/expert-giggle-frontend:latest \
           .
       - name: Push image
-        if: success() && github.ref == 'refs/heads/main' # Only push if on main
+        if: success() && github.ref == 'refs/heads/main' && !startsWith(github.event.head_commit.message, "ci:") # Only push if on main
         run: |
           docker push -a ghcr.io/jonas-ponas/expert-giggle-frontend
+      - name: Call Watchtower
+        if: success() && github.ref == 'refs/heads/main' && !startsWith(github.event.head_commit.message, "ci:")
+        run: |
+          curl -H "Authorization: Bearer ${{secrets.WATCHTOWER_TOKEN}}" ${{secrets.WATCHTOWER_ENDPOINT}}

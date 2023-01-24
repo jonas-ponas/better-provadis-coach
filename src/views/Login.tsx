@@ -70,13 +70,22 @@ export default function Login(props: {}) {
 							}}>
 							{authMethodList &&
 								authMethodList.authProviders.map(v => {
-									let redirectUrl =
-										import.meta.env.MODE == 'production'
-											? 'https://coach.***REMOVED***/callback'
-											: REDIRECT_URI[v.name] || '';
-									let combinedAuthUrl = v.authUrl + encodeURIComponent(redirectUrl);
+									let redirectUrl = '';
+									let disabled = false;
+									let combinedAuthUrl = v.authUrl;
 									switch (v.name) {
 										case 'google':
+											redirectUrl = import.meta.env.VITE_GOOGLE_REDIRECT_URI;
+											if (!redirectUrl)
+												return (
+													<Typography
+														sx={{ m: theme.spacing(1) }}
+														variant='body2'
+														color='error'>
+														Google Login not available
+													</Typography>
+												);
+											combinedAuthUrl += encodeURIComponent(redirectUrl);
 											return (
 												<Button
 													key={v.name}
@@ -99,6 +108,17 @@ export default function Login(props: {}) {
 												</Button>
 											);
 										case 'github':
+											redirectUrl = import.meta.env.VITE_GITHUB_REDIRECT_URI;
+											if (!redirectUrl)
+												return (
+													<Typography
+														sx={{ m: theme.spacing(1) }}
+														variant='body2'
+														color='error'>
+														Github Login not available
+													</Typography>
+												);
+											combinedAuthUrl += encodeURIComponent(redirectUrl);
 											return (
 												<Button
 													key={v.name}

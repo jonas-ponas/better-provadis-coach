@@ -42,8 +42,10 @@ export default function Sync(props: { syncNow?: boolean; callback?: () => void; 
 
 	function handleSync() {
 		let url;
-		if (import.meta.env.MODE == 'production') url = 'wss://coach.***REMOVED***/ws';
-		else url = import.meta.env.VITE_WEBSOCKET_URI;
+		if (!import.meta.env.VITE_WEBSOCKET_URI) {
+			setError('Frontend Fehler! Keine WS-Url festgelegt!');
+			return;
+		} else url = import.meta.env.VITE_WEBSOCKET_URI as string;
 		setPhase('connect');
 		setIsSyncing(true);
 		if (!client?.authStore.isValid) {

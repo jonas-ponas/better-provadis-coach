@@ -29,8 +29,7 @@ type RowData = {
 	type: string;
 	size?: number;
 	mime?: string;
-	collectionId: string;
-	fileName?: string;
+	record: FileRecord | DirectoryRecord;
 };
 
 export default function FileTable({ directory }: { directory: DirectoryRecord }) {
@@ -55,25 +54,27 @@ export default function FileTable({ directory }: { directory: DirectoryRecord })
 		Promise.all([p1, p2])
 			.then(([files, directories]) => {
 				if (!files || !directories) return;
-				const transformFiles = files.map(
-					({ name, size, timestamp, id, collectionId, cachedFile }: FileRecord) => {
-						return {
-							name,
-							size,
-							timestamp,
-							type: 'file',
-							id,
-							collectionId,
-							mime: name.split('.').at(-1),
-							fileName: cachedFile
-						};
-					}
-				);
-				const transformDirectories = directories.map(
-					({ name, timestamp, id, collectionId }: DirectoryRecord) => {
-						return { name, timestamp, type: 'directory', size: undefined, id, collectionId };
-					}
-				);
+				const transformFiles = files.map((record: FileRecord) => {
+					return {
+						name: record.name,
+						size: record.size,
+						timestamp: record.timestamp,
+						type: 'file',
+						id: record.id,
+						mime: record.name.split('.').at(-1),
+						record
+					};
+				});
+				const transformDirectories = directories.map((record: DirectoryRecord) => {
+					return {
+						name: record.name,
+						timestamp: record.timestamp,
+						type: 'directory',
+						size: undefined,
+						id: record.id,
+						record
+					};
+				});
 				setData([...transformFiles, ...transformDirectories]);
 			})
 			.catch(e => {
@@ -142,7 +143,8 @@ export default function FileTable({ directory }: { directory: DirectoryRecord })
 			sortable: true,
 			generator(row: RowData) {
 				if (row.type == 'file') {
-					const url = `https://coach.***REMOVED***/api/files/${row.collectionId}/${row.id}/${row.fileName}`;
+					if (!client) return <>{row.name}</>;
+					const url = client.getFileUrl(row.record, row.record.cachedFile);
 					return (
 						<Link
 							href={url}

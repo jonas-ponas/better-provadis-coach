@@ -22,6 +22,14 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Debug
+        run: | 
+          echo "--build-arg UI_VERSION=${{steps.vars.outputs.version_id}}" \
+          echo "--build-arg PB_VERSION=$PB_VERSION" \
+          echo "--build-arg GOOGLE_REDIRECT_URI=${{secrets.REDIRECT_URI}}" \
+          echo "--build-arg GITHUB_REDIRECT_URI=${{secrets.REDIRECT_URI}}" \
+          echo "--build-arg WEBSOCKET_URI=${{secrets.WEBSOCKET_URI}}" \
+          echo "--build-arg POCKETBASE_URI=${{secrets.POCKETBASE_URI}}" \
       - name: Build image
         run: | 
           docker build \

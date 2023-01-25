@@ -13,6 +13,10 @@ export default function Login(props: {}) {
 	const theme = useTheme();
 	const loaderData = useLoaderData();
 	const authMethodList = loaderData as AuthMethodsList;
+
+	const uiVersion = import.meta.env.VITE_UI_VERSION || '???';
+	const pbVersion = import.meta.env.VITE_PB_VERSION || '???';
+
 	return (
 		<Box
 			sx={{
@@ -26,7 +30,6 @@ export default function Login(props: {}) {
 				<Paper
 					elevation={0}
 					sx={{
-						// p: theme.spacing(2),
 						display: 'flex',
 						alignItems: 'center',
 						flexDirection: 'column',
@@ -149,6 +152,11 @@ export default function Login(props: {}) {
 						</Box>
 					</Box>
 				</Paper>
+				<Box>
+					<Typography sx={{ color: theme.palette.primary.light }} variant='body2' align='center' color=''>
+						{uiVersion} / {pbVersion}
+					</Typography>
+				</Box>
 			</Container>
 		</Box>
 	);

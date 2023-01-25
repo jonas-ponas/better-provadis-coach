@@ -148,7 +148,10 @@ export default function TimeTable() {
 			<Typography
 				variant='h6'
 				sx={{
-					mt: theme.spacing(2)
+					mt: theme.spacing(2),
+					display: 'flex',
+					alignItems: 'center',
+					gap: theme.spacing(1)
 				}}>
 				<Icon name='calendar' style='line' size='sm' />
 				Heute
@@ -158,10 +161,7 @@ export default function TimeTable() {
 					component={Paper}
 					dense={true}
 					sx={{
-						mt: theme.spacing(2),
-						display: 'flex',
-						alignItems: 'center',
-						gap: theme.spacing(1)
+						mt: theme.spacing(2)
 					}}>
 					{eventsToday.map(elementMapping)}
 				</List>

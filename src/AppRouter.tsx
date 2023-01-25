@@ -7,6 +7,7 @@ import Login from './views/Login';
 import ErrorAlert from './components/Error';
 import UserSettings, { loadUserSettings } from './views/UserSettings';
 import Search, { loadSearch } from './views/Search';
+import TimeTable, { loadTimeTable } from './views/Timetable';
 
 const expand =
 	'parent,parent.parent,parent.parent.parent,parent.parent.parent.parent,parent.parent.parent.parent.parent,parent.parent.parent.parent.parent.parent';
@@ -57,10 +58,14 @@ export default (client: pocketbaseEs) =>
 					path: '/search',
 					element: <Search />,
 					loader: loadSearch(client),
-					errorElement: (
-						<ErrorAlert title='Fehler!' description={`Es ist ein Fehler bei der Anmeldung unterlaufen!`} />
-					)
-				} // Add here
+					errorElement: <ErrorAlert title='Fehler!' description='Es ist ein Fehler aufgetreten!' />
+				},
+				{
+					path: '/schedule',
+					element: <TimeTable />,
+					loader: loadTimeTable(client),
+					errorElement: <ErrorAlert title='Fehler!' description='Es ist ein Fehler aufgetreten!' />
+				}
 			]
 		},
 		{

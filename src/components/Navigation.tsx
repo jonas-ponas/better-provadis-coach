@@ -14,7 +14,7 @@ interface MenuItem {
 
 const primaryMenu: MenuItem[] = [
 	{ name: 'Dateien', icon: 'folders', href: '/dir' },
-	{ name: 'Stundenplan', icon: 'calendar-todo', href: '/schedule', disabled: true },
+	{ name: 'Stundenplan', icon: 'calendar-todo', href: '/schedule' },
 	{ name: 'News', icon: 'rss', href: '/news', disabled: true }
 ];
 
@@ -34,16 +34,15 @@ export default function Navigation({ iconsOnly }: { iconsOnly?: boolean }) {
 	}
 
 	function mapping(v: MenuItem) {
-		const functions: { [key: string]: () => void } = {
-			logout: logout
-		};
 		return (
 			<ListItemButton
 				key={v.name}
 				disabled={v?.disabled || false}
 				LinkComponent={RouterLink}
-				href={v?.href || ''}
-				onClick={functions[v?.onClick || ''] || (() => {})}>
+				onClick={() => {
+					if (v.onClick === 'logout') logout();
+					if (v.href) navigate(v.href);
+				}}>
 				{iconsOnly ? (
 					<Icon name={v.icon} style='line' size='lg' />
 				) : (

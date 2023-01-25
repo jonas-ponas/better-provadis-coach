@@ -24,8 +24,18 @@ import ConnectDialog from './ConnectDialog';
 import Sync from './SyncButton';
 import { usePocketbase } from '../util/PocketbaseContext';
 import ConfirmationDialog from './ConfirmationDialog';
+import { DirectoryRecord, StateRecord } from '../records';
+import ManageFolderFunction from './ManageFolderFunction';
 
-export default function SettingsTable({ state, rootDir }: { state: Record | null; rootDir: Record | undefined }) {
+export default function SettingsTable({
+	state,
+	rootDir,
+	scheduleDir
+}: {
+	state: StateRecord | null;
+	rootDir?: DirectoryRecord;
+	scheduleDir?: DirectoryRecord;
+}) {
 	const theme = useTheme();
 	const navigate = useNavigate();
 	const client = usePocketbase();
@@ -62,14 +72,11 @@ export default function SettingsTable({ state, rootDir }: { state: Record | null
 		}
 	}
 
-	async function onRootDirRemove() {
-		if (!client?.authStore.model?.id) {
-			setSnackbar({ type: 'error', text: 'Fehler beim Entfernen!' });
-			return;
-		}
+	async function resetDirectoryFunction(name: string) {
+		if (!client || !client.authStore.model?.id) return;
 		try {
-			await client.collection('users').update(client.authStore.model.id, {
-				rootDirectory: null
+			await client.collection('users').update(client.authStore.model!.id, {
+				[name]: null
 			});
 			navigate(0);
 		} catch (e) {
@@ -94,40 +101,25 @@ export default function SettingsTable({ state, rootDir }: { state: Record | null
 					</TableHead>
 					<TableBody>
 						<TableRow>
-							<TableCell width={150}>Wurzel-Ordner</TableCell>
-							<TableCell>
-								{rootDir == null ? (
-									<Typography variant='body2' sx={{ fontStyle: 'italic' }}>
-										nicht festgelegt
-									</Typography>
-								) : (
-									<Chip
-										label={rootDir?.name}
-										variant='filled'
-										color='primary'
-										size='small'
-										deleteIcon={
-											<Box sx={{ width: '1.5em' }}>
-												<Icon name='external-link' style='line' />
-											</Box>
-										}
-										onDelete={() => navigate(`/dir/${rootDir.id}`)}
-									/>
-								)}
+							<TableCell colSpan={3}>
+								<ManageFolderFunction
+									onReset={() => {
+										resetDirectoryFunction('rootDirectory');
+									}}
+									directory={rootDir}
+									name={'Wurzelordner'}
+								/>
 							</TableCell>
-							<TableCell>
-								<Button
-									variant='outlined'
-									size='small'
-									color='error'
-									disabled={rootDir == null}
-									onClick={onRootDirRemove}
-									startIcon={<Icon size='xss' name='delete-bin' style='line' />}
-									sx={{
-										height: 32
-									}}>
-									Entfernen
-								</Button>
+						</TableRow>
+						<TableRow>
+							<TableCell colSpan={3}>
+								<ManageFolderFunction
+									onReset={() => {
+										resetDirectoryFunction('scheduleDirectory');
+									}}
+									directory={scheduleDir}
+									name={'Stundenplan-Ordner'}
+								/>
 							</TableCell>
 						</TableRow>
 						<TableRow>

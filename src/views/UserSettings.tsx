@@ -10,14 +10,26 @@ import SortableTable, { SortableTableProps } from '../components/SortableTable';
 
 export function loadUserSettings(client: pocketbaseEs) {
 	return async () => {
-		let rootDir: DirectoryRecord | null = null;
+		let rootDir = undefined;
+		let scheduleDir = undefined;
+
 		let authProviders: ExternalAuth[] = [];
 		let state: StateRecord | null = null;
 		if (client.authStore.model?.rootDirectory) {
 			try {
-				rootDir = await client.collection('directory').getOne(client.authStore.model?.rootDirectory);
+				rootDir = await client
+					.collection('directory')
+					.getOne<DirectoryRecord>(client.authStore.model?.rootDirectory);
 			} catch (e) {}
 		}
+		if (client.authStore.model?.scheduleDirectory) {
+			try {
+				scheduleDir = await client
+					.collection('directory')
+					.getOne<DirectoryRecord>(client.authStore.model?.scheduleDirectory);
+			} catch (e) {}
+		}
+
 		try {
 			authProviders = await client.collection('users').listExternalAuths(client.authStore.model!!.id);
 		} catch (e) {}
@@ -28,6 +40,7 @@ export function loadUserSettings(client: pocketbaseEs) {
 		return {
 			state,
 			rootDir,
+			scheduleDir,
 			authProviders
 		};
 	};
@@ -35,27 +48,15 @@ export function loadUserSettings(client: pocketbaseEs) {
 
 export default function UserSettings(props: {}) {
 	const theme = useTheme();
-	const { rootDir, state, authProviders } = useLoaderData() as {
-		rootDir: DirectoryRecord;
+	const { rootDir, state, authProviders, scheduleDir } = useLoaderData() as {
+		rootDir?: DirectoryRecord;
 		state: StateRecord;
 		authProviders: ExternalAuth[];
+		scheduleDir?: DirectoryRecord;
 	};
 	const client = usePocketbase();
 	const authProvider = authProviders ? authProviders[0].provider : 'none';
 	let avatar = client?.authStore.model?.avatarUrl;
-
-	const stateList = [
-		{ key: 'Benutzername / ID', value: `${state?.coachUsername} / ${state?.coachUserId}` },
-		{ key: 'URL / Domänen-ID', value: `${state?.url} / ${state?.domainId}` },
-		{
-			key: 'Letzte Synchronisierung',
-			value: state?.lastSync ? new Date(state?.lastSync).toLocaleString('de-de') : 'undefined'
-		},
-		{
-			key: 'Letzter Antwort-Hash',
-			value: state?.lastFilesHash
-		}
-	];
 
 	return (
 		<Box>
@@ -85,7 +86,7 @@ export default function UserSettings(props: {}) {
 				sx={{
 					mt: theme.spacing(2)
 				}}>
-				<SettingsTable state={state} rootDir={rootDir} />
+				<SettingsTable state={state} rootDir={rootDir} scheduleDir={scheduleDir} />
 			</Box>
 			<Box
 				sx={{
@@ -118,7 +119,15 @@ export default function UserSettings(props: {}) {
 								}
 							]}
 							uniqueKey={'key'}
-							data={stateList}
+							data={[
+								{ key: 'Benutzername / ID', value: `${state?.coachUsername} / ${state?.coachUserId}` },
+								{ key: 'URL / Domänen-ID', value: `${state?.url} / ${state?.domainId}` },
+								{
+									key: 'Letzte Synchronisierung',
+									value: new Date(state?.lastSync || '').toLocaleString('de-de')
+								},
+								{ key: 'Letzter Antwort-Hash', value: state?.lastFilesHash }
+							]}
 						/>
 					</Box>
 				)}

@@ -108,9 +108,6 @@ export default function SortableTable(props: SortableTableProps) {
 			</TableHead>
 			<TableBody>
 				{data.sort(sortFunction).map((row, index) => {
-					console.log(
-						`${props.highlight} == ${row[props.uniqueKey]} = ${props.highlight == row[props.uniqueKey]}`
-					);
 					return (
 						<TableRow
 							key={row[props.uniqueKey]}

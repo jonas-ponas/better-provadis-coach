@@ -22,8 +22,8 @@ jobs:
     - name: Build image
       run: | 
         docker build \
-        -t ghcr.io/jonas-ponas/expert-giggle-frontend:${{steps.vars.outputs.version_id}} \
-        -t ghcr.io/jonas-ponas/expert-giggle-frontend:latest \
+        -t ghcr.io/jonas-ponas/expert-giggle:${{steps.vars.outputs.version_id}} \
+        -t ghcr.io/jonas-ponas/expert-giggle:latest \
         .
     - name: Push the Docker image
       run: docker push ghcr.io/jonas-ponas/expert-giggle:latest

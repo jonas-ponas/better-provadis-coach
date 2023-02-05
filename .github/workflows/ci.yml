@@ -21,10 +21,11 @@ jobs:
       run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
     - name: Build the Docker image
       run: |
-        docker build . \ 
+        docker build \ 
         --file Dockerfile \
         --tag ghcr.io/jonas-ponas/expert-giggle:latest \
-        --tag ghcr.io/jonas-ponas/expert-giggle:${{ steps.vars.outputs.sha_short }} 
+        --tag ghcr.io/jonas-ponas/expert-giggle:${{ steps.vars.outputs.sha_short }} \
+        .
     - name: Push the Docker image
       run: docker push ghcr.io/jonas-ponas/expert-giggle:latest
     - name: Call Watchtower

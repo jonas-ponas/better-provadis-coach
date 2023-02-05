@@ -75,9 +75,12 @@ wss.on('connection', (client: MyWebSocket, request) => {
 
 	client.isAuthorized = false;
 	client.remoteAdress = request.socket.remoteAddress || 'none';
+	logger.verbose(`Request-Headers: ${JSON.stringify(request.headers)}`);
+	logger.debug(`X-Real-IP: ${request.headers['x-real-ip']} remoteAddress: ${request.socket.remoteAddress}`);
+	if (request.headers['x-real-ip']) client.remoteAdress = request.headers['x-real-ip'] as string;
 	setTimeout(() => {
-		if (!client.isAuthorized) {
-			logger.log('info', `Client ${request.socket.remoteAddress} did not authorize in time`);
+		if (!client.isAuthorized && client.readyState == client.OPEN) {
+			logger.log('info', `Client ${client.remoteAdress} did not authorize in time`);
 			client.close(3000, 'Login Timeout');
 		}
 	}, 10 * 1000);
@@ -85,12 +88,13 @@ wss.on('connection', (client: MyWebSocket, request) => {
 	client.on('message', handleMessage(client));
 
 	client.on('close', () => {
-		logger.info(`Client ${request.socket.remoteAddress} disconnected`);
+		logger.info(`Client ${client.remoteAdress} disconnected`);
 	});
 });
 
-wss.on('error', error => {
+wss.on('error', (error: Error) => {
 	logger.error(error);
+	logger.error(error.stack);
 });
 
 // At 0 minutes past the hour, every 3 hours, between 07:00 AM and 07:59 PM, Monday through Friday

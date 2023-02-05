@@ -71,13 +71,14 @@ wss.on('listening', () => {
 });
 
 wss.on('connection', (client: MyWebSocket, request) => {
-	logger.info(`Client ${request.socket.remoteAddress} connected`);
-
 	client.isAuthorized = false;
 	client.remoteAdress = request.socket.remoteAddress || 'none';
 	logger.verbose(`Request-Headers: ${JSON.stringify(request.headers)}`);
 	logger.debug(`X-Real-IP: ${request.headers['x-real-ip']} remoteAddress: ${request.socket.remoteAddress}`);
 	if (request.headers['x-real-ip']) client.remoteAdress = request.headers['x-real-ip'] as string;
+
+	logger.info(`Client ${client.remoteAdress} connected`);
+
 	setTimeout(() => {
 		if (!client.isAuthorized && client.readyState == client.OPEN) {
 			logger.log('info', `Client ${client.remoteAdress} did not authorize in time`);

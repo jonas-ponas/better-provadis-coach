@@ -15,6 +15,7 @@
     "@types/crypto-js": "^4.1.1",
     "@types/express": "^4.17.14",
     "@types/node": "^18.11.9",
+    "@types/node-cron": "^3.0.7",
     "@types/ws": "^8.5.3",
     "nodemon": "^2.0.20",
     "prettier": "^2.7.1",
@@ -25,7 +26,8 @@
     "crypto-js": "^4.1.1",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
-    "pocketbase": "^0.8.1",
+    "node-cron": "^3.0.2",
+    "pocketbase": "^0.10.0",
     "winston": "^3.8.2",
     "ws": "^8.11.0"
   }

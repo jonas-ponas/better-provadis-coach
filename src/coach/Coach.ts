@@ -96,7 +96,10 @@ export class Coach {
 			token: json['refresh_token']
 		};
 		this.logger?.debug(
-			`Refreshed Access- and Refresh-Token. Expires ${new Date(this.accessToken.expires).toISOString()}`
+			`Refreshed Access- and Refresh-Token. ${JSON.stringify({
+				access: this.accessToken,
+				refresh: this.refreshToken
+			})}`
 		);
 	}
 

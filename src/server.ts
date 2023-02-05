@@ -4,6 +4,9 @@ import handleLogin from './handlers/handleLogin';
 import handleSync from './handlers/handleSync';
 import dotenv from 'dotenv';
 import logger from './logger';
+import {scheduled} from './scheduled';
+import cron from 'node-cron';
+
 dotenv.config();
 
 export const PB_USER = process.env.PB_USER;
@@ -22,6 +25,15 @@ const wss = new WebSocketServer({
 });
 
 type Handler = (client: MyWebSocket, data: {[key: string]: any}) => void;
+
+export interface MyWebSocketMessage {
+	type: 'login' | 'sync' | 'error' | 'progress';
+	phase?: string;
+	step?: number;
+	detail?: number;
+	total?: number;
+	msg?: string;
+}
 
 export interface MyWebSocket extends WebSocket {
 	remoteAdress: string;
@@ -79,4 +91,22 @@ wss.on('connection', (client: MyWebSocket, request) => {
 
 wss.on('error', error => {
 	logger.error(error);
+});
+
+// At 0 minutes past the hour, every 3 hours, between 07:00 AM and 07:59 PM, Monday through Friday
+// via https://crontab.cronhub.io/
+logger.info('Scheduling Sync with cron: 0 7-19/3 * * 1-5');
+cron.schedule('0 7-19/3 * * 1-5', () => {
+	if (!PB_PASSWD || !PB_USER || !PB_URL) {
+		logger.error('PocketBase Service User Credentials Missing. Check Environment Variables!');
+		return;
+	}
+	scheduled({
+		pocketbase: {
+			url: PB_URL,
+			user: PB_USER,
+			password: PB_PASSWD
+		},
+		lastSyncDiff: 1000 * 60 * 60 // If theres a sync newer than 1 hour. dont sync
+	});
 });

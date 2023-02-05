@@ -7,17 +7,16 @@ export default function handleLogin(client: MyWebSocket, data: {[key: string]: a
 		client.send(JSON.stringify({type: 'login', msg: 'Login OK'}));
 		return;
 	}
-	fetch(
-		`${PB_URL?.endsWith('/') ? PB_URL.slice(0, PB_URL.length - 1) : PB_URL}/api/collections/users/records/${
-			data.userId
-		}`,
-		{
-			method: 'GET',
-			headers: {
-				Authorization: data.token
-			}
+	const url = `${PB_URL?.endsWith('/') ? PB_URL.slice(0, PB_URL.length - 1) : PB_URL}/api/collections/users/records/${
+		data.userId
+	}`;
+	logger.debug(`Calling ${url} with user-token`);
+	fetch(url, {
+		method: 'GET',
+		headers: {
+			Authorization: data.token
 		}
-	)
+	})
 		.then(async response => {
 			if (response.status == 200) {
 				client.send(JSON.stringify({type: 'login', msg: 'Login OK'}));

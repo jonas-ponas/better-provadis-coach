@@ -19,11 +19,11 @@ jobs:
     - name: Set outputs
       id: vars
       run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-    - name: Build the Docker image
-      run: |
-        docker build \ 
-        --tag ghcr.io/jonas-ponas/expert-giggle:latest \
-        --tag ghcr.io/jonas-ponas/expert-giggle:${{ steps.vars.outputs.sha_short }} \
+    - name: Build image
+      run: | 
+        docker build \
+        -t ghcr.io/jonas-ponas/expert-giggle-frontend:${{steps.vars.outputs.version_id}} \
+        -t ghcr.io/jonas-ponas/expert-giggle-frontend:latest \
         .
     - name: Push the Docker image
       run: docker push ghcr.io/jonas-ponas/expert-giggle:latest

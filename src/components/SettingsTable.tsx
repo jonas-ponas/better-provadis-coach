@@ -163,7 +163,7 @@ export default function SettingsTable({
 											Verbinden
 										</Button>
 									)}
-									<Sync callback={onSyncFinished} syncNow={syncNow} disabled={state == null} />
+									<Sync onSyncFinish={onSyncFinished} syncNow={syncNow} disabled={state == null} />
 								</Box>
 							</TableCell>
 						</TableRow>

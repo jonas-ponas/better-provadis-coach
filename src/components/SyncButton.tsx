@@ -9,9 +9,9 @@ const MESSAGES = {
 	state: 'Rufe aktuellen Zustand ab...',
 	coach: [
 		'Rufe Coach Daten ab... (1/4)',
-		'Rufe Coach Daten ab... (2/4',
-		'Rufe Coach Daten ab... (3/4)',
-		'Rufe Coach Daten ab... (4/4)'
+		'Rufe Coach Daten ab... (2/4)',
+		'Rufe Coach Ordner ab... (3/4)',
+		'Rufe Coach Dateien ab... (4/4)'
 	],
 	database: [
 		'Synchronisiere Ordner mit Datenbank...',
@@ -23,7 +23,12 @@ const MESSAGES = {
 
 type phases = 'connect' | 'state' | 'auth' | 'coach' | 'database' | 'done';
 
-export default function Sync(props: { syncNow?: boolean; callback?: () => void; disabled?: boolean }) {
+export default function Sync(props: {
+	syncNow?: boolean;
+	onSyncFinish?: () => void;
+	disabled?: boolean;
+	onSyncStart?: () => void;
+}) {
 	const theme = useTheme();
 	const client = usePocketbase();
 
@@ -31,7 +36,6 @@ export default function Sync(props: { syncNow?: boolean; callback?: () => void; 
 	const [phase, setPhase] = useState<phases>('connect');
 	const [step, setStep] = useState<number>(0);
 	const [progress, setProgress] = useState<number>(0);
-	const [error, setError] = useState<undefined | string>(undefined);
 	const [snackbar, setSnackbar] = useState<{ type: string; text: string } | undefined>(undefined);
 
 	useEffect(() => {
@@ -43,13 +47,17 @@ export default function Sync(props: { syncNow?: boolean; callback?: () => void; 
 	function handleSync() {
 		let url;
 		if (!import.meta.env.VITE_WEBSOCKET_URI) {
-			setError('Frontend Fehler! Keine WS-Url festgelegt!');
+			setSnackbar({ type: 'error', text: 'Frontend Fehler! Keine WS-Url festgelegt!' });
 			return;
 		} else url = import.meta.env.VITE_WEBSOCKET_URI as string;
 		setPhase('connect');
 		setIsSyncing(true);
+		if (props.onSyncStart) props.onSyncStart();
 		if (!client?.authStore.isValid) {
-			setError('Konnte nicht beim Sync-Service anmelden. Versuchen Sie sich neueinzuloggen!');
+			setSnackbar({
+				type: 'error',
+				text: 'Konnte nicht beim Sync-Service anmelden. Versuchen Sie sich neueinzuloggen!'
+			});
 		}
 		const ws = new WebSocket(url);
 		ws.onopen = () => {
@@ -79,7 +87,7 @@ export default function Sync(props: { syncNow?: boolean; callback?: () => void; 
 						setSnackbar({ type: 'success', text: 'Erfolgreich Synchronisiert.' });
 						setTimeout(() => {
 							setIsSyncing(false);
-							if (props.callback) props.callback();
+							if (props.onSyncFinish) props.onSyncFinish();
 						}, 1000);
 						return;
 					}
@@ -88,7 +96,6 @@ export default function Sync(props: { syncNow?: boolean; callback?: () => void; 
 					setProgress(Math.floor(((json?.detail || 0) / (json?.total || 1)) * 100));
 					break;
 				case 'error':
-					setError(json.msg);
 					setSnackbar({ type: 'error', text: json.msg });
 					setIsSyncing(false);
 					break;

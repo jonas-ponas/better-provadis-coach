@@ -35,6 +35,7 @@ export interface StateRecord extends Record {
 	domainId: number | undefined;
 	coachUserId: number | undefined;
 	lastSync: string | undefined;
+	lastSyncSuccessful: boolean;
 	coachUsername: string | undefined;
 	lastFilesHash: string | undefined;
 }

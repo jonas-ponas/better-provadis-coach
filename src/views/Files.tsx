@@ -1,29 +1,29 @@
 import React, { useState } from 'react';
-import { Box, useTheme } from '@mui/material';
+import { Box, Stack, Typography, useTheme } from '@mui/material';
 import { json, LoaderFunctionArgs, redirect, useLoaderData, useNavigate } from 'react-router-dom';
-import { DirectoryRecord } from '../records';
+import { DirectoryRecord, StateRecord } from '../records';
 import SyncButton from '../components/SyncButton';
 import FileTable from '../components/FileTable';
-import pocketbaseEs, { ClientResponseError } from 'pocketbase';
+import PocketBase, { ClientResponseError } from 'pocketbase';
+import verbalizeDate from '../util/verbalizeDate';
 
-export function loadFiles(client: pocketbaseEs, expand: string) {
+export function loadFiles(client: PocketBase, expand: string) {
 	return async function ({ params }: LoaderFunctionArgs) {
 		const record = await client.collection('directory').getOne<DirectoryRecord>(params.dirId!!, {
 			expand
 		});
-		return record;
+		const state = await client.collection('state').getFirstListItem(`user = '${client.authStore.model?.id}'`);
+		return [record, state];
 	};
 }
 
-export function loadRootDirectory(client: pocketbaseEs) {
+export function loadRootDirectory(client: PocketBase) {
 	return async () => {
 		if (client.authStore.model?.rootDirectory) {
 			throw redirect('/dir/' + client.authStore.model?.rootDirectory);
 		} else {
 			try {
-				const record = await client
-					.collection('directory')
-					.getFirstListItem<DirectoryRecord>(`parent = null`);
+				const record = await client.collection('directory').getFirstListItem<DirectoryRecord>(`parent = null`);
 				throw redirect('/dir/' + record.id);
 			} catch (e) {
 				if (e instanceof Error) {
@@ -38,24 +38,38 @@ export function loadRootDirectory(client: pocketbaseEs) {
 				throw e;
 			}
 		}
-	}
+	};
 }
 
 export default function Files(props: {}) {
 	const theme = useTheme();
-	const loaderData = useLoaderData() as DirectoryRecord;
+	const [directory, state] = useLoaderData() as [DirectoryRecord, StateRecord];
 	const navigate = useNavigate();
+	const [isSyncing, setIsSyncing] = useState(false);
 
 	return (
 		<Box>
-			<Box>
-				<SyncButton callback={() => navigate(0)} />
-			</Box>
+			<Stack direction='row' alignItems='center' justifyContent='space-between'>
+				<SyncButton
+					onSyncFinish={() => {
+						setIsSyncing(false);
+						navigate(0);
+					}}
+					onSyncStart={() => {
+						setIsSyncing(true);
+					}}
+				/>
+				{!isSyncing && (
+					<Typography variant='body2' sx={{ color: theme.palette.grey[500] }}>
+						Zuletzt synchronisiert: {state.lastSync ? verbalizeDate(state.lastSync) : 'nie'}
+					</Typography>
+				)}
+			</Stack>
 			<Box
 				sx={{
 					mt: theme.spacing(1)
 				}}>
-				<FileTable directory={loaderData} />
+				<FileTable directory={directory} />
 			</Box>
 		</Box>
 	);

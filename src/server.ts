@@ -100,9 +100,14 @@ wss.on('error', (error: Error) => {
 
 // At 07:00 AM, 10:00 AM, 01:00 PM, 04:00 PM and 07:00 PM, Monday through Friday
 // via https://crontab.cronhub.io/
-logger.info('Scheduling Sync with cron: 0 7,10,13,16,19 * * 1-5');
+const cronString = process.env.CRON ?? '0 7,13,19 * * 1-5';
+if (!cron.validate(cronString)) {
+	logger.error(`Invalid cron configuration! "${cronString}"`);
+	process.exit(1);
+}
+logger.info(`Scheduling Sync with cron: ${cronString}`);
 cron.schedule(
-	'0 7,10,13,16,19 * * 1-5',
+	cronString,
 	() => {
 		if (!PB_PASSWD || !PB_USER || !PB_URL) {
 			logger.error('PocketBase Service User Credentials Missing. Check Environment Variables!');

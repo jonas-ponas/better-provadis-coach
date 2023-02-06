@@ -5,7 +5,7 @@ import handleSync from './handlers/handleSync';
 import dotenv from 'dotenv';
 import logger from './logger';
 import {scheduled} from './scheduled';
-import cron from 'node-cron';
+import {CronJob} from 'cron';
 
 dotenv.config();
 
@@ -100,13 +100,9 @@ wss.on('error', (error: Error) => {
 
 // At 07:00 AM, 10:00 AM, 01:00 PM, 04:00 PM and 07:00 PM, Monday through Friday
 // via https://crontab.cronhub.io/
-const cronString = process.env.CRON ?? '0 7,13,19 * * 1-5';
-if (!cron.validate(cronString)) {
-	logger.error(`Invalid cron configuration! "${cronString}"`);
-	process.exit(1);
-}
+const cronString = process.env.CRON ?? '0 7,13,16,19 * * 1-5';
 logger.info(`Scheduling Sync with cron: ${cronString}`);
-cron.schedule(
+const job = new CronJob(
 	cronString,
 	() => {
 		if (!PB_PASSWD || !PB_USER || !PB_URL) {
@@ -122,7 +118,9 @@ cron.schedule(
 			lastSyncDiff: 1000 * 60 * 60 // If theres a sync newer than 1 hour. dont sync
 		});
 	},
-	{
-		timezone: 'Europe/Berlin'
-	}
+	() => {
+		logger.info('CronJob completed!');
+	},
+	true,
+	'Europe/Berlin'
 );

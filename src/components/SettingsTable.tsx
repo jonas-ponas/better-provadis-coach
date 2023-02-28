@@ -31,13 +31,11 @@ import ManageFolderFunction from './ManageFolderFunction';
 export default function SettingsTable({
 	state,
 	rootDir,
-	scheduleDir,
-	autoSync
+	scheduleDir
 }: {
 	state: StateRecord | null;
 	rootDir?: DirectoryRecord;
 	scheduleDir?: DirectoryRecord;
-	autoSync: boolean;
 }) {
 	const theme = useTheme();
 	const navigate = useNavigate();

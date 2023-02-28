@@ -14,7 +14,6 @@ export default function ManageFolderFunction({
 	onReset: () => void;
 }) {
 	const navigate = useNavigate();
-	console.log(directory);
 	return (
 		<Stack
 			direction='row'

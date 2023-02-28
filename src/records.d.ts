@@ -6,6 +6,7 @@ export interface UserRecord extends Record {
 	avatarUrl: string | undefined;
 	favorites: string[];
 	rootDirectory: string | undefined;
+	autoSync: boolean;
 }
 
 export interface FileRecord extends Record {
@@ -38,4 +39,5 @@ export interface StateRecord extends Record {
 	lastSyncSuccessful: boolean;
 	coachUsername: string | undefined;
 	lastFilesHash: string | undefined;
+	lastSyncSuccessful: boolean;
 }

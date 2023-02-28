@@ -7,6 +7,7 @@ import {
 	Chip,
 	Paper,
 	Snackbar,
+	Switch,
 	Table,
 	TableBody,
 	TableCell,
@@ -30,11 +31,13 @@ import ManageFolderFunction from './ManageFolderFunction';
 export default function SettingsTable({
 	state,
 	rootDir,
-	scheduleDir
+	scheduleDir,
+	autoSync
 }: {
 	state: StateRecord | null;
 	rootDir?: DirectoryRecord;
 	scheduleDir?: DirectoryRecord;
+	autoSync: boolean;
 }) {
 	const theme = useTheme();
 	const navigate = useNavigate();
@@ -86,6 +89,20 @@ export default function SettingsTable({
 		}
 	}
 
+	async function setAutomaticSync(value: boolean) {
+		if (!client || !client.authStore.model?.id) return;
+		try {
+			await client.collection('users').update(client.authStore.model!.id, {
+				autoSync: value
+			});
+			// navigate(0);
+		} catch (e) {
+			if (e instanceof Error) {
+				setSnackbar({ type: 'error', text: e.name });
+			}
+		}
+	}
+
 	const isCoachConnected = state !== null;
 
 	return (
@@ -126,7 +143,11 @@ export default function SettingsTable({
 							<TableCell>Coach</TableCell>
 							<TableCell>
 								{isCoachConnected ? (
-									<Chip label='Verbunden' variant='filled' color='success' size='small' />
+									state?.lastSyncSuccessful ? (
+										<Chip label='Verbunden' variant='filled' color='success' size='small' />
+									) : (
+										<Chip label='Möglicher Fehler' variant='filled' color='warning' size='small' />
+									)
 								) : (
 									<Chip label='Nicht verbunden' variant='filled' color='error' size='small' />
 								)}
@@ -165,6 +186,17 @@ export default function SettingsTable({
 									)}
 									<Sync onSyncFinish={onSyncFinished} syncNow={syncNow} disabled={state == null} />
 								</Box>
+							</TableCell>
+						</TableRow>
+						<TableRow>
+							<TableCell>Automatischer Sync</TableCell>
+							<TableCell>
+								<Switch
+									color='secondary'
+									size='small'
+									defaultChecked={client?.authStore.model?.autoSync}
+									onChange={(event, checked) => setAutomaticSync(checked)}
+								/>
 							</TableCell>
 						</TableRow>
 					</TableBody>

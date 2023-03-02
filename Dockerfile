@@ -1,5 +1,7 @@
 ARG PB_VERSION
-FROM node:19 as build
+FROM node:lts as build
+
+WORKDIR /app
 COPY . . 
 
 ARG GOOGLE_REDIRECT_URI 
@@ -16,11 +18,11 @@ ENV VITE_GITHUB_REDIRECT_URI=${GITHUB_REDIRECT_URI}
 ENV VITE_WEBSOCKET_URI=${WEBSOCKET_URI} 
 ENV VITE_POCKETBASE_URI=${POCKETBASE_URI}
 
-RUN npm ci
-RUN npm run build
+RUN yarn install --immutable
+RUN yarn build
 
 FROM ghcr.io/muchobien/pocketbase:${PB_VERSION}
 
 EXPOSE 8090
-COPY --from=build ./dist ./dist
+COPY --from=build /app/dist ./dist
 ENTRYPOINT ["/usr/local/bin/pocketbase", "serve", "--http=0.0.0.0:8090", "--dir=/pb_data", "--publicDir=/dist"]

@@ -16,10 +16,7 @@ ENV VITE_GITHUB_REDIRECT_URI=${GITHUB_REDIRECT_URI}
 ENV VITE_WEBSOCKET_URI=${WEBSOCKET_URI} 
 ENV VITE_POCKETBASE_URI=${POCKETBASE_URI}
 
-RUN yarn install \
-    --prefer-offline \
-    --frozen-lockfile \
-    --non-interactive
+RUN yarn install --immutable
 RUN yarn build
 
 FROM ghcr.io/muchobien/pocketbase:${PB_VERSION}

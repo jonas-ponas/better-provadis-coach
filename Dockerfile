@@ -4,13 +4,9 @@ WORKDIR /app
 
 COPY . .
 
-RUN ls -a
-
-RUN npm install
-RUN npm run build
-
-RUN rm -rf ./src
+RUN yarn install --immutable 
+RUN yarn build
 
 EXPOSE 8080
 
-ENTRYPOINT [ "npm", "run", "start" ]
+ENTRYPOINT [ "yarn", "start" ]

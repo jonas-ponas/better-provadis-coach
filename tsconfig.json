@@ -1,27 +1,27 @@
 {
-  "compilerOptions": {
-    /* Visit https://aka.ms/tsconfig to read more about this file */
+	"compilerOptions": {
+		/* Visit https://aka.ms/tsconfig to read more about this file */
 
-    /* Language and Environment */
-    "target": "es2016",                                  /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
-  
-    /* Modules */
-    "module": "commonjs",                                /* Specify what module code is generated. */
-    "rootDir": "./src",                                  /* Specify the root folder within your source files. */
+		/* Language and Environment */
+		"target": "es2016" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
 
-    /* JavaScript Support */
- // "emitDeclarationOnly": true,                      /* Only output d.ts files and not JavaScript files. */
-    "sourceMap": true,                                /* Create source map files for emitted JavaScript files. */
-    "outDir": "./dist",                                   /* Specify an output folder for all emitted files. */
+		/* Modules */
+		"module": "commonjs" /* Specify what module code is generated. */,
+		"rootDir": "./src" /* Specify the root folder within your source files. */,
 
-    /* Interop Constraints */
-   "esModuleInterop": true,                             /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables 'allowSyntheticDefaultImports' for type compatibility. */
-    "forceConsistentCasingInFileNames": true,            /* Ensure that casing is correct in imports. */
+		/* JavaScript Support */
+		// "emitDeclarationOnly": true,                      /* Only output d.ts files and not JavaScript files. */
+		"sourceMap": false /* Create source map files for emitted JavaScript files. */,
+		"outDir": "./dist" /* Specify an output folder for all emitted files. */,
 
-    /* Type Checking */
-    "strict": true,                                      /* Enable all strict type-checking options. */
+		/* Interop Constraints */
+		"esModuleInterop": true /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables 'allowSyntheticDefaultImports' for type compatibility. */,
+		"forceConsistentCasingInFileNames": true /* Ensure that casing is correct in imports. */,
 
-    /* Completeness */
-    "skipLibCheck": true                                 /* Skip type checking all .d.ts files. */
-  }
+		/* Type Checking */
+		"strict": true /* Enable all strict type-checking options. */,
+
+		/* Completeness */
+		"skipLibCheck": true /* Skip type checking all .d.ts files. */
+	}
 }

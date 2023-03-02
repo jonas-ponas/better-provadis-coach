@@ -24,5 +24,5 @@ RUN yarn build
 FROM ghcr.io/muchobien/pocketbase:${PB_VERSION}
 
 EXPOSE 8090
-COPY --from=build ./dist ./dist
+COPY --from=build /app/dist ./dist
 ENTRYPOINT ["/usr/local/bin/pocketbase", "serve", "--http=0.0.0.0:8090", "--dir=/pb_data", "--publicDir=/dist"]

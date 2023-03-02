@@ -1,5 +1,5 @@
 ARG PB_VERSION
-FROM node:19 as build
+FROM node:lts as build
 COPY . . 
 
 ARG GOOGLE_REDIRECT_URI 
@@ -16,8 +16,11 @@ ENV VITE_GITHUB_REDIRECT_URI=${GITHUB_REDIRECT_URI}
 ENV VITE_WEBSOCKET_URI=${WEBSOCKET_URI} 
 ENV VITE_POCKETBASE_URI=${POCKETBASE_URI}
 
-RUN npm ci
-RUN npm run build
+RUN yarn install \
+    --prefer-offline \
+    --frozen-lockfile \
+    --non-interactive
+RUN yarn build
 
 FROM ghcr.io/muchobien/pocketbase:${PB_VERSION}
 

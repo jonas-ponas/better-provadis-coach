@@ -1,5 +1,4 @@
 import {WebSocketServer, WebSocket, RawData} from 'ws';
-import handleInit from './handlers/handleInit';
 import handleLogin from './handlers/handleLogin';
 import handleSync from './handlers/handleSync';
 import dotenv from 'dotenv';

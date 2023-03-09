@@ -1,8 +1,4 @@
-import {createHash} from 'crypto';
-import pocketbaseEs, {Record} from 'pocketbase';
-import {Coach} from '../coach/Coach';
 import logger from '../logger';
-import coachToPocketbase from '../pocketbase/coachToPocketbase';
 import {MyWebSocket, PB_PASSWD, PB_USER, PB_URL} from '../server';
 import {sync} from '../sync';
 
@@ -30,6 +26,7 @@ export default function handleSync(client: MyWebSocket, data: {[key: string]: an
 			user: PB_USER,
 			password: PB_PASSWD
 		},
-		userId: client.userId
+		userId: client.userId,
+		withNews: false
 	});
 }

@@ -6,6 +6,7 @@ import dotenv from 'dotenv';
 import logger from './logger';
 import {scheduled} from './scheduled';
 import {CronJob} from 'cron';
+import handleSyncNews from './handlers/handleSyncNews';
 
 dotenv.config();
 
@@ -42,8 +43,8 @@ export interface MyWebSocket extends WebSocket {
 }
 
 const handlers: {[key: string]: Handler} = {
-	init: handleInit,
 	sync: handleSync,
+	syncNews: handleSyncNews,
 	login: handleLogin
 };
 
@@ -73,7 +74,6 @@ wss.on('listening', () => {
 wss.on('connection', (client: MyWebSocket, request) => {
 	client.isAuthorized = false;
 	client.remoteAdress = request.socket.remoteAddress || 'none';
-	logger.verbose(`Request-Headers: ${JSON.stringify(request.headers)}`);
 	logger.debug(`X-Real-IP: ${request.headers['x-real-ip']} remoteAddress: ${request.socket.remoteAddress}`);
 	if (request.headers['x-real-ip']) client.remoteAdress = request.headers['x-real-ip'] as string;
 

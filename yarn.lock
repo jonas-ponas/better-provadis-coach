@@ -1592,10 +1592,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pocketbase@npm:^0.10.0":
-  version: 0.10.2
-  resolution: "pocketbase@npm:0.10.2"
-  checksum: f74bf0224aa1a0881cbf86951ac94e63c3386c2c927601cb2265d044e1b9eff2cfb659f722d284ca9898f3db2f7ffdade5f5a978f5316f389e1e4273f9f157a3
+"pocketbase@npm:^0.12.1":
+  version: 0.12.1
+  resolution: "pocketbase@npm:0.12.1"
+  checksum: 2794961834f4493a8a4389d9ee58d6c2dcd77926dd844aaf45fece3ddd36f2355ecce75d70a351567c5b7f10018fb3508bace45af46944b73b47492887e8a8fc
   languageName: node
   linkType: hard
 
@@ -1639,7 +1639,7 @@ __metadata:
     dotenv: ^16.0.3
     express: ^4.18.2
     nodemon: ^2.0.20
-    pocketbase: ^0.10.0
+    pocketbase: ^0.12.1
     prettier: ^2.7.1
     ts-node: ^10.9.1
     typescript: ^4.9.3

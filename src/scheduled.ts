@@ -1,8 +1,8 @@
-import pocketbaseEs from 'pocketbase';
 import logger from './logger';
 import {PB_PASSWD, PB_URL, PB_USER} from './server';
 import {sync} from './sync';
-const PocketBase = require('pocketbase/cjs');
+
+const Pocketbase = require('pocketbase/cjs');
 
 export async function scheduled({
 	pocketbase,
@@ -17,18 +17,14 @@ export async function scheduled({
 	maxUsers?: number; // 30
 	lastSyncDiff?: number; // 1000 * 60 * 20
 }) {
-	logger.info(`
-	----------------------------------------------------
-	Scheduled Sync started (${new Date().toISOString()})
-	----------------------------------------------------
-	`);
+	logger.info(`Scheduled Sync started (${new Date().toISOString()})`);
 
 	if (!PB_USER || !PB_PASSWD || !PB_URL) {
 		logger.error(`PocketBase Service User/Url not specified! Check env-variables!`);
 		return;
 	}
 
-	const pb: pocketbaseEs = new PocketBase(pocketbase.url);
+	const pb = new Pocketbase(pocketbase.url);
 	try {
 		await pb.admins.authWithPassword(pocketbase.user, pocketbase.password);
 	} catch (e: unknown) {
@@ -47,8 +43,8 @@ export async function scheduled({
 		return;
 	}
 	logger.info(`Received ${result.length} Users`);
-	logger.debug(`Users: ${result.map(record => record.coachUsername).join(', ')}`);
-	const promises = result.map(record => {
+	logger.debug(`Users: ${result.map((record: any) => record.coachUsername).join(', ')}`);
+	const promises = result.map((record: any) => {
 		logger.debug(JSON.stringify(record));
 		return sync({
 			onProgress: () => {},
@@ -58,7 +54,8 @@ export async function scheduled({
 				user: PB_USER ?? '',
 				password: PB_PASSWD ?? ''
 			},
-			userId: record.user
+			userId: record.user,
+			withNews: true
 		});
 	});
 	Promise.all(promises)

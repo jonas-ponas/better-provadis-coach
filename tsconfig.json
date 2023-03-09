@@ -3,12 +3,12 @@
 		/* Visit https://aka.ms/tsconfig to read more about this file */
 
 		/* Language and Environment */
-		"target": "es2016" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
+		"target": "es2018" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
 
 		/* Modules */
 		"module": "commonjs" /* Specify what module code is generated. */,
 		"rootDir": "./src" /* Specify the root folder within your source files. */,
-
+		"moduleResolution": "node",
 		/* JavaScript Support */
 		// "emitDeclarationOnly": true,                      /* Only output d.ts files and not JavaScript files. */
 		"sourceMap": false /* Create source map files for emitted JavaScript files. */,

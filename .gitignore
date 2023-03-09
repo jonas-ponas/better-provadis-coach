@@ -32,3 +32,4 @@ dist-ssr
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+pocketbase_*_windows_*

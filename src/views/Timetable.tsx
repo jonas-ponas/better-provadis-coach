@@ -23,6 +23,7 @@ import verbalizeDate from '../util/verbalizeDate';
 import { usePocketbase } from '../util/PocketbaseContext';
 import Icon from '../components/Icon';
 import OpenLinkDialog from '../components/OpenLinkDialog';
+import Select from '../components/Select';
 
 export function loadTimeTable(client: PocketBase) {
 	return async function ({ request }: LoaderFunctionArgs): Promise<{ files?: ListResult<FileRecord> }> {
@@ -41,18 +42,32 @@ export default function TimeTable() {
 	const { files } = useLoaderData() as { files?: ListResult<FileRecord> };
 	const [vEvents, setVEvents] = useState<Event[]>([]);
 	const [showDialog, setShowDialog] = useState<string | null>(null);
+	const [ttName, setTtName] = useState('');
 	const theme = useTheme();
 	const client = usePocketbase();
 
 	useEffect(() => {
+		const name = localStorage.getItem('schedulename');
+		if (name) setTtName(name);
+	}, []);
+
+	useEffect(() => {
 		if (!client) return;
+		if (!ttName || ttName == '') return;
 		if (files) {
-			let fileList = files.items.sort((a, b) => {
+			let fileList = files.items.filter(v => {
+				const name = v.name.split('.')[0].trim();
+				return name == ttName;
+			});
+			fileList = fileList.sort((a, b) => {
 				return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
 			});
 			const icsFile = fileList.find(item => item.name.endsWith('.ics'));
 			const htmlFile = fileList.find(item => item.name.endsWith('.html'));
-			if (!icsFile || !htmlFile || !icsFile.cachedFile || !htmlFile.cachedFile) return;
+			if (!icsFile || !htmlFile || !icsFile.cachedFile || !htmlFile.cachedFile) {
+				setVEvents([]);
+				return;
+			}
 			Promise.all([
 				fetch(client.getFileUrl(icsFile, icsFile.cachedFile || '')),
 				fetch(client.getFileUrl(htmlFile, htmlFile.cachedFile || ''))
@@ -77,8 +92,8 @@ export default function TimeTable() {
 					});
 					vEvents = vEvents.map(event => {
 						const oldSummary = event.summary;
-						event.summary = oldSummary.split('-')[0].trim();
-						event.organizer = oldSummary.split('-')[1].trim();
+						event.summary = (oldSummary.split('-')[0] ?? '').trim();
+						event.organizer = (oldSummary.split('-')[1] ?? '').trim();
 						event.location =
 							links.find(link => {
 								const teacher = (link.teacher.split(' ').pop() || '').toLowerCase();
@@ -91,7 +106,16 @@ export default function TimeTable() {
 				});
 			});
 		}
-	}, [files]);
+	}, [files, ttName]);
+
+	let availableSchedules = (files?.items ?? [])
+		.filter((p, i, a) => {
+			const [name, ext] = p.name.split('.');
+			if (ext == 'html') return a.findIndex(v => v.name === `${name}.ics`) >= 0;
+			if (ext == 'ics') return a.findIndex(v => v.name === `${name}.html`) >= 0;
+		})
+		.map(v => v.name.split('.')[0]);
+	availableSchedules = [...new Set(availableSchedules)];
 
 	const eventsToday = vEvents?.filter(p => p.startDate.toJSDate().toDateString() === new Date().toDateString()) || [];
 	const eventsFuture =
@@ -135,6 +159,17 @@ export default function TimeTable() {
 
 	return (
 		<>
+			<Box sx={{ mt: 4 }}>
+				<Select
+					items={(availableSchedules ?? []).map(v => ({ value: v, title: v }))}
+					label={'Stundenplan'}
+					value={ttName}
+					onChange={newItem => {
+						setTtName(newItem);
+						localStorage.setItem('schedulename', newItem);
+					}}
+				/>
+			</Box>
 			{!files && (
 				<Alert variant='filled' severity='warning'>
 					<AlertTitle>Kein Stundenplan-Ordner festgelegt!</AlertTitle>

@@ -145,7 +145,7 @@ export default function TimeTable() {
 						secondary={
 							<Stack direction='row' spacing={1}>
 								<Typography variant='body2' color='black'>
-									{verbalizeDate(date)}
+									{verbalizeDate(date)} ({date.getHours()}:{date.getMinutes()})
 								</Typography>
 								<Typography variant='body2'>{event.organizer}</Typography>
 							</Stack>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import PocketBase, { ListResult } from 'pocketbase';
 import { LoaderFunctionArgs, useLoaderData } from 'react-router-dom';
 import { FileRecord, UserRecord } from '../records';
@@ -46,9 +46,21 @@ export default function TimeTable() {
 	const theme = useTheme();
 	const client = usePocketbase();
 
+	const availableSchedules = useMemo(() => {
+		let a = (files?.items ?? [])
+			.filter((p, i, a) => {
+				const [name, ext] = p.name.split('.');
+				if (ext == 'html') return a.findIndex(v => v.name === `${name}.ics`) >= 0;
+				if (ext == 'ics') return a.findIndex(v => v.name === `${name}.html`) >= 0;
+			})
+			.map(v => v.name.split('.')[0]);
+		a = [...new Set(a)];
+		return a;
+	}, [files]);
+
 	useEffect(() => {
 		const name = localStorage.getItem('schedulename');
-		if (name) setTtName(name);
+		if (name && availableSchedules.includes(name)) setTtName(name);
 	}, []);
 
 	useEffect(() => {
@@ -108,15 +120,6 @@ export default function TimeTable() {
 		}
 	}, [files, ttName]);
 
-	let availableSchedules = (files?.items ?? [])
-		.filter((p, i, a) => {
-			const [name, ext] = p.name.split('.');
-			if (ext == 'html') return a.findIndex(v => v.name === `${name}.ics`) >= 0;
-			if (ext == 'ics') return a.findIndex(v => v.name === `${name}.html`) >= 0;
-		})
-		.map(v => v.name.split('.')[0]);
-	availableSchedules = [...new Set(availableSchedules)];
-
 	const eventsToday = vEvents?.filter(p => p.startDate.toJSDate().toDateString() === new Date().toDateString()) || [];
 	const eventsFuture =
 		vEvents?.filter(p => p.startDate.toJSDate().toDateString() !== new Date().toDateString()) || [];
@@ -159,86 +162,86 @@ export default function TimeTable() {
 
 	return (
 		<>
-			<Box sx={{ mt: 4 }}>
-				<Select
-					items={(availableSchedules ?? []).map(v => ({ value: v, title: v }))}
-					label={'Stundenplan'}
-					value={ttName}
-					onChange={newItem => {
-						setTtName(newItem);
-						localStorage.setItem('schedulename', newItem);
-					}}
-				/>
-			</Box>
 			{!files && (
-				<Alert variant='filled' severity='warning'>
+				<Alert icon={<Icon name='alarm-warning' style='line' />} variant='standard' severity='warning'>
 					<AlertTitle>Kein Stundenplan-Ordner festgelegt!</AlertTitle>
 					Markiere einen Ordner als Stundenplan-Ordner um die Stundenpläne daraus hier anzuzeigen. <br />
-					<i>
-						Es werden dann die aktuelleste .html und .ics Datei des Ordners ausgelesen und hier dargestellt.
-						Ein Klick auf das jeweilige Listen-Element springt zum Meeting-Raum.
-					</i>
 				</Alert>
 			)}
-			<Typography
-				variant='h6'
-				sx={{
-					mt: theme.spacing(2),
-					display: 'flex',
-					alignItems: 'center',
-					gap: theme.spacing(1)
-				}}>
-				<Icon name='calendar' style='line' size='sm' />
-				Heute
-			</Typography>
-			{eventsToday.length > 0 ? (
-				<List
-					component={Paper}
-					dense={true}
-					sx={{
-						mt: theme.spacing(2)
-					}}>
-					{eventsToday.map(elementMapping)}
-				</List>
-			) : (
-				<Typography
-					sx={{
-						m: theme.spacing(2),
-						textAlign: 'center',
-						color: theme.palette.grey[400]
-					}}>
-					Heute keine Termine 🥳
-				</Typography>
-			)}
-			<Typography
-				variant='h6'
-				sx={{
-					mt: theme.spacing(2),
-					display: 'flex',
-					alignItems: 'center',
-					gap: theme.spacing(1)
-				}}>
-				<Icon name='calendar-2' style='line' size='sm' />
-				Sonstige
-			</Typography>
-			{eventsFuture.length > 0 ? (
-				<List
-					component={Paper}
-					dense={true}
-					sx={{
-						mt: theme.spacing(2)
-					}}>
-					{eventsFuture.map(elementMapping)}
-				</List>
-			) : (
-				<Typography
-					sx={{
-						m: theme.spacing(2),
-						textAlign: 'center',
-						color: theme.palette.grey[400]
-					}}>
-					Keine Termine 🥳
-				</Typography>
+			{ttName && (
+				<>
+					<Box sx={{ mt: 4 }}>
+						<Select
+							items={(availableSchedules ?? []).map(v => ({ value: v, title: v }))}
+							label={'Stundenplan'}
+							value={ttName}
+							onChange={newItem => {
+								setTtName(newItem);
+								localStorage.setItem('schedulename', newItem);
+							}}
+						/>
+					</Box>
+					<Typography
+						variant='h6'
+						sx={{
+							mt: theme.spacing(2),
+							display: 'flex',
+							alignItems: 'center',
+							gap: theme.spacing(1)
+						}}>
+						<Icon name='calendar' style='line' size='sm' />
+						Heute
+					</Typography>
+					{eventsToday.length > 0 ? (
+						<List
+							component={Paper}
+							dense={true}
+							sx={{
+								mt: theme.spacing(2)
+							}}>
+							{eventsToday.map(elementMapping)}
+						</List>
+					) : (
+						<Typography
+							sx={{
+								m: theme.spacing(2),
+								textAlign: 'center',
+								color: theme.palette.grey[400]
+							}}>
+							Heute keine Termine 🥳
+						</Typography>
+					)}
+					<Typography
+						variant='h6'
+						sx={{
+							mt: theme.spacing(2),
+							display: 'flex',
+							alignItems: 'center',
+							gap: theme.spacing(1)
+						}}>
+						<Icon name='calendar-2' style='line' size='sm' />
+						Sonstige
+					</Typography>
+					{eventsFuture.length > 0 ? (
+						<List
+							component={Paper}
+							dense={true}
+							sx={{
+								mt: theme.spacing(2)
+							}}>
+							{eventsFuture.map(elementMapping)}
+						</List>
+					) : (
+						<Typography
+							sx={{
+								m: theme.spacing(2),
+								textAlign: 'center',
+								color: theme.palette.grey[400]
+							}}>
+							Keine Termine 🥳
+						</Typography>
+					)}
+				</>
 			)}
 			<OpenLinkDialog link={showDialog ?? ''} onClose={() => setShowDialog(null)} open={showDialog !== null} />
 		</>

@@ -31,7 +31,7 @@ export default async function insertNewsItems(
 					let userExists = userId == undefined ? true : record.allowedUsers.includes(userId);
 					if (!userExists) {
 						const update = await pb.collection('news').update(record.id, {
-							allowedUsers: [...record.allowedUser, userId]
+							allowedUsers: [...record.allowedUsers, userId]
 						});
 						logger.debug(`Updated ${update.title} ${update.id} ${update.coachId}`);
 						if (onProgress) onProgress(++i, total);

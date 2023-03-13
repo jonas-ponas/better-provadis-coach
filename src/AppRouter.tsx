@@ -8,6 +8,7 @@ import ErrorAlert from './components/Error';
 import UserSettings, { loadUserSettings } from './views/UserSettings';
 import Search, { loadSearch } from './views/Search';
 import TimeTable, { loadTimeTable } from './views/Timetable';
+import News, { loadNews } from './views/News';
 
 const expand =
 	'parent,parent.parent,parent.parent.parent,parent.parent.parent.parent,parent.parent.parent.parent.parent,parent.parent.parent.parent.parent.parent';
@@ -64,6 +65,12 @@ export default (client: pocketbaseEs) =>
 					path: '/schedule',
 					element: <TimeTable />,
 					loader: loadTimeTable(client),
+					errorElement: <ErrorAlert title='Fehler!' description='Es ist ein Fehler aufgetreten!' />
+				},
+				{
+					path: '/news',
+					element: <News />,
+					loader: loadNews(client),
 					errorElement: <ErrorAlert title='Fehler!' description='Es ist ein Fehler aufgetreten!' />
 				}
 			]

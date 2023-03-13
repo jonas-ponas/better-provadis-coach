@@ -15,7 +15,7 @@ interface MenuItem {
 const primaryMenu: MenuItem[] = [
 	{ name: 'Dateien', icon: 'folders', href: '/dir' },
 	{ name: 'Stundenplan', icon: 'calendar-todo', href: '/schedule' },
-	{ name: 'News', icon: 'rss', href: '/news', disabled: true }
+	{ name: 'News', icon: 'rss', href: '/news' }
 ];
 
 const secondaryMenu: MenuItem[] = [

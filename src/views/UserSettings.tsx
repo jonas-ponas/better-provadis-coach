@@ -126,7 +126,10 @@ export default function UserSettings(props: {}) {
 									key: 'Letzte Synchronisierung',
 									value: new Date(state?.lastSync || '').toLocaleString('de-de')
 								},
-								{ key: 'Letzter Antwort-Hash', value: state?.lastFilesHash }
+								{
+									key: 'Letzter Antwort-Hash',
+									value: `${state?.lastFilesHash} / ${state?.lastNewsHash}`
+								}
 							]}
 						/>
 					</Box>

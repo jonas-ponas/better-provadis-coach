@@ -39,6 +39,7 @@ export interface StateRecord extends Record {
 	lastSyncSuccessful: boolean;
 	coachUsername?: string;
 	lastFilesHash?: string;
+	lastNewsHash?: string;
 	lastSyncSuccessful: boolean;
 }
 

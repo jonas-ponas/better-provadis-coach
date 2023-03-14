@@ -11,7 +11,6 @@ import SortableTable, { SortableTableProps } from '../components/SortableTable';
 export function loadUserSettings(client: pocketbaseEs) {
 	return async () => {
 		let rootDir = undefined;
-		let scheduleDir = undefined;
 
 		let authProviders: ExternalAuth[] = [];
 		let state: StateRecord | null = null;
@@ -20,13 +19,6 @@ export function loadUserSettings(client: pocketbaseEs) {
 				rootDir = await client
 					.collection('directory')
 					.getOne<DirectoryRecord>(client.authStore.model?.rootDirectory);
-			} catch (e) {}
-		}
-		if (client.authStore.model?.scheduleDirectory) {
-			try {
-				scheduleDir = await client
-					.collection('directory')
-					.getOne<DirectoryRecord>(client.authStore.model?.scheduleDirectory);
 			} catch (e) {}
 		}
 
@@ -40,7 +32,6 @@ export function loadUserSettings(client: pocketbaseEs) {
 		return {
 			state,
 			rootDir,
-			scheduleDir,
 			authProviders
 		};
 	};
@@ -48,11 +39,10 @@ export function loadUserSettings(client: pocketbaseEs) {
 
 export default function UserSettings(props: {}) {
 	const theme = useTheme();
-	const { rootDir, state, authProviders, scheduleDir } = useLoaderData() as {
+	const { rootDir, state, authProviders } = useLoaderData() as {
 		rootDir?: DirectoryRecord;
 		state: StateRecord;
 		authProviders: ExternalAuth[];
-		scheduleDir?: DirectoryRecord;
 	};
 	const client = usePocketbase();
 	const authProvider = authProviders ? authProviders[0].provider : 'none';
@@ -86,7 +76,7 @@ export default function UserSettings(props: {}) {
 				sx={{
 					mt: theme.spacing(2)
 				}}>
-				<SettingsTable state={state} rootDir={rootDir} scheduleDir={scheduleDir} />
+				<SettingsTable state={state} rootDir={rootDir} />
 			</Box>
 			<Box
 				sx={{

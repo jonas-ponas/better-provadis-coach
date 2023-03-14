@@ -28,15 +28,7 @@ import ConfirmationDialog from './ConfirmationDialog';
 import { DirectoryRecord, StateRecord } from '../records';
 import ManageFolderFunction from './ManageFolderFunction';
 
-export default function SettingsTable({
-	state,
-	rootDir,
-	scheduleDir
-}: {
-	state: StateRecord | null;
-	rootDir?: DirectoryRecord;
-	scheduleDir?: DirectoryRecord;
-}) {
+export default function SettingsTable({ state, rootDir }: { state: StateRecord | null; rootDir?: DirectoryRecord }) {
 	const theme = useTheme();
 	const navigate = useNavigate();
 	const client = usePocketbase();
@@ -123,17 +115,6 @@ export default function SettingsTable({
 									}}
 									directory={rootDir}
 									name={'Wurzelordner'}
-								/>
-							</TableCell>
-						</TableRow>
-						<TableRow>
-							<TableCell colSpan={3}>
-								<ManageFolderFunction
-									onReset={() => {
-										resetDirectoryFunction('scheduleDirectory');
-									}}
-									directory={scheduleDir}
-									name={'Stundenplan-Ordner'}
 								/>
 							</TableCell>
 						</TableRow>

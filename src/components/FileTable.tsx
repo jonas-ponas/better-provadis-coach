@@ -111,19 +111,6 @@ export default function FileTable({ directory }: { directory: DirectoryRecord })
 		}
 	}
 
-	async function onSetScheduleDir(event: React.MouseEvent) {
-		if (menuAnchorEl === null) return;
-		try {
-			await client?.collection('users').update(client.authStore.model!!.id, {
-				scheduleDirectory: menuAnchorEl.id
-			});
-		} catch (e) {
-			console.error(e);
-		} finally {
-			setMenuAnchorEl(null);
-		}
-	}
-
 	const tableHeaders: SortableTableProps['header'] = [
 		{
 			title: '',
@@ -142,9 +129,7 @@ export default function FileTable({ directory }: { directory: DirectoryRecord })
 					return <Icon name='file' style='line' size='xl' />;
 				}
 				const isRootDir = row.id == client?.authStore.model?.rootDirectory;
-				const isScheduleDir = row.id == client?.authStore.model?.scheduleDirectory;
 				if (isRootDir) return <Icon name='folder-user' style='fill' size='xl' />;
-				if (isScheduleDir) return <Icon name='folder-history' style='fill' size='xl' />;
 				return <Icon name='folder' style='line' size='xl' />;
 			}
 		},
@@ -217,7 +202,6 @@ export default function FileTable({ directory }: { directory: DirectoryRecord })
 	];
 
 	const isRootDir = menuAnchorEl?.id == client?.authStore.model?.rootDirectory;
-	const isScheduleDir = menuAnchorEl?.id == client?.authStore.model?.scheduleDirectory;
 	return (
 		<TableContainer component={Paper} elevation={1}>
 			<Box
@@ -256,12 +240,6 @@ export default function FileTable({ directory }: { directory: DirectoryRecord })
 						<Icon name='folder-user' style={isRootDir ? 'fill' : 'line'} size='lg' />
 					</ListItemIcon>
 					Wurzelknoten
-				</MenuItem>
-				<MenuItem onClick={onSetScheduleDir} disabled={isScheduleDir}>
-					<ListItemIcon>
-						<Icon name='folder-history' style={isScheduleDir ? 'fill' : 'line'} size='lg' />
-					</ListItemIcon>
-					Stundplan-Ordner
 				</MenuItem>
 			</Menu>
 		</TableContainer>

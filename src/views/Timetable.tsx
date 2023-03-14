@@ -27,10 +27,8 @@ import Select from '../components/Select';
 
 export function loadTimeTable(client: PocketBase) {
 	return async function ({ request }: LoaderFunctionArgs): Promise<{ files?: ListResult<FileRecord> }> {
-		const scheduleDir = (client.authStore.model as UserRecord).scheduleDirectory;
-		if (!scheduleDir) return {};
 		const files = await client.collection('file').getList<FileRecord>(0, 20, {
-			filter: `(name ~ ".ics" || name ~ ".html") && parent.id = '${scheduleDir}'`
+			filter: `(name ~ ".ics" || name ~ ".html")`
 		});
 		return {
 			files
@@ -168,19 +166,21 @@ export default function TimeTable() {
 					Markiere einen Ordner als Stundenplan-Ordner um die Stundenpläne daraus hier anzuzeigen. <br />
 				</Alert>
 			)}
+			{files && (
+				<Box mt={2}>
+					<Select
+						items={(availableSchedules ?? []).map(v => ({ value: v, title: v }))}
+						label={'Stundenplan'}
+						value={ttName}
+						onChange={newItem => {
+							setTtName(newItem);
+							localStorage.setItem('schedulename', newItem);
+						}}
+					/>
+				</Box>
+			)}
 			{ttName && (
 				<>
-					<Box sx={{ mt: 4 }}>
-						<Select
-							items={(availableSchedules ?? []).map(v => ({ value: v, title: v }))}
-							label={'Stundenplan'}
-							value={ttName}
-							onChange={newItem => {
-								setTtName(newItem);
-								localStorage.setItem('schedulename', newItem);
-							}}
-						/>
-					</Box>
 					<Typography
 						variant='h6'
 						sx={{

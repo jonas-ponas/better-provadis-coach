@@ -8,11 +8,11 @@ export default ({ mode }) => {
 		server: {
 			proxy: {
 				'^/api': {
-					target: 'https://coach.***REMOVED***',
+					target: 'https://dev.coach.jo-nas.cloud',
 					changeOrigin: true
 				},
 				'/ws': {
-					target: 'wss://coach.***REMOVED***',
+					target: 'wss://dev.coach.jo-nas.cloud',
 					ws: true,
 					changeOrigin: true
 				}

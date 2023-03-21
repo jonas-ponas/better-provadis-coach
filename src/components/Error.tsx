@@ -1,21 +1,40 @@
 import React from 'react';
-import { Alert, AlertTitle } from '@mui/material';
-import { isRouteErrorResponse, useRouteError } from 'react-router-dom';
+import { Alert, AlertTitle, Box, Button } from '@mui/material';
+import { isRouteErrorResponse, useNavigate, useRouteError } from 'react-router-dom';
 import Icon from './Icon';
 
-export default function Error({ title, description }: { title: string; description: string }) {
+export default function ErrorAlert({ title, description }: { title: string; description: string }) {
 	const error = useRouteError() as { [key: string]: any };
-	let name = error?.name || title;
-	let message = error?.message || description;
+	const navigate = useNavigate();
+	let name;
+	let message;
+	let stack;
 	if (isRouteErrorResponse(error)) {
 		name = error.data.name;
 		message = error.data.description;
+	} else {
+		if (error instanceof Error) {
+			name = error.name;
+			stack = error.stack;
+		} else {
+			name = title;
+			message = description;
+		}
 	}
 
 	return (
 		<Alert variant='filled' severity='error' icon={<Icon name='error-warning' style='line' />}>
 			<AlertTitle>{name}</AlertTitle>
 			{message}
+			{stack && <pre>{stack}</pre>}
+			<Box sx={{ mt: 3 }}>
+				<Button
+					color='inherit'
+					onClick={() => navigate('/')}
+					startIcon={<Icon name='arrow-left' style='line' />}>
+					Back Home
+				</Button>
+			</Box>
 		</Alert>
 	);
 }

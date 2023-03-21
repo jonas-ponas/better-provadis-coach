@@ -45,11 +45,17 @@ export default function Sync(props: {
 	}, [props.syncNow]);
 
 	function handleSync() {
+		const ws_uri = import.meta.env.VITE_WEBSOCKET_URI as string;
 		let url;
-		if (!import.meta.env.VITE_WEBSOCKET_URI) {
+		if (!ws_uri) {
 			setSnackbar({ type: 'error', text: 'Frontend Fehler! Keine WS-Url festgelegt!' });
 			return;
-		} else url = import.meta.env.VITE_WEBSOCKET_URI as string;
+		} else if (ws_uri.startsWith('/')) {
+			const scheme = window.location.protocol.startsWith('https') ? 'wss://' : 'ws://';
+			url = `${scheme}${window.location.host}${ws_uri}`;
+		} else {
+			url = ws_uri;
+		}
 		setPhase('connect');
 		setIsSyncing(true);
 		if (props.onSyncStart) props.onSyncStart();

@@ -6,7 +6,17 @@ export default ({ mode }) => {
 	return defineConfig({
 		plugins: [react()],
 		server: {
-			proxy: {}
+			proxy: {
+				'^/api': {
+					target: 'https://coach.***REMOVED***',
+					changeOrigin: true
+				},
+				'/ws': {
+					target: 'wss://coach.***REMOVED***',
+					ws: true,
+					changeOrigin: true
+				}
+			}
 		}
 	});
 };

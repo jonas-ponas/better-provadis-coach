@@ -19,6 +19,12 @@ type sizes =
 	| '9x'
 	| '10x';
 
-export default function Icon({ name, style, size }: { name: string; style?: styles; size?: sizes }) {
+export interface IconProps {
+	name: string;
+	style?: styles;
+	size?: sizes;
+}
+
+export default function Icon({ name, style, size }: IconProps) {
 	return <i className={`ri-${name}` + (style ? `-${style}` : '') + (size ? ` ri-${size}` : '')}> </i>;
 }

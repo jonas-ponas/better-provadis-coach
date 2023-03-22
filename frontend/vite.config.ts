@@ -6,7 +6,17 @@ export default ({ mode }) => {
 	return defineConfig({
 		plugins: [react()],
 		server: {
-			proxy: {}
+			proxy: {
+				'^/api': {
+					target: 'https://dev.coach.jo-nas.cloud',
+					changeOrigin: true
+				},
+				'/ws': {
+					target: 'wss://dev.coach.jo-nas.cloud',
+					ws: true,
+					changeOrigin: true
+				}
+			}
 		}
 	});
 };

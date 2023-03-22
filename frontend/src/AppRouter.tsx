@@ -9,6 +9,8 @@ import UserSettings, { loadUserSettings } from './views/UserSettings';
 import Search, { loadSearch } from './views/Search';
 import TimeTable, { loadTimeTable } from './views/Timetable';
 import News, { loadNews } from './views/News';
+import { loadCallback, loadLayout } from './util/routeLoaders';
+import { Box } from '@mui/material';
 
 const expand =
 	'parent,parent.parent,parent.parent.parent,parent.parent.parent.parent,parent.parent.parent.parent.parent,parent.parent.parent.parent.parent.parent';
@@ -18,17 +20,12 @@ export default (client: pocketbaseEs) =>
 		{
 			path: '/',
 			element: <Layout />,
-			loader: async () => {
-				if (!client.authStore.isValid) throw redirect('/login');
-				try {
-					// await client.collection('users').authRefresh();
-					return null;
-				} catch (e) {
-					if (e instanceof ClientResponseError && e.status === 401) {
-						throw redirect('/login');
-					}
-				}
-			},
+			loader: loadLayout(client),
+			errorElement: (
+				<Box sx={{ p: 5 }}>
+					<ErrorAlert title='Fehler!' description={`Es ist ein Fehler bei der Anmeldung unterlaufen!`} />
+				</Box>
+			),
 			children: [
 				{
 					path: '/',
@@ -80,36 +77,16 @@ export default (client: pocketbaseEs) =>
 			element: <Login />,
 			loader: async () => {
 				return await client.collection('users').listAuthMethods();
-			},
-			errorElement: (
-				<ErrorAlert title='Fehler!' description={`Es ist ein Fehler bei der Anmeldung unterlaufen!`} />
-			)
+			}
 		},
 		{
 			path: '/callback/*',
 			element: <></>,
-			loader: async request => {
-				const url = new URL(request.request.url);
-				const code = url.searchParams.get('code');
-				const state = url.searchParams.get('state');
-				const provider = JSON.parse(localStorage.getItem('provider') || '{}');
-				if (!code || !state || !provider)
-					throw new Error('Der O-Auth Provider hat nicht genug Parameter zurückgeliefert!');
-				let response = await client
-					?.collection('users')
-					.authWithOAuth2<UserRecord>(provider.name, code, provider.codeVerifier, provider.redirectUrl);
-				const avatarUrlChanged = response.record.avatarUrl === '' && response.meta?.avatarUrl;
-				const nameChanged = response.record.name !== response.meta?.name;
-				if (nameChanged || avatarUrlChanged) {
-					client.collection('users').update(response.record.id, {
-						avatarUrl: response.meta?.avatarUrl || response.record.avatarUrl,
-						name: response.meta?.name || response.record.name
-					});
-				}
-				throw redirect('/');
-			},
+			loader: loadCallback(client),
 			errorElement: (
-				<ErrorAlert title='Fehler!' description={`Es ist ein Fehler bei der Anmeldung unterlaufen!`} />
+				<Box sx={{ p: 5 }}>
+					<ErrorAlert title='Fehler!' description={`Es ist ein Fehler bei der Anmeldung unterlaufen!`} />
+				</Box>
 			)
 		}
 	]);

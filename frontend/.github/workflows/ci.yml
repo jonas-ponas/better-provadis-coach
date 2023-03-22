@@ -16,29 +16,33 @@ jobs:
         run: |
           echo "version_id=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT      
       - name: Login to GitHub Container Registry
-        if: github.ref == 'refs/heads/main' # Only push if on main
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' # Only push if on main
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: haya14busa/action-cond@v1
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' # Only push if on main
+        id: condval
+        with:
+          cond: ${{ github.ref == 'refs/heads/main' }}
+          if_true: "latest"
+          if_false: "develop"
       - name: Build image
+        if: success()
         run: | 
           docker build \
           --build-arg UI_VERSION=${{steps.vars.outputs.version_id}} \
           --build-arg PB_VERSION=$PB_VERSION \
-          --build-arg GOOGLE_REDIRECT_URI=${{secrets.REDIRECT_URI}} \
-          --build-arg GITHUB_REDIRECT_URI=${{secrets.REDIRECT_URI}} \
-          --build-arg WEBSOCKET_URI=${{secrets.WEBSOCKET_URI}} \
-          --build-arg POCKETBASE_URI=${{secrets.POCKETBASE_URI}} \
           -t ghcr.io/jonas-ponas/expert-giggle-frontend:${{steps.vars.outputs.version_id}} \
-          -t ghcr.io/jonas-ponas/expert-giggle-frontend:latest \
+          -t ghcr.io/jonas-ponas/expert-giggle-frontend:${{steps.condval.outputs.value}} \
           .
       - name: Push image
-        if: success() && github.ref == 'refs/heads/main' && !startsWith(github.event.head_commit.message, 'ci:') # Only push if on main
+        if: success() && github.ref == 'refs/heads/main' && !startsWith(github.event.head_commit.message, 'ci:') || github.ref == 'refs/heads/develop' # Only push if on main
         run: |
           docker push -a ghcr.io/jonas-ponas/expert-giggle-frontend
       - name: Call Watchtower
-        if: success() && github.ref == 'refs/heads/main' && !startsWith(github.event.head_commit.message, 'ci:')
+        if: success() && github.ref == 'refs/heads/main' && !startsWith(github.event.head_commit.message, 'ci:') || github.ref == 'refs/heads/develop'
         run: |
           curl -H "Authorization: Bearer ${{secrets.WATCHTOWER_TOKEN}}" ${{secrets.WATCHTOWER_ENDPOINT}}

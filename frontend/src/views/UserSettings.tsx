@@ -1,12 +1,24 @@
 import React from 'react';
-import { Alert, AlertTitle, Avatar, Box, Chip, Paper, TableContainer, Typography, useTheme } from '@mui/material';
+import {
+	Alert,
+	AlertTitle,
+	Avatar,
+	Box,
+	Chip,
+	Paper,
+	Stack,
+	TableContainer,
+	Typography,
+	useTheme
+} from '@mui/material';
 import { useLoaderData } from 'react-router-dom';
 import { usePocketbase } from '../util/PocketbaseContext';
-import Icon from '../components/Icon';
+import Icon, { IconProps } from '../components/Icon';
 import pocketbaseEs, { ExternalAuth, Record } from 'pocketbase';
 import SettingsTable from '../components/SettingsTable';
 import { DirectoryRecord, StateRecord } from '../records';
 import SortableTable, { SortableTableProps } from '../components/SortableTable';
+import { ICON_MAP } from '../icons/providerIcons';
 
 export function loadUserSettings(client: pocketbaseEs) {
 	return async () => {
@@ -45,8 +57,9 @@ export default function UserSettings(props: {}) {
 		authProviders: ExternalAuth[];
 	};
 	const client = usePocketbase();
-	const authProvider = authProviders ? authProviders[0].provider : 'none';
 	let avatar = client?.authStore.model?.avatarUrl;
+
+	console.log(authProviders);
 
 	return (
 		<Box>
@@ -59,17 +72,25 @@ export default function UserSettings(props: {}) {
 				<Avatar src={avatar} alt={(client?.authStore.model?.username || 'u').toUpperCase()} />
 				<Box sx={{ ml: theme.spacing(2) }}>
 					<Typography variant='h6'>{client?.authStore.model?.name}</Typography>
-					<Chip
-						icon={
-							<Box sx={{ height: '1em', color: 'inherit' }}>
-								<Icon name={authProvider} style='line' size='fw' />
-							</Box>
-						}
-						label={authProvider == 'github' ? 'Github' : authProvider == 'google' ? 'Google' : 'unbekannt'}
-						variant='outlined'
-						color='info'
-						size='small'
-					/>
+					<Stack direction='row' gap={1}>
+						{authProviders.map(({ provider }) => {
+							const icon = ICON_MAP[provider];
+							return (
+								<Chip
+									icon={
+										<Box sx={{ height: '1em', color: 'inherit' }}>
+											<Icon name={icon?.name ?? 'question-mark'} style={icon?.style} size='fw' />
+										</Box>
+									}
+									label={provider}
+									sx={{ textTransform: 'capitalize' }}
+									variant='outlined'
+									color='info'
+									size='small'
+								/>
+							);
+						})}
+					</Stack>
 				</Box>
 			</Box>
 			<Box

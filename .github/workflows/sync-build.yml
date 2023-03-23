@@ -1,12 +1,16 @@
-name: Docker Image CI
+name: Build and Deploy sync-service
 
 on:
   push:
-    branches: [ "main" ]
+    paths:
+      - "sync-service/**"
+    branches:
+      - main
+      - develop
   workflow_dispatch:
 
 jobs:
-  ci:
+  build-docker:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -19,16 +23,19 @@ jobs:
     - name: Set outputs
       id: vars
       run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+    - uses: haya14busa/action-cond@v1
+      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop' # Only push if on main
+      id: docker_tag
+      with:
+        cond: ${{ github.ref == 'refs/heads/main' }}
+        if_true: "latest"
+        if_false: "develop"
     - name: Build image
       run: | 
         docker build \
         -t ghcr.io/jonas-ponas/expert-giggle:${{steps.vars.outputs.sha_short}} \
-        -t ghcr.io/jonas-ponas/expert-giggle:latest \
-        .
+        -t ghcr.io/jonas-ponas/expert-giggle:${{steps.docker_tag.outputs.value}} \
+        ./sync-service/
     - name: Push the Docker image
       run: docker push ghcr.io/jonas-ponas/expert-giggle:latest
-    - name: Call Watchtower
-      if: success() && github.ref == 'refs/heads/main' && !startsWith(github.event.head_commit.message, 'ci:')
-      run: |
-        curl -H "Authorization: Bearer ${{secrets.WATCHTOWER_TOKEN}}" ${{secrets.WATCHTOWER_ENDPOINT}}
     

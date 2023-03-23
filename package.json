@@ -1,0 +1,9 @@
+{
+  "name": "better-provadis-coach",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "sync-service"
+  ],
+  "packageManager": "yarn@3.5.0"
+}

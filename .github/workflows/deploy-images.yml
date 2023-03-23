@@ -1,0 +1,16 @@
+name: Deploy Images
+on: 
+  workflow_run: 
+    workflows:
+      - frontend-build
+      - sync-build
+    types:
+      - completed
+  
+jobs:
+  call-watchtower:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call Watchtower
+        run: |
+          curl -H "Authorization: Bearer ${{secrets.WATCHTOWER_TOKEN}}" ${{secrets.WATCHTOWER_ENDPOINT}}

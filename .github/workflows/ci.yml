@@ -41,7 +41,7 @@ jobs:
       context: ./frontend/
       build-args: |
         UI_VERSION=${{ needs.check.outputs.short_sha }}
-        PB_VERSION=${{ env.PB_VERSION }}
+        PB_VERSION=$PB_VERSION
     secrets: inherit
   build-sync:
     name: "Sync-Service"

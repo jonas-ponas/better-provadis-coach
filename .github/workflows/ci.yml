@@ -1,0 +1,61 @@
+on: 
+  push:
+    branches:
+      - main
+      - develop
+
+jobs:
+  check: 
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            sync:
+              - 'sync-service/**'
+            fronted:
+              - 'frontend/**'
+    outputs:
+      sync: ${{ steps.filter.outputs.sync }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+  build-frontend:
+    needs: check
+    if: ${{ needs.check.outputs.frontend == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/workflows/build.yml
+        with:
+          docker-image-name: "jonas-ponas/expert-giggle-frontend"
+          context: ./frontend/
+        secrets: inherit
+  build-sync:
+    needs: check
+    if: ${{ needs.check.outputs.sync == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/workflows/build.yml
+        with:
+          docker-image-name: "jonas-ponas/expert-giggle"
+          context: ./sync-service/
+        secrets: inherit
+
+  deploy:
+    needs: 
+      - build-frontend
+      - build-sync
+    if: |
+      always() && 
+      (needs.build-frontend.result == 'success' || needs.build-frontend.result == 'skipped') && 
+      (needs.build-sync.result == 'success' || needs.build-sync.result == 'skipped') && 
+      !(needs.build-frontend.result == 'skipped' && needs.build-sync.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call Watchtower
+        run: |
+          curl -H "Authorization: Bearer ${{secrets.WATCHTOWER_TOKEN}}" ${{secrets.WATCHTOWER_ENDPOINT}}
+

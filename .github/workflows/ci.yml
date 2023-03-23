@@ -24,7 +24,7 @@ jobs:
   build-frontend:
     needs: check
     if: ${{ needs.check.outputs.frontend == 'true' }}
-    uses: ./.github/workflows/build.yml
+    uses: jonas-ponas/better-provadis-coach/.github/workflows/build.yml
     with:
       docker-image-name: "jonas-ponas/expert-giggle-frontend"
       context: ./frontend/
@@ -33,7 +33,7 @@ jobs:
   build-sync:
     needs: check
     if: ${{ needs.check.outputs.sync == 'true' }}
-    uses: ./.github/workflows/build.yml
+    uses: jonas-ponas/better-provadis-coach/.github/workflows/build.yml
     with:
       docker-image-name: "jonas-ponas/expert-giggle"
       context: ./sync-service/

@@ -3,11 +3,10 @@ on:
     branches:
       - main
       - develop
-
 jobs:
-  check: 
+  check:
+    name: "Find Changes" 
     runs-on: ubuntu-latest
-    
     steps:
       - uses: actions/checkout@v3
       - uses: dorny/paths-filter@v2
@@ -25,6 +24,7 @@ jobs:
       frontend: ${{ steps.filter.outputs.frontend }}
       workflows: ${{ steps.filter.outputs.workflows }}
   build-frontend:
+    name: "Build Frontend"
     needs: check
     if: ${{ needs.check.outputs.frontend == 'true' || needs.check.outputs.workflows == 'true' }}
     uses: ./.github/workflows/build.yml
@@ -32,8 +32,8 @@ jobs:
       docker-image-name: "jonas-ponas/expert-giggle-frontend"
       context: ./frontend/
     secrets: inherit
-        
   build-sync:
+    name: "Build Sync-Service"
     needs: check
     if: ${{ needs.check.outputs.sync == 'true' || needs.check.outputs.workflows == 'true' }}
     uses: ./.github/workflows/build.yml
@@ -41,8 +41,8 @@ jobs:
       docker-image-name: "jonas-ponas/expert-giggle"
       context: ./sync-service/
     secrets: inherit
-
   deploy:
+    name: "Call Watchtower"
     needs: 
       - build-frontend
       - build-sync
@@ -56,4 +56,3 @@ jobs:
       - name: Call Watchtower
         run: |
           curl -H "Authorization: Bearer ${{secrets.WATCHTOWER_TOKEN}}" ${{secrets.WATCHTOWER_ENDPOINT}}
-

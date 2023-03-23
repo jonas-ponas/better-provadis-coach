@@ -1,3 +1,4 @@
+name: Build & Push Docker Image
 on: 
   workflow_call:
     inputs:
@@ -28,8 +29,8 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: |
-            jonas-ponas/${{ inputs.docker-image-name }}
-            ghcr.io/jonas-ponas/${{ inputs.docker-image-name }}
+            ${{ inputs.docker-image-name }}
+            ghcr.io/${{ inputs.docker-image-name }}
           tags: |
             type=sha,format=short,prefix={{branch}}-
             type=raw,value=latest,enable={{is_default_branch}}

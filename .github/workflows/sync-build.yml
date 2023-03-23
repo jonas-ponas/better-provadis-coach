@@ -1,9 +1,10 @@
-name: Build and Deploy sync-service
+name: Build and Deploy Sync-service
 
 on:
   push:
     paths:
       - "sync-service/**"
+      - ".github/workflows/sync-build.yml"
     branches:
       - main
       - develop
@@ -19,7 +20,7 @@ jobs:
       with:
         registry: ghcr.io
         username: ${{ github.actor }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+        password: ${{ github.token }}
     - name: Set outputs
       id: vars
       run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT

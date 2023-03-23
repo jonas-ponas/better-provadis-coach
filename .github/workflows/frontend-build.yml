@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - "frontend/**"
+      - ".github/workflows/frontend-build.yml"
     branches:
       - main
       - develop
@@ -25,7 +26,7 @@ jobs:
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ github.token }}
       - uses: haya14busa/action-cond@v1
         id: docker_tag
         with:
@@ -45,7 +46,3 @@ jobs:
         if: success()
         run: |
           docker push -a ghcr.io/jonas-ponas/expert-giggle-frontend
-      - name: Call Watchtower
-        if: success()
-        run: |
-          curl -H "Authorization: Bearer ${{secrets.WATCHTOWER_TOKEN}}" ${{secrets.WATCHTOWER_ENDPOINT}}

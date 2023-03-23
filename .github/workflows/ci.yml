@@ -24,25 +24,20 @@ jobs:
   build-frontend:
     needs: check
     if: ${{ needs.check.outputs.frontend == 'true' }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/workflows/build.yml
-        with:
-          docker-image-name: "jonas-ponas/expert-giggle-frontend"
-          context: ./frontend/
-        secrets: inherit
+    uses: ./.github/workflows/build.yml
+    with:
+      docker-image-name: "jonas-ponas/expert-giggle-frontend"
+      context: ./frontend/
+    secrets: inherit
+        
   build-sync:
     needs: check
     if: ${{ needs.check.outputs.sync == 'true' }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: ./.github/workflows/build.yml
-        with:
-          docker-image-name: "jonas-ponas/expert-giggle"
-          context: ./sync-service/
-        secrets: inherit
+    uses: ./.github/workflows/build.yml
+    with:
+      docker-image-name: "jonas-ponas/expert-giggle"
+      context: ./sync-service/
+    secrets: inherit
 
   deploy:
     needs: 

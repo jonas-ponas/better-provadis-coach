@@ -5,6 +5,7 @@ on:
       - develop
 env:
   PB_VERSION: 0.13
+
 jobs:
   check:
     name: "Find Changes" 
@@ -38,6 +39,9 @@ jobs:
     with:
       docker-image-name: "jonas-ponas/expert-giggle-frontend"
       context: ./frontend/
+      build-args: |
+        UI_VERSION=${{ needs.check.outputs.short_sha }}
+        PB_VERSION=${{ env.PB_VERSION }}
     secrets: inherit
   build-sync:
     name: "Sync-Service"
@@ -47,9 +51,6 @@ jobs:
     with:
       docker-image-name: "jonas-ponas/expert-giggle"
       context: ./sync-service/
-      build-args: |
-        UI_VERSION=${{ needs.check.outputs.short_sha }}
-        PB_VERSION=$PB_VERSION
     secrets: inherit
   deploy:
     name: "Deploy"

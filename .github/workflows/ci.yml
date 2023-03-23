@@ -3,6 +3,8 @@ on:
     branches:
       - main
       - develop
+env:
+  PB_VERSION: 0.13
 jobs:
   check:
     name: "Find Changes" 
@@ -19,10 +21,15 @@ jobs:
               - 'sync-service/**'
             fronted:
               - 'frontend/**'
+      - name: Get Short SHA
+        id: vars
+        run: |
+          echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
     outputs:
       sync: ${{ steps.filter.outputs.sync == 'true' }}
       frontend: ${{ steps.filter.outputs.frontend }}
       workflows: ${{ steps.filter.outputs.workflows }}
+      short_sha: ${{ steps.vars.outputs.short_sha}}
   build-frontend:
     name: "Frontend"
     needs: check
@@ -40,6 +47,9 @@ jobs:
     with:
       docker-image-name: "jonas-ponas/expert-giggle"
       context: ./sync-service/
+      buildArgs: |
+        UI_VERSION=${{ needs.check.outputs.short_sha }}
+        PB_VERSION=$PB_VERSION
     secrets: inherit
   deploy:
     name: "Deploy"

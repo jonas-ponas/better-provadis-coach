@@ -9,6 +9,9 @@ on:
       context: 
         required: true
         type: string
+      build-args:
+        required: false
+        type: string
 
 jobs:
   build-docker-image:
@@ -41,6 +44,7 @@ jobs:
         with:
           context: ${{ inputs.context }}
           push: true
+          build-args: ${{ inputs.build-args }}
           tags: ${{ steps.meta.outputs.tags }}
           # labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha

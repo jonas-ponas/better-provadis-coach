@@ -24,7 +24,7 @@ jobs:
       frontend: ${{ steps.filter.outputs.frontend }}
       workflows: ${{ steps.filter.outputs.workflows }}
   build-frontend:
-    name: "Build Frontend"
+    name: "Frontend"
     needs: check
     if: ${{ needs.check.outputs.frontend == 'true' || needs.check.outputs.workflows == 'true' }}
     uses: ./.github/workflows/build.yml
@@ -33,7 +33,7 @@ jobs:
       context: ./frontend/
     secrets: inherit
   build-sync:
-    name: "Build Sync-Service"
+    name: "Sync-Service"
     needs: check
     if: ${{ needs.check.outputs.sync == 'true' || needs.check.outputs.workflows == 'true' }}
     uses: ./.github/workflows/build.yml
@@ -42,7 +42,7 @@ jobs:
       context: ./sync-service/
     secrets: inherit
   deploy:
-    name: "Call Watchtower"
+    name: "Deploy"
     needs: 
       - build-frontend
       - build-sync

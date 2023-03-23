@@ -47,7 +47,7 @@ jobs:
     with:
       docker-image-name: "jonas-ponas/expert-giggle"
       context: ./sync-service/
-      buildArgs: |
+      build-args: |
         UI_VERSION=${{ needs.check.outputs.short_sha }}
         PB_VERSION=$PB_VERSION
     secrets: inherit

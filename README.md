@@ -1,3 +1,3 @@
 # better-provadis-coach
 
-![alt](./docs/architecture.png)
+![alt](./docs/Concept.png)

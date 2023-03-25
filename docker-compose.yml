@@ -1,0 +1,33 @@
+version: "3.7"
+services:
+  pocketbase:
+    image: ghcr.io/jonas-ponas/expert-giggle-frontend:latest
+    container_name: "pocketbase"
+    restart: unless-stopped
+    volumes: 
+      - ./data:/pb_data
+    ports:
+      - "8090:8090"
+    networks:
+      - back
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://pocketbase:8090/api/health || exit 1
+      interval: 10s
+      timeout: 10s
+      retries: 3
+  expert-giggle:
+    image: ghcr.io/jonas-ponas/expert-giggle:latest
+    container_name: "sync-service"
+    restart: unless-stopped
+    environment:
+      - PB_URL=http://pocketbase:8090/
+      - PB_USER=
+      - PB_PASSWD=
+      - CLIENT_SECRET=
+      - CLIENT_ID=
+    networks:
+      - reverse-proxy
+      - back
+networks:
+  back:
+    driver: bridge

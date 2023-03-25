@@ -33,7 +33,6 @@ jobs:
         uses: docker/metadata-action@v4
         with:
           images: |
-            ${{ inputs.docker-image-name }}
             ghcr.io/${{ inputs.docker-image-name }}
           tags: |
             type=sha,format=short,prefix={{branch}}-
@@ -46,7 +45,7 @@ jobs:
           push: true
           build-args: ${{ inputs.build-args }}
           tags: ${{ steps.meta.outputs.tags }}
-          # labels: ${{ steps.meta.outputs.labels }}
+          labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 

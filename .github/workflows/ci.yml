@@ -1,3 +1,5 @@
+name: Build & Deploy Services
+run-name: Build & Deploy Services
 on: 
   push:
     branches:

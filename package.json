@@ -3,7 +3,14 @@
   "private": true,
   "workspaces": [
     "frontend",
-    "sync-service"
+    "sync-service",
+    "schedule-service"
   ],
-  "packageManager": "yarn@3.5.0"
+  "packageManager": "yarn@3.5.0",
+  "devDependencies": {
+    "@types/prettier": "^2",
+    "@yarnpkg/sdks": "^3.0.0-rc.40",
+    "prettier": "^2.8.7",
+    "typescript": "^5.0.2"
+  }
 }

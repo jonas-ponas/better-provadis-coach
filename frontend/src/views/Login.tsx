@@ -56,7 +56,7 @@ export default function Login(props: {}) {
 									fontWeight: 'bold',
 									ml: theme.spacing(1)
 								}}>
-								Expert Giggle
+								Better Provadis Coach
 							</Typography>
 						</Box>
 						<Typography variant='body2'>Die deutlich bessere UI für den Provadis-Coach</Typography>

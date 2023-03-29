@@ -49,7 +49,7 @@ export default function Layout(props: {}) {
 										color: theme.palette.grey[400],
 										textDecorationColor: theme.palette.grey[400]
 									}}
-									href='https://github.com/jonas-ponas/expert-giggle-frontend/issues/new/choose'
+									href='https://github.com/jonas-ponas/better-provadis-coach/issues/new/choose'
 									target='_blank'>
 									Fehler melden / Feedback
 								</Link>

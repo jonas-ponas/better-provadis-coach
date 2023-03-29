@@ -46,12 +46,11 @@ export default function Sync(props: {
 
 	function handleSync() {
 		const ws_uri = import.meta.env.VITE_WEBSOCKET_URI as string;
+		const scheme = window.location.protocol.startsWith('https') ? 'wss://' : 'ws://';
 		let url;
 		if (!ws_uri) {
-			setSnackbar({ type: 'error', text: 'Frontend Fehler! Keine WS-Url festgelegt!' });
-			return;
+			url = `${scheme}${window.location.host}/ws`;
 		} else if (ws_uri.startsWith('/')) {
-			const scheme = window.location.protocol.startsWith('https') ? 'wss://' : 'ws://';
 			url = `${scheme}${window.location.host}${ws_uri}`;
 		} else {
 			url = ws_uri;
@@ -74,6 +73,11 @@ export default function Sync(props: {
 					token: client?.authStore.token
 				})
 			);
+		};
+
+		ws.onerror = e => {
+			console.error(e);
+			setSnackbar({ type: 'error', text: 'Es gab einen Websocket Fehler!' });
 		};
 
 		ws.onmessage = event => {

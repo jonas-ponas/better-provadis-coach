@@ -34,7 +34,7 @@ export default function Brandbar(props: {}) {
 					}}
 				/>
 				<Typography variant='h6' sx={{ fontWeight: 'bold', ml: theme.spacing(1) }}>
-					Expert Giggle
+					Better Provadis Coach
 				</Typography>
 			</Box>
 			<Box>

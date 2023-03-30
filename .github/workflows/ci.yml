@@ -20,6 +20,8 @@ jobs:
               - '.github/workflows/**'
             sync:
               - 'sync-service/**'
+            schedule:
+              - 'schedule-service/**'
             fronted:
               - 'frontend/**'
       - name: Get Short SHA
@@ -29,12 +31,13 @@ jobs:
     outputs:
       sync: ${{ steps.filter.outputs.sync == 'true' }}
       frontend: ${{ steps.filter.outputs.frontend }}
+      schedule: ${{ steps.filter.outputs.schedule }}
       workflows: ${{ steps.filter.outputs.workflows }}
       short_sha: ${{ steps.vars.outputs.short_sha}}
   build-frontend:
     name: "Frontend"
     needs: check
-    if: ${{ needs.check.outputs.frontend == 'true' || needs.check.outputs.workflows == 'true' }}
+    if: ${{ needs.check.outputs.frontend == 'true' }}
     uses: ./.github/workflows/build.yml
     with:
       docker-image-name: "jonas-ponas/expert-giggle-frontend"
@@ -46,22 +49,30 @@ jobs:
   build-sync:
     name: "Sync-Service"
     needs: check
-    if: ${{ needs.check.outputs.sync == 'true' || needs.check.outputs.workflows == 'true' }}
+    if: ${{ needs.check.outputs.sync == 'true' }}
     uses: ./.github/workflows/build.yml
     with:
       docker-image-name: "jonas-ponas/expert-giggle"
       context: ./sync-service/
+    secrets: inherit
+  build-schedule:
+    name: "Schedule-Service"
+    needs: check
+    if: ${{ needs.check.outputs.schedule == 'true' }}
+    uses: ./.github/workflows/build.yml
+    with:
+      docker-image-name: "jonas-ponas/bpc-schedule-service"
+      context: ./schedule-service/
     secrets: inherit
   deploy:
     name: "Deploy"
     needs: 
       - build-frontend
       - build-sync
+      - build-schedule
     if: |
       always() && 
-      (needs.build-frontend.result == 'success' || needs.build-frontend.result == 'skipped') && 
-      (needs.build-sync.result == 'success' || needs.build-sync.result == 'skipped') && 
-      !(needs.build-frontend.result == 'skipped' && needs.build-sync.result == 'skipped')
+      (needs.build-frontend.result == 'success' || needs.build-sync.result == 'success' || needs.build-schedule.result == 'success')
     runs-on: ubuntu-latest
     steps:
       - name: Call Watchtower

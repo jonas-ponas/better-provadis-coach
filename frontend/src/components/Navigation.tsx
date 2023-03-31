@@ -15,6 +15,7 @@ interface MenuItem {
 const primaryMenu: MenuItem[] = [
 	{ name: 'Dateien', icon: 'folders', href: '/dir' },
 	{ name: 'Stundenplan', icon: 'calendar-todo', href: '/schedule' },
+	{ name: 'Termine', icon: 'calendar-2', href: '/calendar' },
 	{ name: 'News', icon: 'rss', href: '/news' }
 ];
 

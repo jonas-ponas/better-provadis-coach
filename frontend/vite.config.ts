@@ -15,6 +15,10 @@ export default ({ mode }) => {
 					target: `wss://${process.env.VITE_DEV_HOST}`,
 					ws: true,
 					changeOrigin: true
+				},
+				'/ical': {
+					target: `https://${process.env.VITE_DEV_HOST}`,
+					changeOrigin: true
 				}
 			}
 		}

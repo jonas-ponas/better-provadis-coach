@@ -11,6 +11,7 @@ import TimeTable, { loadTimeTable } from './views/Timetable';
 import News, { loadNews } from './views/News';
 import { loadCallback, loadLayout } from './util/routeLoaders';
 import { Box } from '@mui/material';
+import Calendar, { loadCalendar } from './views/Calendar';
 
 const expand =
 	'parent,parent.parent,parent.parent.parent,parent.parent.parent.parent,parent.parent.parent.parent.parent,parent.parent.parent.parent.parent.parent';
@@ -62,6 +63,12 @@ export default (client: pocketbaseEs) =>
 					path: '/schedule',
 					element: <TimeTable />,
 					loader: loadTimeTable(client),
+					errorElement: <ErrorAlert title='Fehler!' description='Es ist ein Fehler aufgetreten!' />
+				},
+				{
+					path: '/calendar',
+					element: <Calendar />,
+					loader: loadCalendar(client),
 					errorElement: <ErrorAlert title='Fehler!' description='Es ist ein Fehler aufgetreten!' />
 				},
 				{

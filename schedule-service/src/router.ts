@@ -35,6 +35,9 @@ async function getFiles(id: string, client: any): Promise<{ name: string; conten
 }
 
 router.get('/:id', async (request, response) => {
+	const remoteAdress = request.headers['x-real-ip'] ?? request.socket.remoteAddress;
+	logger.info(`${remoteAdress} requests ${request.url}`);
+
 	const id = request.params.id;
 	const client = new PocketBase(PB_URL);
 	try {

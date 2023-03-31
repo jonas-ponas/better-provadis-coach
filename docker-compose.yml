@@ -28,16 +28,14 @@ services:
     networks:
       - reverse-proxy
       - back
-  schedule:
-    image: ghcr.io/jonas-ponas/expert-giggle:latest
-    container_name: "schedule-service"
+  ical:
+    image: ghcr.io/jonas-ponas/bpc-ical-service:latest
+    container_name: "bpc-ical-service"
     restart: unless-stopped
     environment:
       - PB_URL=http://pocketbase:8090/
       - PB_USER=
       - PB_PASSWD=
-      - CLIENT_SECRET=
-      - CLIENT_ID=
     networks:
       - reverse-proxy
       - back

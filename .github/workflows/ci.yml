@@ -56,12 +56,12 @@ jobs:
       context: ./sync-service/
     secrets: inherit
   build-schedule:
-    name: "Schedule-Service"
+    name: "Ical-Service"
     needs: check
     if: ${{ needs.check.outputs.schedule == 'true' }}
     uses: ./.github/workflows/build.yml
     with:
-      docker-image-name: "jonas-ponas/bpc-schedule-service"
+      docker-image-name: "jonas-ponas/bpc-ical-service"
       context: ./schedule-service/
     secrets: inherit
   deploy:

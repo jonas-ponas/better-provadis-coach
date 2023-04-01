@@ -8,7 +8,7 @@ on:
 
 jobs:
   check:
-    name: "Find Changes" 
+    name: "Prepare" 
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -20,8 +20,8 @@ jobs:
               - '.github/workflows/**'
             sync:
               - 'sync-service/**'
-            schedule:
-              - 'schedule-service/**'
+            ical:
+              - 'ical-service/**'
             fronted:
               - 'frontend/**'
       - name: Get Short SHA
@@ -31,7 +31,7 @@ jobs:
     outputs:
       sync: ${{ steps.filter.outputs.sync == 'true' }}
       frontend: ${{ steps.filter.outputs.frontend }}
-      schedule: ${{ steps.filter.outputs.schedule }}
+      ical: ${{ steps.filter.outputs.ical }}
       workflows: ${{ steps.filter.outputs.workflows }}
       short_sha: ${{ steps.vars.outputs.short_sha}}
   build-frontend:
@@ -55,24 +55,24 @@ jobs:
       docker-image-name: "jonas-ponas/expert-giggle"
       context: ./sync-service/
     secrets: inherit
-  build-schedule:
-    name: "Ical-Service"
+  build-ical:
+    name: "ical-Service"
     needs: check
-    if: ${{ needs.check.outputs.schedule == 'true' }}
+    if: ${{ needs.check.outputs.ical == 'true' }}
     uses: ./.github/workflows/build.yml
     with:
       docker-image-name: "jonas-ponas/bpc-ical-service"
-      context: ./schedule-service/
+      context: ./ical-service/
     secrets: inherit
   deploy:
     name: "Deploy"
     needs: 
       - build-frontend
       - build-sync
-      - build-schedule
+      - build-ical
     if: |
       always() && 
-      (needs.build-frontend.result == 'success' || needs.build-sync.result == 'success' || needs.build-schedule.result == 'success')
+      (needs.build-frontend.result == 'success' || needs.build-sync.result == 'success' || needs.build-ical.result == 'success')
     runs-on: ubuntu-latest
     steps:
       - name: Call Watchtower

@@ -30,7 +30,7 @@ jobs:
   build-frontend:
     name: "Frontend"
     needs: check
-    if: needs.check.outputs.frontend == 'true'
+    if: always() && needs.check.outputs.frontend == 'true'
     uses: ./.github/workflows/build.yml
     with:
       docker-image-name: "jonas-ponas/expert-giggle-frontend"

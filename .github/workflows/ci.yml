@@ -15,7 +15,7 @@ jobs:
       - uses: dorny/paths-filter@v2
         id: filter
         with:
-          base: HEAD~
+          # base: ${{ github.ref }}
           filters: .github/filters.yml
       - name: Get Short SHA
         id: vars
@@ -30,7 +30,7 @@ jobs:
   build-frontend:
     name: "Frontend"
     needs: check
-    if: ${{ needs.check.outputs.frontend == 'true' }}
+    if: needs.check.outputs.frontend == 'true'
     uses: ./.github/workflows/build.yml
     with:
       docker-image-name: "jonas-ponas/expert-giggle-frontend"
@@ -42,7 +42,7 @@ jobs:
   build-sync:
     name: "Sync-Service"
     needs: check
-    if: ${{ needs.check.outputs.sync == 'true' }}
+    if: needs.check.outputs.sync == 'true'
     uses: ./.github/workflows/build.yml
     with:
       docker-image-name: "jonas-ponas/expert-giggle"
@@ -51,7 +51,7 @@ jobs:
   build-ical:
     name: "ical-Service"
     needs: check
-    if: ${{ needs.check.outputs.ical == 'true' }}
+    if: needs.check.outputs.ical == 'true'
     uses: ./.github/workflows/build.yml
     with:
       docker-image-name: "jonas-ponas/bpc-ical-service"

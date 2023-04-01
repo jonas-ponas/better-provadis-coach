@@ -29,15 +29,12 @@ jobs:
         run: |
           echo "short_sha=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
     outputs:
-      sync: ${{ steps.filter.outputs.sync == 'true' }}
-      frontend: ${{ steps.filter.outputs.frontend }}
-      ical: ${{ steps.filter.outputs.ical }}
-      workflows: ${{ steps.filter.outputs.workflows }}
+      filter: ${{ steps.filter.outputs }}
       short_sha: ${{ steps.vars.outputs.short_sha}}
   build-frontend:
     name: "Frontend"
     needs: check
-    if: ${{ needs.check.outputs.frontend == 'true' }}
+    if: ${{ needs.check.outputs.filter.frontend == 'true' }}
     uses: ./.github/workflows/build.yml
     with:
       docker-image-name: "jonas-ponas/expert-giggle-frontend"
@@ -49,7 +46,7 @@ jobs:
   build-sync:
     name: "Sync-Service"
     needs: check
-    if: ${{ needs.check.outputs.sync == 'true' }}
+    if: ${{ needs.check.outputs.filter.sync == 'true' }}
     uses: ./.github/workflows/build.yml
     with:
       docker-image-name: "jonas-ponas/expert-giggle"
@@ -58,7 +55,7 @@ jobs:
   build-ical:
     name: "ical-Service"
     needs: check
-    if: ${{ needs.check.outputs.ical == 'true' }}
+    if: ${{ needs.check.outputs.filter.ical == 'true' }}
     uses: ./.github/workflows/build.yml
     with:
       docker-image-name: "jonas-ponas/bpc-ical-service"

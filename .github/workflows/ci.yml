@@ -15,7 +15,7 @@ jobs:
       - uses: dorny/paths-filter@v2
         id: filter
         with:
-          base: HEAD
+          base: HEAD~
           filters: .github/filters.yml
       - name: Get Short SHA
         id: vars

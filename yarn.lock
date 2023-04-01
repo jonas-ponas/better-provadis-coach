@@ -1078,9 +1078,9 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:^18.15.10":
-  version: 18.15.10
-  resolution: "@types/node@npm:18.15.10"
-  checksum: 9aeae0b683eda82892def5315812bdee3f1a28c4898b7e70f8e2514564538b16c4dccbe8339c1266f8fc1d707a48f152689264a854f5ebc2eba5011e793612d9
+  version: 18.15.11
+  resolution: "@types/node@npm:18.15.11"
+  checksum: 977b4ad04708897ff0eb049ecf82246d210939c82461922d20f7d2dcfd81bbc661582ba3af28869210f7e8b1934529dcd46bff7d448551400f9d48b9d3bddec3
   languageName: node
   linkType: hard
 
@@ -2694,6 +2694,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ical-service@workspace:ical-service":
+  version: 0.0.0-use.local
+  resolution: "ical-service@workspace:ical-service"
+  dependencies:
+    "@types/express": ^4.17.17
+    "@types/node": ^18.15.10
+    "@types/prettier": ^2
+    dotenv: ^16.0.3
+    express: ^4.18.2
+    html-entities: ^2.3.3
+    ical.js: ^1.5.0
+    nodemon: ^2.0.22
+    pocketbase: ^0.13.0
+    prettier: ^2.8.7
+    ts-node: ^10.9.1
+    typescript: ^5.0.2
+    winston: ^3.8.2
+  languageName: unknown
+  linkType: soft
+
 "ical.js@npm:^1.5.0":
   version: 1.5.0
   resolution: "ical.js@npm:1.5.0"
@@ -3575,9 +3595,9 @@ __metadata:
   linkType: hard
 
 "pocketbase@npm:^0.13.0":
-  version: 0.13.0
-  resolution: "pocketbase@npm:0.13.0"
-  checksum: 5bfaaa7d9f3094b610afd98dc011c23a4e432147fa9f4d642ce899c29983a249cbcd1dca177f336b29ce213c9aec28deeff0350a78240fd7b3320ec0959ee867
+  version: 0.13.1
+  resolution: "pocketbase@npm:0.13.1"
+  checksum: 43d433a89e65ad8e6f860fb7b4fdc77e8848e53b5397702a227915c53fd864eca496b9a23cd82305b6acf2de7c55a91a4b461c5e02616ddb48cecbed82b33483
   languageName: node
   linkType: hard
 
@@ -3959,26 +3979,6 @@ __metadata:
   checksum: cab8f25ae6f1434abee8d80023d7e72b598cf1327164ddab31003c51215526801e40b66c5e65d658a0af1e9d6478cadcb4c745f4bd6751f97d8644786c0978b0
   languageName: node
   linkType: hard
-
-"schedule-service@workspace:schedule-service":
-  version: 0.0.0-use.local
-  resolution: "schedule-service@workspace:schedule-service"
-  dependencies:
-    "@types/express": ^4.17.17
-    "@types/node": ^18.15.10
-    "@types/prettier": ^2
-    dotenv: ^16.0.3
-    express: ^4.18.2
-    html-entities: ^2.3.3
-    ical.js: ^1.5.0
-    nodemon: ^2.0.22
-    pocketbase: ^0.13.0
-    prettier: ^2.8.7
-    ts-node: ^10.9.1
-    typescript: ^5.0.2
-    winston: ^3.8.2
-  languageName: unknown
-  linkType: soft
 
 "scheduler@npm:^0.23.0":
   version: 0.23.0

@@ -1,5 +1,5 @@
 {
-  "name": "schedule-service",
+  "name": "ical-service",
   "main": "index.js",
   "scripts": {
     "build": "tsc",

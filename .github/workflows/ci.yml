@@ -15,15 +15,8 @@ jobs:
       - uses: dorny/paths-filter@v2
         id: filter
         with:
-          filters: |
-            workflows:
-              - '.github/workflows/**'
-            sync:
-              - 'sync-service/**'
-            ical:
-              - 'ical-service/**'
-            fronted:
-              - 'frontend/**'
+          base: HEAD
+          filters: .github/filters.yml
       - name: Get Short SHA
         id: vars
         run: |

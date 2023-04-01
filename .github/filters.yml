@@ -1,0 +1,8 @@
+workflows:
+- '.github/workflows/**'
+sync:
+  - 'sync-service/**'
+ical:
+  - 'ical-service/**'
+fronted:
+  - 'frontend/**'

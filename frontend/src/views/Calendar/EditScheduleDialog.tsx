@@ -81,8 +81,6 @@ export default function EditScheduleDialog({
 		}
 	};
 
-	console.log(icalRecord?.fileList, selected);
-
 	return (
 		<Dialog open={open} onClose={() => onClose(false)} aria-labelledby='edit-calendar-dialog'>
 			<DialogTitle
@@ -111,7 +109,9 @@ export default function EditScheduleDialog({
 					<Typography variant='body1'>Ausgewählt:</Typography>
 					<Box>
 						{selected.map(s => (
-							<Typography variant='body2'>{s}</Typography>
+							<Typography variant='body2' key={s}>
+								{s}
+							</Typography>
 						))}
 					</Box>
 				</Stack>

@@ -2,23 +2,11 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { LoaderFunctionArgs, useLoaderData, useNavigate } from 'react-router-dom';
 import PocketBase, { ClientResponseError, ListResult } from 'pocketbase';
 import { IcalRecord } from '../../records';
-import { Alert, ButtonGroup, Divider, IconButton, Stack, Typography } from '@mui/material';
+import { Alert, ButtonGroup, Divider, IconButton, Popper, Stack, Typography } from '@mui/material';
 import Icon from '../../components/Icon';
 import EditScheduleDialog from './EditScheduleDialog';
 import { usePocketbase } from '../../util/PocketbaseContext';
-
-export function loadCalendar(client: PocketBase) {
-	return async function () {
-		try {
-			return await client
-				.collection('icals')
-				.getFirstListItem<IcalRecord>(`user = '${client.authStore.model?.id}'`);
-		} catch (e) {
-			if (e instanceof ClientResponseError && e.status === 404) return undefined;
-			throw e;
-		}
-	};
-}
+import CopyButton from './CopyButton';
 
 function useIcalRecord(): [IcalRecord | undefined, () => void] {
 	const client = usePocketbase() as PocketBase;
@@ -43,8 +31,7 @@ function useIcalRecord(): [IcalRecord | undefined, () => void] {
 	return [icalRecord, fetchData];
 }
 
-function useIcaldata(): [string | undefined, (id: string) => void] {
-	const [icalData, setIcalData] = useState<string | undefined>();
+function getServiceUrl() {
 	const serviceUrlEnv = import.meta.env.VITE_ICAL_SERVICE_URI as string;
 	let serviceUrl: string;
 	if (!serviceUrlEnv) {
@@ -54,8 +41,14 @@ function useIcaldata(): [string | undefined, (id: string) => void] {
 	} else {
 		serviceUrl = serviceUrlEnv;
 	}
+	return serviceUrl;
+}
+
+function useIcaldata(): [string | undefined, (id: string) => void] {
+	const [icalData, setIcalData] = useState<string | undefined>();
+
 	const fetchData = useCallback((id: string) => {
-		fetch(`${serviceUrl}/${id}`).then(response => {
+		fetch(`${getServiceUrl()}/${id}`).then(response => {
 			response.text().then(text => {
 				setIcalData(text);
 			});
@@ -83,9 +76,7 @@ export default function Calendar() {
 					Deine Termine
 				</Typography>
 				<ButtonGroup>
-					<IconButton>
-						<Icon name='links' style='line' />
-					</IconButton>
+					<CopyButton textToCopy={`${getServiceUrl()}/${icalRecord?.id}`} disabled={!icalRecord} />
 					<IconButton onClick={() => setShowDialog(true)}>
 						<Icon name='settings-4' style='line' />
 					</IconButton>

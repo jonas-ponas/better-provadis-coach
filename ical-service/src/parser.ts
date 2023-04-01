@@ -1,7 +1,6 @@
 import { decode } from 'html-entities';
 import logger from './logger';
-import ICAL, { Component, Property } from 'ical.js';
-import { writeFileSync } from 'fs';
+import ICAL, { Component } from 'ical.js';
 
 type Link = { teacher: string; link: string };
 type ContentWithFilename = { name: string; content: string };
@@ -32,12 +31,10 @@ export function getLinksFromHtml(htmlTexts: string[]): Link[] {
  * @returns string: one ical-file
  */
 export function mergeIcalFiles(icsTexts: ContentWithFilename[], links: Link[]): string {
-	logger.verbose(links);
 	const vCalendar = getCalendarComponent(icsTexts.map(v => v.name));
 	let id = 0;
 	for (const ical of icsTexts) {
 		const jcal = ICAL.parse(ical.content);
-		writeFileSync('../jcal.json', JSON.stringify(jcal));
 		const cal = new Component(jcal);
 		const vEvents = cal.getAllSubcomponents('vevent');
 		logger.debug(`file ${ical.name} contains ${vEvents.length} events`);

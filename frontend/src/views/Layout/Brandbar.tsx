@@ -1,6 +1,6 @@
 import React from 'react';
 import { Avatar, Box, Typography, useTheme } from '@mui/material';
-import { usePocketbase } from '../util/PocketbaseContext';
+import { usePocketbase } from '../../util/PocketbaseContext';
 import Searchbar from './Searchbar';
 
 export default function Brandbar(props: {}) {

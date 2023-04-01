@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Grid, Link, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { Outlet } from 'react-router-dom';
-import Brandbar from '../components/Brandbar';
-import Navigation from '../components/Navigation';
+import Brandbar from './Brandbar';
+import Navigation from './Navigation';
 import 'remixicon/fonts/remixicon.css';
 
 export default function Layout(props: {}) {

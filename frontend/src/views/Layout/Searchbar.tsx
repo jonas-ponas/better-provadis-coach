@@ -1,7 +1,7 @@
 import { IconButton, InputBase, Paper, TextField, useTheme } from '@mui/material';
 import React, { useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import Icon from './Icon';
+import Icon from '../../components/Icon';
 
 export default function Searchbar(props: {}) {
 	const theme = useTheme();

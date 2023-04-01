@@ -1,9 +1,9 @@
 import React from 'react';
 import { Container, Box, Paper, Typography, useTheme, Button, Avatar, ButtonGroup } from '@mui/material';
 import { AuthMethodsList } from 'pocketbase';
-import Icon from '../components/Icon';
+import Icon from '../../components/Icon';
 import { useLoaderData } from 'react-router-dom';
-import LoginButton from '../components/LoginButton';
+import LoginButton from './LoginButton';
 
 export default function Login(props: {}) {
 	const theme = useTheme();

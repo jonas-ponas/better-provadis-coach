@@ -1,8 +1,8 @@
 import React from 'react';
 import { Box, List, ListItemButton, ListItemIcon, ListItemText, Paper, useTheme } from '@mui/material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import Icon from './Icon';
-import { usePocketbase } from '../util/PocketbaseContext';
+import Icon from '../../components/Icon';
+import { usePocketbase } from '../../util/PocketbaseContext';
 
 interface MenuItem {
 	name: string;

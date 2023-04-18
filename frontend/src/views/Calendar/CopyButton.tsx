@@ -1,4 +1,4 @@
-import { Box, IconButton, Popper, Typography, useTheme } from '@mui/material';
+import { Box, Button, IconButton, Popper, Typography, colors, useTheme } from '@mui/material';
 import React, { useState } from 'react';
 import Icon from '../../components/Icon';
 
@@ -18,10 +18,16 @@ export default function CopyButton({ textToCopy, disabled }: { textToCopy: strin
 	};
 
 	return (
-		<>
-			<IconButton onClick={onClick} disabled={disabled}>
-				<Icon name='links' style='line' />
-			</IconButton>
+		<Box sx={{ mx: 1 }}>
+			<Button
+				size='small'
+				onClick={onClick}
+				disabled={disabled}
+				startIcon={<Icon name='links' style='line' />}
+				color='secondary'
+				variant='outlined'>
+				Copy Ical-Link
+			</Button>
 			<Popper open={showPopper} anchorEl={anchorEl}>
 				<Box
 					sx={{
@@ -34,6 +40,6 @@ export default function CopyButton({ textToCopy, disabled }: { textToCopy: strin
 					<Typography variant='body2'>Kopiert!</Typography>
 				</Box>
 			</Popper>
-		</>
+		</Box>
 	);
 }

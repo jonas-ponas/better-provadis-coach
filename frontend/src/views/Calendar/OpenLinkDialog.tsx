@@ -11,7 +11,7 @@ import {
 	useTheme
 } from '@mui/material';
 import React from 'react';
-import Icon from './Icon';
+import Icon from '../../components/Icon';
 
 export default function OpenLinkDialog({ link, open, onClose }: { link: string; open: boolean; onClose: () => void }) {
 	const theme = useTheme();

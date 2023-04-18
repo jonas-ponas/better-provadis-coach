@@ -7,7 +7,6 @@ import Login from './views/Login';
 import ErrorAlert from './components/Error';
 import UserSettings, { loadUserSettings } from './views/UserSettings';
 import Search, { loadSearch } from './views/Search';
-import TimeTable, { loadTimeTable } from './views/Timetable';
 import News, { loadNews } from './views/News';
 import { loadCallback, loadLayout } from './util/routeLoaders';
 import { Box } from '@mui/material';
@@ -16,17 +15,18 @@ import Calendar from './views/Calendar';
 const expand =
 	'parent,parent.parent,parent.parent.parent,parent.parent.parent.parent,parent.parent.parent.parent.parent,parent.parent.parent.parent.parent.parent';
 
-export default (client: pocketbaseEs) =>
-	createBrowserRouter([
+export default (client: pocketbaseEs) => {
+	const errorElement = <ErrorAlert title='Fehler!' description='Es ist ein Fehler aufgetreten!' />;
+	const errorLogin = (
+		<ErrorAlert sx={{ m: 5 }} title='Fehler!' description={`Es ist ein Fehler bei der Anmeldung unterlaufen!`} />
+	);
+	const errorFolder = <ErrorAlert title='Fehler' description='Das angeforderte Verzeichnis wurde nicht gefunden.' />;
+	return createBrowserRouter([
 		{
 			path: '/',
 			element: <Layout />,
 			loader: loadLayout(client),
-			errorElement: (
-				<Box sx={{ p: 5 }}>
-					<ErrorAlert title='Fehler!' description={`Es ist ein Fehler bei der Anmeldung unterlaufen!`} />
-				</Box>
-			),
+			errorElement: errorLogin,
 			children: [
 				{
 					path: '/',
@@ -36,45 +36,35 @@ export default (client: pocketbaseEs) =>
 					path: '/dir/:dirId',
 					element: <Files />,
 					loader: loadFiles(client, expand),
-					errorElement: (
-						<ErrorAlert title='Fehler' description='Das angeforderte Verzeichnis wurde nicht gefunden.' />
-					)
+					errorElement: errorFolder
 				},
 				{
 					path: '/dir',
 					loader: loadRootDirectory(client),
-					errorElement: (
-						<ErrorAlert title='Fehler' description='Das angeforderte Verzeichnis wurde nicht gefunden.' />
-					)
+					errorElement: errorFolder
 				},
 				{
 					path: '/settings',
 					element: <UserSettings />,
-					errorElement: <ErrorAlert title='Fehler!' description='Es ist ein Fehler aufgetreten!' />,
+					errorElement,
 					loader: loadUserSettings(client)
 				},
 				{
 					path: '/search',
 					element: <Search />,
 					loader: loadSearch(client),
-					errorElement: <ErrorAlert title='Fehler!' description='Es ist ein Fehler aufgetreten!' />
-				},
-				{
-					path: '/schedule',
-					element: <TimeTable />,
-					loader: loadTimeTable(client),
-					errorElement: <ErrorAlert title='Fehler!' description='Es ist ein Fehler aufgetreten!' />
+					errorElement
 				},
 				{
 					path: '/calendar',
 					element: <Calendar />,
-					errorElement: <ErrorAlert title='Fehler!' description='Es ist ein Fehler aufgetreten!' />
+					errorElement
 				},
 				{
 					path: '/news',
 					element: <News />,
 					loader: loadNews(client),
-					errorElement: <ErrorAlert title='Fehler!' description='Es ist ein Fehler aufgetreten!' />
+					errorElement
 				}
 			]
 		},
@@ -88,11 +78,7 @@ export default (client: pocketbaseEs) =>
 		{
 			path: '/callback/*',
 			element: <></>,
-			loader: loadCallback(client),
-			errorElement: (
-				<Box sx={{ p: 5 }}>
-					<ErrorAlert title='Fehler!' description={`Es ist ein Fehler bei der Anmeldung unterlaufen!`} />
-				</Box>
-			)
+			loader: loadCallback(client)
 		}
 	]);
+};

@@ -6,7 +6,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
-import { Box, CircularProgress, IconButton, Stack, Typography } from '@mui/material';
+import { Alert, Box, CircularProgress, IconButton, Stack, Typography } from '@mui/material';
 import Icon from '../../components/Icon';
 import MultipleSelect from './MultipleSelect';
 import { usePocketbase } from '../../util/PocketbaseContext';
@@ -97,23 +97,29 @@ export default function EditScheduleDialog({
 					<Icon name='close' style='line' />
 				</IconButton>
 			</DialogTitle>
-			<DialogContent sx={{ minWidth: 500, p: 3 }}>
-				<Stack gap={1}>
+			<DialogContent sx={{ minWidth: 500, px: 3, pb: 3 }}>
+				<Stack gap={0}>
+					<Typography variant='body1'>Ausgewählt:</Typography>
+					<Box sx={{ mb: 2 }}>
+						{selected.length === 0 && (
+							<Typography fontStyle='italic' variant='body2'>
+								Keine Stundenpläne ausgewählt
+							</Typography>
+						)}
+						{selected.map(s => (
+							<Typography variant='body2' key={s}>
+								- {s}
+							</Typography>
+						))}
+					</Box>
 					<MultipleSelect
 						options={availableSchedules}
 						defaultValue={icalRecord?.fileList ?? []}
 						onChange={(newValue: string[]) => {
 							setSelected(newValue);
 						}}
+						help='Wähle alle Stundenpläne aus die auf dich zutreffen.'
 					/>
-					<Typography variant='body1'>Ausgewählt:</Typography>
-					<Box>
-						{selected.map(s => (
-							<Typography variant='body2' key={s}>
-								{s}
-							</Typography>
-						))}
-					</Box>
 				</Stack>
 			</DialogContent>
 			<DialogActions>

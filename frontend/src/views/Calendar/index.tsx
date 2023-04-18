@@ -1,26 +1,44 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { LoaderFunctionArgs, useLoaderData, useNavigate } from 'react-router-dom';
-import PocketBase, { ClientResponseError, ListResult } from 'pocketbase';
+import PocketBase, { ClientResponseError } from 'pocketbase';
 import { IcalRecord } from '../../records';
-import { Alert, ButtonGroup, Divider, IconButton, Popper, Stack, Typography } from '@mui/material';
+import {
+	Alert,
+	Box,
+	ButtonGroup,
+	CircularProgress,
+	Divider,
+	IconButton,
+	Popper,
+	Stack,
+	Typography
+} from '@mui/material';
 import Icon from '../../components/Icon';
 import EditScheduleDialog from './EditScheduleDialog';
 import { usePocketbase } from '../../util/PocketbaseContext';
 import CopyButton from './CopyButton';
+import IcalEventList from './IcalEventList';
+import OpenLinkDialog from './OpenLinkDialog';
 
-function useIcalRecord(): [IcalRecord | undefined, () => void] {
+function useIcalRecord(): [IcalRecord | undefined, () => void, boolean] {
 	const client = usePocketbase() as PocketBase;
 	const [icalRecord, setIcalRecord] = useState<IcalRecord | undefined>();
+	const [isLoading, setIsLoading] = useState(false);
 
 	const fetchData = useCallback(() => {
+		setIsLoading(true);
 		client
 			.collection('icals')
 			.getFirstListItem<IcalRecord>(`user = '${client.authStore.model?.id}'`)
 			.then(record => {
+				setIsLoading(false);
 				setIcalRecord(record);
 			})
 			.catch(e => {
+				setIsLoading(false);
 				if (e instanceof ClientResponseError && e.status === 404) setIcalRecord(undefined);
+			})
+			.finally(() => {
+				setIsLoading(false);
 			});
 	}, [client]);
 
@@ -28,7 +46,7 @@ function useIcalRecord(): [IcalRecord | undefined, () => void] {
 		fetchData();
 	}, []);
 
-	return [icalRecord, fetchData];
+	return [icalRecord, fetchData, isLoading];
 }
 
 function getServiceUrl() {
@@ -44,24 +62,34 @@ function getServiceUrl() {
 	return serviceUrl;
 }
 
-function useIcaldata(): [string | undefined, (id: string) => void] {
+function useIcaldata(): [string | undefined, (id: string) => void, boolean] {
 	const [icalData, setIcalData] = useState<string | undefined>();
+	const [isLoading, setIsLoading] = useState(false);
 
 	const fetchData = useCallback((id: string) => {
-		fetch(`${getServiceUrl()}/${id}`).then(response => {
-			response.text().then(text => {
-				setIcalData(text);
+		setIsLoading(true);
+		fetch(`${getServiceUrl()}/${id}`)
+			.then(response => {
+				response.text().then(text => {
+					setIsLoading(false);
+					setIcalData(text);
+				});
+			})
+			.finally(() => {
+				setIsLoading(false);
 			});
-		});
 	}, []);
 
-	return [icalData, fetchData];
+	return [icalData, fetchData, isLoading];
 }
 
 export default function Calendar() {
-	const [icalRecord, fetchIcalRecord] = useIcalRecord();
-	const [icalData, fetchIcalData] = useIcaldata();
-	const [showDialog, setShowDialog] = useState(false);
+	const [icalRecord, fetchIcalRecord, isRecordLoading] = useIcalRecord();
+	const [icalData, fetchIcalData, isDataLoading] = useIcaldata();
+	const [showEditDialog, setShowEditDialog] = useState(false);
+	const [showLinkDialog, setShowLinkDialog] = useState<string | null>(null);
+
+	const isLoading = isRecordLoading || isDataLoading;
 
 	useEffect(() => {
 		if (icalRecord?.id) {
@@ -69,30 +97,52 @@ export default function Calendar() {
 		}
 	}, [icalRecord]);
 
+	console.log({ isLoading, isDataLoading, isRecordLoading });
+
 	return (
 		<>
-			<Stack justifyContent='space-between' alignItems='center' direction='row'>
+			<Stack justifyContent='space-between' alignItems='center' direction='row' sx={{ px: 2 }}>
 				<Typography variant='h5' component='h1'>
-					Deine Termine
+					Stundenplan
 				</Typography>
 				<ButtonGroup>
 					<CopyButton textToCopy={`${getServiceUrl()}/${icalRecord?.id}`} disabled={!icalRecord} />
-					<IconButton onClick={() => setShowDialog(true)}>
+					<IconButton onClick={() => setShowEditDialog(true)}>
 						<Icon name='settings-4' style='line' />
 					</IconButton>
 				</ButtonGroup>
 			</Stack>
-			<Divider sx={{ my: 2 }} />
-			{!icalRecord && <Alert severity='info'>Du musst den Kalender erst konfigurieren!</Alert>}
-			{icalData && <pre>{icalData}</pre>}
+			<Divider sx={{ my: 1 }} />
+			{!isLoading ? (
+				<>
+					{!icalRecord && (
+						<Alert severity='info'>
+							<Typography variant='body1'>Du musst deinen Stundenplan zuerst konfigurieren!</Typography>
+							<Typography variant='body2' fontStyle='italic'>
+								Klicke dazu auf das <Icon name='settings-4' style='line' /> - Symbol oben rechts.
+							</Typography>
+						</Alert>
+					)}
+					{icalData && <IcalEventList data={icalData} onClick={event => setShowLinkDialog(event.location)} />}
+				</>
+			) : (
+				<Box sx={{ width: '100%', display: 'flex', justifyContent: 'center' }}>
+					<CircularProgress />
+				</Box>
+			)}
 
 			<EditScheduleDialog
 				icalRecord={icalRecord}
 				onClose={refresh => {
 					if (refresh) fetchIcalRecord();
-					setShowDialog(false);
+					setShowEditDialog(false);
 				}}
-				open={showDialog}
+				open={showEditDialog}
+			/>
+			<OpenLinkDialog
+				link={showLinkDialog ?? ''}
+				onClose={() => setShowLinkDialog(null)}
+				open={showLinkDialog !== null}
 			/>
 		</>
 	);

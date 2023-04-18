@@ -124,7 +124,8 @@ function getEvent(event: Component, links: Link[], id: number) {
 			setProperties(component, {
 				...properties,
 				url: zoomLink.link,
-				[`organizer;CN="${zoomLink.teacher}"`]: 'mailto:dummy@example.com',
+				description: `${zoomLink.teacher}`,
+				// [`organizer;CN="${zoomLink.teacher}"`]: 'mailto:dummy@example.com',
 				location: zoomLink.link
 			});
 		} else {

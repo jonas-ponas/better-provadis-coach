@@ -41,6 +41,12 @@ router.get('/:id', async (request, response) => {
 	const id = request.params.id;
 	try {
 		const icalRecord = await client.collection('icals').getOne(id);
+		logger.debug(JSON.stringify(icalRecord));
+		logger.debug(icalRecord.fileList.length);
+		if (icalRecord.fileList.length === 0) {
+			logger.info(`Responding to ${remoteAdress}: 404`);
+			return response.status(404).send();
+		}
 		if (cache.has(id)) {
 			const cacheHit = cache.get(id)!;
 			logger.debug(`Cache has id "${id}"`);
@@ -48,6 +54,7 @@ router.get('/:id', async (request, response) => {
 			const isContentValid = icalRecord.fileList.join(',') == cacheHit.files;
 			if (isTimeValid && isContentValid) {
 				logger.debug(`Cache Hit! ${id}`);
+				logger.info(`Responding to ${remoteAdress}: 200 - Content-Lenght: ${cacheHit.content.length}`);
 				return response.status(200).contentType('text/calendar').send(cacheHit.content);
 			} else {
 				logger.debug(
@@ -61,6 +68,7 @@ router.get('/:id', async (request, response) => {
 		const icsFiles = t.filter(v => v.name.endsWith('ics'));
 		const combinedIcs = parseIcsFiles(icsFiles, links);
 		cache.set(id, { time: new Date().getTime(), content: combinedIcs, files: icalRecord.fileList.join(',') });
+		logger.info(`Responding to ${remoteAdress}: 200 - Content-Lenght: ${combinedIcs.length}`);
 		response.status(200).contentType('text/calendar').send(combinedIcs);
 	} catch (e: any) {
 		if (e.stack) {
@@ -70,15 +78,18 @@ router.get('/:id', async (request, response) => {
 			if (e.status === 401) {
 				logger.error('Possibly wrong PocketBase Credentials! Please check!');
 				logger.error(e.stack);
-				response.status(500).send();
+				logger.info(`Responding to ${remoteAdress}: 500`);
+				return response.status(500).send();
 			}
 			if (e.status === 404) {
 				logger.warn(`Could not find id "${id}"`);
-				response.status(404).send();
+				logger.info(`Responding to ${remoteAdress}: 404 `);
+				return response.status(404).send();
 			}
 		} else {
 			logger.error(e);
-			response.status(500).send();
+			logger.info(`Responding to ${remoteAdress}: 500`);
+			return response.status(500).send();
 		}
 	}
 });

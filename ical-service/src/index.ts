@@ -33,6 +33,15 @@ client.admins
 const app = express();
 app.use(BASENAME, router);
 app.set('x-powered-by', false);
+if (process.env.NODE_ENV?.startsWith('dev')) {
+	logger.info('NODE is in DEV Mode: Activating CORS');
+	app.use((req, res, next) => {
+		logger.debug('HI');
+		res.setHeader('Access-Control-Allow-Origin', '*');
+		next();
+	});
+}
+
 app.listen(PORT, () => {
 	logger.info(`Listening on ${PORT} on path ${BASENAME}`);
 });

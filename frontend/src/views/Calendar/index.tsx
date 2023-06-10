@@ -18,6 +18,7 @@ import { usePocketbase } from '../../util/PocketbaseContext';
 import CopyButton from './CopyButton';
 import IcalEventList from './IcalEventList';
 import OpenLinkDialog from './OpenLinkDialog';
+import { getIcalServiceUrl } from '../../util/serviceUrls';
 
 function useIcalRecord(): [IcalRecord | undefined, () => void, boolean] {
 	const client = usePocketbase() as PocketBase;
@@ -49,26 +50,13 @@ function useIcalRecord(): [IcalRecord | undefined, () => void, boolean] {
 	return [icalRecord, fetchData, isLoading];
 }
 
-function getServiceUrl() {
-	const serviceUrlEnv = import.meta.env.VITE_ICAL_SERVICE_URI as string;
-	let serviceUrl: string;
-	if (!serviceUrlEnv) {
-		serviceUrl = `${window.location.protocol}//${window.location.host}/ical`;
-	} else if (serviceUrlEnv.startsWith('/')) {
-		serviceUrl = `${window.location.protocol}//${window.location.host}${serviceUrlEnv}`;
-	} else {
-		serviceUrl = serviceUrlEnv;
-	}
-	return serviceUrl;
-}
-
 function useIcaldata(): [string | undefined, (id: string) => void, boolean] {
 	const [icalData, setIcalData] = useState<string | undefined>();
 	const [isLoading, setIsLoading] = useState(false);
 
 	const fetchData = useCallback((id: string) => {
 		setIsLoading(true);
-		fetch(`${getServiceUrl()}/${id}`)
+		fetch(`${getIcalServiceUrl()}/${id}`)
 			.then(response => {
 				response.text().then(text => {
 					setIsLoading(false);
@@ -106,7 +94,7 @@ export default function Calendar() {
 					Stundenplan
 				</Typography>
 				<ButtonGroup>
-					<CopyButton textToCopy={`${getServiceUrl()}/${icalRecord?.id}`} disabled={!icalRecord} />
+					<CopyButton textToCopy={`${getIcalServiceUrl()}/${icalRecord?.id}`} disabled={!icalRecord} />
 					<IconButton onClick={() => setShowEditDialog(true)}>
 						<Icon name='settings-4' style='line' />
 					</IconButton>
@@ -115,7 +103,7 @@ export default function Calendar() {
 			<Divider sx={{ my: 1 }} />
 			{!isLoading ? (
 				<>
-					{!icalRecord && (
+					{(!icalRecord || (icalRecord && !icalData)) && (
 						<Alert severity='info'>
 							<Typography variant='body1'>Du musst deinen Stundenplan zuerst konfigurieren!</Typography>
 							<Typography variant='body2' fontStyle='italic'>

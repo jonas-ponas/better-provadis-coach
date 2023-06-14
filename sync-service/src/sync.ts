@@ -94,7 +94,7 @@ export async function sync({
 		if (withNews) {
 			const news = await coach.getNews();
 			onProgress({type: 'progress', phase: 'database', step: 4});
-			newsHash = createHash('md5').update(JSON.stringify(files)).digest('hex');
+			newsHash = createHash('md5').update(JSON.stringify(news)).digest('hex');
 			if (newsHash !== state.lastNewsHash) {
 				await coachToPocketbase.insertNewsItems(news, pb, state.user, (i, t) => {
 					onProgress({type: 'progress', phase: 'database', step: 4, detail: i, total: t});

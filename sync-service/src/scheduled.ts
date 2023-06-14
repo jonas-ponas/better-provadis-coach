@@ -1,6 +1,6 @@
 import logger from './logger';
-import {PB_PASSWD, PB_URL, PB_USER} from './server';
-import {sync} from './sync';
+import { PB_PASSWD, PB_URL, PB_USER } from './server';
+import { sync } from './sync';
 
 const Pocketbase = require('pocketbase/cjs');
 

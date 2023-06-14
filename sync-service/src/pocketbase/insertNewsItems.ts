@@ -1,4 +1,4 @@
-import {NewsItem} from '../coach/Coach';
+import { NewsItem } from '../coach/Coach';
 import logger from '../logger';
 
 export default async function insertNewsItems(

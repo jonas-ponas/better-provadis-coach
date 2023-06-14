@@ -1,16 +1,16 @@
 import logger from '../logger';
-import {MyWebSocket, PB_PASSWD, PB_USER, PB_URL} from '../server';
-import {sync} from '../sync';
+import { MyWebSocket, PB_PASSWD, PB_USER, PB_URL } from '../server';
+import { sync } from '../sync';
 
-export default function handleSync(client: MyWebSocket, data: {[key: string]: any}) {
+export default function handleSync(client: MyWebSocket, data: { [key: string]: any }) {
 	if (!client.isAuthorized || !client.userId) {
 		logger.warn(`Client not authorized`);
-		client.send(JSON.stringify({type: 'error', msg: 'Unauthorized'}));
+		client.send(JSON.stringify({ type: 'error', msg: 'Unauthorized' }));
 		return;
 	}
 	if (!PB_USER || !PB_PASSWD || !PB_URL) {
 		logger.error(`S1 PocketBase Service User/Url not specified!`);
-		client.send(JSON.stringify({type: 'error', msg: 'Internal Error (S1)'})); // ERROR S1
+		client.send(JSON.stringify({ type: 'error', msg: 'Internal Error (S1)' })); // ERROR S1
 		client.close(1011, 'Internal Error');
 		return;
 	}

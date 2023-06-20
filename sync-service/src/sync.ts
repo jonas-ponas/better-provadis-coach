@@ -4,7 +4,8 @@ import { Coach } from './coach/Coach';
 import logger from './logger';
 import coachToPocketbase from './pocketbase/coachToPocketbase';
 import { MyWebSocketMessage } from './server';
-import { writeFileSync } from 'fs';
+import { FileRecord } from '../types';
+import { fileDiff } from './diff';
 
 export async function sync({
 	onProgress,
@@ -34,6 +35,19 @@ export async function sync({
 		onClose(1011);
 		return;
 	}
+	let currentFiles: FileRecord[];
+	try {
+		currentFiles = await pb.collection('file').getFullList({
+			sort: '-created'
+		});
+	} catch (e: unknown) {
+		logger.error(`S5 Could not retrieve current Database State! Check Credentials! ${e}`);
+		if (e instanceof Error) logger.error(e.stack);
+		onProgress({ type: 'error', msg: 'Internal Error (S5)' }); // ERROR S2
+		onClose(1011);
+		return;
+	}
+
 	let coach: Coach;
 	let state;
 	try {
@@ -50,12 +64,15 @@ export async function sync({
 				clientId: process.env.CLIENT_ID || '',
 				clientSecret: process.env.CLIENT_SECRET || ''
 			},
-			logger
+			logger,
+			op => {
+				logger.info('Token-Change! ' + JSON.stringify(op));
+			}
 		);
 		onProgress({ type: 'progress', phase: 'coach', step: 2 });
 	} catch (e) {
 		logger.error(`S4 Could not create Coach from state: ${e}`);
-		if (e instanceof Error) logger.error(e.stack);
+		if (e instanceof Error) logger.error((e as Error).stack);
 		onProgress({ type: 'error', msg: 'Internal Error: Could not login into Provadis Coach (S4)' }); // ERROR S4
 		onClose(1011);
 		return;
@@ -77,20 +94,25 @@ export async function sync({
 		onProgress({ type: 'progress', phase: 'database', step: 1 });
 		filesHash = createHash('md5').update(JSON.stringify(files)).digest('hex');
 
-		writeFileSync('files.json', JSON.stringify(files));
-
 		if (filesHash !== state.lastFilesHash) {
-			const ctoPb = await coachToPocketbase.insertDirectories(dirs, pb, state.user, new Map(), (i, t) => {
-				onProgress({ type: 'progress', phase: 'database', step: 1, detail: i, total: t });
+			const diff = fileDiff({
+				current: currentFiles,
+				incoming: files
 			});
-			onProgress({ type: 'progress', phase: 'database', step: 2 });
-			const fToPb = await coachToPocketbase.insertFiles(files, pb, state.user, ctoPb, (i, t) => {
-				onProgress({ type: 'progress', phase: 'database', step: 2, detail: i, total: t });
-			});
-			onProgress({ type: 'progress', phase: 'database', step: 3 });
-			await coachToPocketbase.insertCacheFiles(pb, coach, fToPb, (i, t) => {
-				onProgress({ type: 'progress', phase: 'database', step: 3, detail: i, total: t });
-			});
+
+			console.log(diff);
+
+			// const ctoPb = await coachToPocketbase.insertDirectories(dirs, pb, state.user, new Map(), (i, t) => {
+			// 	onProgress({ type: 'progress', phase: 'database', step: 1, detail: i, total: t });
+			// });
+			// onProgress({ type: 'progress', phase: 'database', step: 2 });
+			// const fToPb = await coachToPocketbase.insertFiles(files, pb, state.user, ctoPb, (i, t) => {
+			// 	onProgress({ type: 'progress', phase: 'database', step: 2, detail: i, total: t });
+			// });
+			// onProgress({ type: 'progress', phase: 'database', step: 3 });
+			// await coachToPocketbase.insertCacheFiles(pb, coach, fToPb, (i, t) => {
+			// 	onProgress({ type: 'progress', phase: 'database', step: 3, detail: i, total: t });
+			// });
 		} else {
 			logger.debug('Current File Hash is equal to last one. Skipping.');
 		}
@@ -109,7 +131,7 @@ export async function sync({
 		success = true;
 	} catch (e) {
 		logger.error(`S3 Error occured while syncing: ${e}`);
-		if (e instanceof Error) logger.error(e.stack);
+		if (e instanceof Error) logger.error((e as Error).stack);
 		onProgress({ type: 'error', msg: 'Internal Error (S3)' }); // ERROR S3
 		onClose(1011);
 	} finally {
@@ -138,7 +160,7 @@ export async function sync({
 		} catch (e: unknown) {
 			logger.error(`DATA: ${JSON.stringify(data)}`);
 			logger.error(`Failed to write state back to pocketbase! ${e}`);
-			if (e instanceof Error) logger.error(e.stack);
+			if (e instanceof Error) logger.error((e as Error).stack);
 			onProgress({
 				type: 'error',
 				msg: 'Failed to write back token information. Consider reconnecting Coach via QR-Code'

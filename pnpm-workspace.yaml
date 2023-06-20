@@ -1,0 +1,4 @@
+packages:
+  - "frontend"
+  - "sync-service"
+  - "ical-service"

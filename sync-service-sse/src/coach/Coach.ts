@@ -1,6 +1,8 @@
 import { HmacSHA256 } from 'crypto-js';
 import { stringify } from 'crypto-js/enc-hex';
 import { Logger } from 'winston';
+import { StateRecord } from '../schema';
+import { ENV } from '..';
 
 const ZEROTIME = new Date(0).toISOString();
 
@@ -9,6 +11,20 @@ export type TokenChangeHookFn = (options: {
 	accessToken?: string | undefined;
 	expires?: number | undefined;
 }) => void;
+
+export interface UserInfo {
+	coach: { name: string; version: string; id: string };
+	domain: { id: number; name: string };
+	user: { id: number; firstname: string; familyname: string };
+	token: {
+		access_token: string;
+		client_id: string;
+		expires: number;
+		refresh_token: string;
+		scope: string;
+		token_type: string;
+	};
+}
 
 export class Coach {
 	private accessToken?: { expires: number; token: string };
@@ -123,19 +139,7 @@ export class Coach {
 		);
 	}
 
-	public async getUserInfo(): Promise<{
-		coach: { name: string; version: string; id: string };
-		domain: { id: number; name: string };
-		user: { id: number; firstname: string; familyname: string };
-		token: {
-			access_token: string;
-			client_id: string;
-			expires: number;
-			refresh_token: string;
-			scope: string;
-			token_type: string;
-		};
-	}> {
+	public async getUserInfo(): Promise<UserInfo> {
 		this.logger?.debug('Getting Oauth User-Info...');
 		// await this.checkAccessToken()
 		const options = {
@@ -354,6 +358,10 @@ export class Coach {
 		return [];
 	}
 
+	public getMetaData() {
+		return this.coachMeta;
+	}
+
 	public static async createFromQrCode(
 		qrcode: {
 			token: string;
@@ -384,21 +392,19 @@ export class Coach {
 		}
 	}
 
-	public static async createFromState(
-		state: {
-			token: string;
-			expires: number;
-			refreshToken: string;
-			url?: string;
-			userId?: string;
-			domainId?: number;
-			clientSecret: string;
-			clientId: string;
-		},
-		logger?: Logger,
-		tokenChangeHook?: TokenChangeHookFn
-	) {
-		let coach = new Coach(state, logger, tokenChangeHook);
+	public static async createFromState(state: StateRecord, logger?: Logger, tokenChangeHook?: TokenChangeHookFn) {
+		let coach = new Coach(
+			{
+				token: state.token,
+				expires: new Date(state.expires).getTime(),
+				refreshToken: state.refreshToken ?? '',
+				domainId: state.domainId,
+				clientId: ENV.CLIENT_ID,
+				clientSecret: ENV.CLIENT_SECRET
+			},
+			logger,
+			tokenChangeHook
+		);
 		try {
 			if (state.refreshToken == '') {
 				await coach.getUserInfo();

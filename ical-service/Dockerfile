@@ -4,9 +4,9 @@ WORKDIR /app
 
 COPY . .
 
-RUN yarn install --immutable 
-RUN yarn build
+RUN pnpm install --frozen-lockfile 
+RUN pnpm run build
 
 EXPOSE 8080
 
-ENTRYPOINT [ "yarn", "start" ]
+ENTRYPOINT [ "pnpm", "run", "start" ]

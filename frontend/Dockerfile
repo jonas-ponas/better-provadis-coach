@@ -10,6 +10,7 @@ ARG PB_VERSION
 ENV VITE_UI_VERSION=${UI_VERSION}
 ENV VITE_PB_VERSION=${PB_VERSION}
 
+RUN npm install -g pnpm
 RUN pnpm install --frozen-lockfile
 RUN pnpm run build
 

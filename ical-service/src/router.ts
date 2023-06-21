@@ -38,7 +38,11 @@ async function getFiles(icalRecord: any, client: any): Promise<{ name: string; c
 router.get('/:id', async (request, response) => {
 	const remoteAdress = request.headers['x-real-ip'] ?? request.socket.remoteAddress;
 	logger.info(`${remoteAdress} requests ${request.url}`);
-	const id = request.params.id;
+	let id = request.params.id;
+	if (id.endsWith('.ics')) {
+		logger.debug('Ends with .ics, Removing it >:(');
+		id = id.replace('.ics', '');
+	}
 	try {
 		const icalRecord = await client.collection('icals').getOne(id);
 		logger.debug(JSON.stringify(icalRecord));

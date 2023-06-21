@@ -9,8 +9,8 @@ export default ({ mode }) => {
 		server: {
 			proxy: {
 				'^/api': {
-					target: `${myEnv.VITE_POCKETBASE}`
-					// changeOrigin: true,
+					target: `${myEnv.VITE_POCKETBASE}`,
+					changeOrigin: true
 				},
 				'/ws': {
 					target: `${myEnv.VITE_SYNC}`,

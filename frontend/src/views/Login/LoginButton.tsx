@@ -1,8 +1,8 @@
 import { Button } from '@mui/material';
 import { AuthProviderInfo } from 'pocketbase';
 import React from 'react';
-import { ICON_MAP } from '../icons/providerIcons';
-import Icon from './Icon';
+import { ICON_MAP } from '../../icons/providerIcons';
+import Icon from '../../components/Icon';
 
 const REDIRECT_PATH = '/callback';
 

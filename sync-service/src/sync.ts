@@ -1,9 +1,10 @@
-import {createHash} from 'crypto';
+import { createHash } from 'crypto';
 const PocketBase = require('pocketbase/cjs');
-import {Coach} from './coach/Coach';
+import { Coach } from './coach/Coach';
 import logger from './logger';
 import coachToPocketbase from './pocketbase/coachToPocketbase';
-import {MyWebSocketMessage} from './server';
+import { MyWebSocketMessage } from './server';
+import { writeFileSync } from 'fs';
 
 export async function sync({
 	onProgress,
@@ -22,23 +23,23 @@ export async function sync({
 	userId: string;
 	withNews?: boolean;
 }) {
-	onProgress({type: 'progress', phase: 'auth'});
+	onProgress({ type: 'progress', phase: 'auth' });
 	const pb = new PocketBase(pocketbase.url);
 	try {
 		await pb.admins.authWithPassword(pocketbase.user, pocketbase.password);
 	} catch (e: unknown) {
 		logger.error(`S2 Could not authorize PocketBase Service User. Check Credentials! ${e}`);
 		if (e instanceof Error) logger.error(e.stack);
-		onProgress({type: 'error', msg: 'Internal Error (S2)'}); // ERROR S2
+		onProgress({ type: 'error', msg: 'Internal Error (S2)' }); // ERROR S2
 		onClose(1011);
 		return;
 	}
 	let coach: Coach;
 	let state;
 	try {
-		onProgress({type: 'progress', phase: 'state'});
+		onProgress({ type: 'progress', phase: 'state' });
 		state = await pb.collection('state').getFirstListItem(`user.id = "${userId}"`);
-		onProgress({type: 'progress', phase: 'coach', step: 1});
+		onProgress({ type: 'progress', phase: 'coach', step: 1 });
 		coach = await Coach.createFromState(
 			{
 				token: state.token,
@@ -51,11 +52,11 @@ export async function sync({
 			},
 			logger
 		);
-		onProgress({type: 'progress', phase: 'coach', step: 2});
+		onProgress({ type: 'progress', phase: 'coach', step: 2 });
 	} catch (e) {
 		logger.error(`S4 Could not create Coach from state: ${e}`);
 		if (e instanceof Error) logger.error(e.stack);
-		onProgress({type: 'error', msg: 'Internal Error: Could not login into Provadis Coach (S4)'}); // ERROR S4
+		onProgress({ type: 'error', msg: 'Internal Error: Could not login into Provadis Coach (S4)' }); // ERROR S4
 		onClose(1011);
 		return;
 	}
@@ -65,39 +66,41 @@ export async function sync({
 	let newsHash;
 	try {
 		const user = await coach.getUserInfo();
-		onProgress({type: 'progress', phase: 'coach', step: 3});
+		onProgress({ type: 'progress', phase: 'coach', step: 3 });
 		username = user.user.firstname + ' ' + user.user.familyname;
 		logger.info(`Syncing Files for: ${username}`);
 
 		const dirs = await coach.getDirectories();
-		onProgress({type: 'progress', phase: 'coach', step: 4});
+		onProgress({ type: 'progress', phase: 'coach', step: 4 });
 
 		const files = await coach.getFiles();
-		onProgress({type: 'progress', phase: 'database', step: 1});
+		onProgress({ type: 'progress', phase: 'database', step: 1 });
 		filesHash = createHash('md5').update(JSON.stringify(files)).digest('hex');
+
+		writeFileSync('files.json', JSON.stringify(files));
 
 		if (filesHash !== state.lastFilesHash) {
 			const ctoPb = await coachToPocketbase.insertDirectories(dirs, pb, state.user, new Map(), (i, t) => {
-				onProgress({type: 'progress', phase: 'database', step: 1, detail: i, total: t});
+				onProgress({ type: 'progress', phase: 'database', step: 1, detail: i, total: t });
 			});
-			onProgress({type: 'progress', phase: 'database', step: 2});
+			onProgress({ type: 'progress', phase: 'database', step: 2 });
 			const fToPb = await coachToPocketbase.insertFiles(files, pb, state.user, ctoPb, (i, t) => {
-				onProgress({type: 'progress', phase: 'database', step: 2, detail: i, total: t});
+				onProgress({ type: 'progress', phase: 'database', step: 2, detail: i, total: t });
 			});
-			onProgress({type: 'progress', phase: 'database', step: 3});
+			onProgress({ type: 'progress', phase: 'database', step: 3 });
 			await coachToPocketbase.insertCacheFiles(pb, coach, fToPb, (i, t) => {
-				onProgress({type: 'progress', phase: 'database', step: 3, detail: i, total: t});
+				onProgress({ type: 'progress', phase: 'database', step: 3, detail: i, total: t });
 			});
 		} else {
 			logger.debug('Current File Hash is equal to last one. Skipping.');
 		}
 		if (withNews) {
 			const news = await coach.getNews();
-			onProgress({type: 'progress', phase: 'database', step: 4});
+			onProgress({ type: 'progress', phase: 'database', step: 4 });
 			newsHash = createHash('md5').update(JSON.stringify(news)).digest('hex');
 			if (newsHash !== state.lastNewsHash) {
 				await coachToPocketbase.insertNewsItems(news, pb, state.user, (i, t) => {
-					onProgress({type: 'progress', phase: 'database', step: 4, detail: i, total: t});
+					onProgress({ type: 'progress', phase: 'database', step: 4, detail: i, total: t });
 				});
 			} else {
 				logger.debug('Current News Hash is equal to last one. Skipping.');
@@ -107,7 +110,7 @@ export async function sync({
 	} catch (e) {
 		logger.error(`S3 Error occured while syncing: ${e}`);
 		if (e instanceof Error) logger.error(e.stack);
-		onProgress({type: 'error', msg: 'Internal Error (S3)'}); // ERROR S3
+		onProgress({ type: 'error', msg: 'Internal Error (S3)' }); // ERROR S3
 		onClose(1011);
 	} finally {
 		const currentState = coach.exportFromState();
@@ -133,6 +136,7 @@ export async function sync({
 		try {
 			await pb.collection('state').update(state.id, data);
 		} catch (e: unknown) {
+			logger.error(`DATA: ${JSON.stringify(data)}`);
 			logger.error(`Failed to write state back to pocketbase! ${e}`);
 			if (e instanceof Error) logger.error(e.stack);
 			onProgress({
@@ -140,6 +144,6 @@ export async function sync({
 				msg: 'Failed to write back token information. Consider reconnecting Coach via QR-Code'
 			});
 		}
-		onProgress({type: 'progress', phase: 'done'});
+		onProgress({ type: 'progress', phase: 'done' });
 	}
 }

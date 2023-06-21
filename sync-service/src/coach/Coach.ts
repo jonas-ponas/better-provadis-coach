@@ -1,19 +1,19 @@
-import {HmacSHA256} from 'crypto-js';
-import {stringify} from 'crypto-js/enc-hex';
-import {Logger} from 'winston';
+import { HmacSHA256 } from 'crypto-js';
+import { stringify } from 'crypto-js/enc-hex';
+import { Logger } from 'winston';
 
 const ZEROTIME = new Date(0).toISOString();
 
 export class Coach {
-	private accessToken?: {expires: number; token: string};
-	private coachToken?: {expires: number; token: string};
-	private refreshToken?: {expires?: number; token: string};
+	private accessToken?: { expires: number; token: string };
+	private coachToken?: { expires: number; token: string };
+	private refreshToken?: { expires?: number; token: string };
 
 	private userId: number = -1;
 	private url: string = '';
 	private domainId: number = -1;
 
-	private coachMeta?: {name: string; version: string; id: string};
+	private coachMeta?: { name: string; version: string; id: string };
 
 	private clientId?: string;
 	private clientSecret?: string;
@@ -104,9 +104,9 @@ export class Coach {
 	}
 
 	public async getUserInfo(): Promise<{
-		coach: {name: string; version: string; id: string};
-		domain: {id: number; name: string};
-		user: {id: number; firstname: string; familyname: string};
+		coach: { name: string; version: string; id: string };
+		domain: { id: number; name: string };
+		user: { id: number; firstname: string; familyname: string };
 		token: {
 			access_token: string;
 			client_id: string;

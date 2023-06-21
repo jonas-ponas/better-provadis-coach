@@ -1,9 +1,9 @@
 import React from 'react';
-import { Alert, AlertTitle, Box, Button } from '@mui/material';
+import { Alert, AlertTitle, Box, Button, SxProps } from '@mui/material';
 import { isRouteErrorResponse, useNavigate, useRouteError } from 'react-router-dom';
 import Icon from './Icon';
 
-export default function ErrorAlert({ title, description }: { title: string; description: string }) {
+export default function ErrorAlert({ title, description, sx }: { title: string; description: string; sx?: SxProps }) {
 	const error = useRouteError() as { [key: string]: any };
 	const navigate = useNavigate();
 	let name;
@@ -23,7 +23,7 @@ export default function ErrorAlert({ title, description }: { title: string; desc
 	}
 
 	return (
-		<Alert variant='filled' severity='error' icon={<Icon name='error-warning' style='line' />}>
+		<Alert variant='filled' severity='error' icon={<Icon name='error-warning' style='line' />} sx={sx}>
 			<AlertTitle>{name}</AlertTitle>
 			{message}
 			{stack && <pre>{stack}</pre>}

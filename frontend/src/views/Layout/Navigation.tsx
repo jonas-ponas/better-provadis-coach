@@ -1,8 +1,8 @@
 import React from 'react';
 import { Box, List, ListItemButton, ListItemIcon, ListItemText, Paper, useTheme } from '@mui/material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
-import Icon from './Icon';
-import { usePocketbase } from '../util/PocketbaseContext';
+import Icon from '../../components/Icon';
+import { usePocketbase } from '../../util/PocketbaseContext';
 
 interface MenuItem {
 	name: string;
@@ -14,7 +14,7 @@ interface MenuItem {
 
 const primaryMenu: MenuItem[] = [
 	{ name: 'Dateien', icon: 'folders', href: '/dir' },
-	{ name: 'Stundenplan', icon: 'calendar-todo', href: '/schedule' },
+	{ name: 'Stundenplan', icon: 'calendar-2', href: '/calendar' },
 	{ name: 'News', icon: 'rss', href: '/news' }
 ];
 

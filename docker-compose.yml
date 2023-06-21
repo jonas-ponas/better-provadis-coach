@@ -15,7 +15,7 @@ services:
       interval: 10s
       timeout: 10s
       retries: 3
-  expert-giggle:
+  sync:
     image: ghcr.io/jonas-ponas/expert-giggle:latest
     container_name: "sync-service"
     restart: unless-stopped
@@ -25,6 +25,17 @@ services:
       - PB_PASSWD=
       - CLIENT_SECRET=
       - CLIENT_ID=
+    networks:
+      - reverse-proxy
+      - back
+  ical:
+    image: ghcr.io/jonas-ponas/bpc-ical-service:latest
+    container_name: "bpc-ical-service"
+    restart: unless-stopped
+    environment:
+      - PB_URL=http://pocketbase:8090/
+      - PB_USER=
+      - PB_PASSWD=
     networks:
       - reverse-proxy
       - back

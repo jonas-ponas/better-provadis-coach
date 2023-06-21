@@ -1,10 +1,10 @@
-import {WebSocketServer, WebSocket, RawData} from 'ws';
+import { WebSocketServer, WebSocket, RawData } from 'ws';
 import handleLogin from './handlers/handleLogin';
 import handleSync from './handlers/handleSync';
 import dotenv from 'dotenv';
 import logger from './logger';
-import {scheduled} from './scheduled';
-import {CronJob} from 'cron';
+import { scheduled } from './scheduled';
+import { CronJob } from 'cron';
 import handleSyncNews from './handlers/handleSyncNews';
 
 dotenv.config();
@@ -24,7 +24,7 @@ const wss = new WebSocketServer({
 	port: PORT
 });
 
-type Handler = (client: MyWebSocket, data: {[key: string]: any}) => void;
+type Handler = (client: MyWebSocket, data: { [key: string]: any }) => void;
 
 export interface MyWebSocketMessage {
 	type: 'login' | 'sync' | 'error' | 'progress';
@@ -41,7 +41,7 @@ export interface MyWebSocket extends WebSocket {
 	userId: any;
 }
 
-const handlers: {[key: string]: Handler} = {
+const handlers: { [key: string]: Handler } = {
 	sync: handleSync,
 	syncNews: handleSyncNews,
 	login: handleLogin
@@ -56,11 +56,11 @@ function handleMessage(client: MyWebSocket) {
 				logger.verbose('Incoming ' + JSON.stringify(json));
 				return handlers[json.type](client, json);
 			}
-			return client.send(JSON.stringify({type: 'error', msg: 'Unknown message type.'}));
+			return client.send(JSON.stringify({ type: 'error', msg: 'Unknown message type.' }));
 		} catch (e) {
 			logger.warn('Unsupported Data: ' + data.toString('utf-8'));
 			client.close(1003, 'Unsupported Data');
-			client.send(JSON.stringify({type: 'error', msg: 'Provide JSON.'}));
+			client.send(JSON.stringify({ type: 'error', msg: 'Provide JSON.' }));
 			return;
 		}
 	};

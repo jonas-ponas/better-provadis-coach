@@ -4,7 +4,7 @@
   "workspaces": [
     "frontend",
     "sync-service",
-    "schedule-service"
+    "ical-service"
   ],
   "packageManager": "yarn@3.5.0",
   "devDependencies": {

@@ -1,4 +1,4 @@
-import {File} from '../coach/Coach';
+import { File } from '../coach/Coach';
 import logger from '../logger';
 // import pocketbaseEs from "pocketbase"
 
@@ -10,7 +10,7 @@ export default async function insertFiles(
 	onProgress?: (i: number, t: number) => void
 ) {
 	cToPbMap = cToPbMap || new Map<number, string>();
-	const fToPbMap = new Map<number, {pbId: string; name: string}>();
+	const fToPbMap = new Map<number, { pbId: string; name: string }>();
 	if (!pb.authStore.isValid) throw Error('Pocketbase-AuthStore not valid');
 	const total = files.length;
 	let i = 0;
@@ -38,7 +38,7 @@ export default async function insertFiles(
 				allowedUser: userId ? [userId] : []
 			};
 			const create = await pb.collection('file').create(data);
-			fToPbMap.set(create.coachId, {name: create.name, pbId: create.id});
+			fToPbMap.set(create.coachId, { name: create.name, pbId: create.id });
 			logger.debug(`Created ${create.name} ${create.id} ${create.coachId}`);
 			if (onProgress) onProgress(++i, total);
 		} catch (e) {
@@ -61,7 +61,7 @@ export default async function insertFiles(
 						});
 						logger.debug(`Updated ${update.name} ${update.id} ${update.coachId}`);
 						if (sizeChanged) {
-							fToPbMap.set(record.coachId, {pbId: record.id, name: record.name});
+							fToPbMap.set(record.coachId, { pbId: record.id, name: record.name });
 							logger.verbose('File size changed');
 						} // Update Cache File
 						if (onProgress) onProgress(++i, total);

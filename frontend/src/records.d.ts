@@ -51,3 +51,8 @@ export interface NewsItemRecord extends Record {
 	dateCreated?: string;
 	allowedUsers: string[];
 }
+
+export interface IcalRecord extends Record {
+	user: string;
+	fileList?: string[];
+}

@@ -1,17 +1,34 @@
-import React from 'react';
-import { Container, Box, Paper, Typography, useTheme, Button, Avatar, ButtonGroup } from '@mui/material';
+import React, { useRef } from 'react';
+import {
+	Container,
+	Box,
+	Paper,
+	Typography,
+	useTheme,
+	Button,
+	Avatar,
+	ButtonGroup,
+	TextField,
+	Stack
+} from '@mui/material';
 import { AuthMethodsList } from 'pocketbase';
-import Icon from '../components/Icon';
-import { useLoaderData } from 'react-router-dom';
-import LoginButton from '../components/LoginButton';
+import Icon from '../../components/Icon';
+import { useLoaderData, useNavigate } from 'react-router-dom';
+import LoginButton from './LoginButton';
+import { usePocketbase } from '../../util/PocketbaseContext';
 
 export default function Login(props: {}) {
 	const theme = useTheme();
 	const loaderData = useLoaderData();
 	const authMethodList = loaderData as AuthMethodsList;
+	const client = usePocketbase();
+	const navigate = useNavigate();
 
 	const uiVersion = import.meta.env.VITE_UI_VERSION || '???';
 	const pbVersion = import.meta.env.VITE_PB_VERSION || '???';
+
+	const usernameRef = useRef<HTMLInputElement>();
+	const passwordRef = useRef<HTMLInputElement>();
 
 	return (
 		<Box
@@ -68,6 +85,26 @@ export default function Login(props: {}) {
 									return <LoginButton authProvider={v} key={v.name} />;
 								})}
 						</ButtonGroup>
+						{authMethodList?.usernamePassword && (
+							<Stack direction='column' gap={1}>
+								<TextField inputRef={usernameRef} label='Username' />
+								<TextField inputRef={passwordRef} label='password' type='password' />
+								<Button
+									onClick={() => {
+										client
+											?.collection('users')
+											.authWithPassword(
+												usernameRef.current?.value ?? '',
+												passwordRef.current?.value ?? ''
+											)
+											.then(record => {
+												navigate('/');
+											});
+									}}>
+									Login
+								</Button>
+							</Stack>
+						)}
 					</Box>
 				</Paper>
 				<Box>

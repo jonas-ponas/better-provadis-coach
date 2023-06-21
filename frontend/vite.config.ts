@@ -2,18 +2,23 @@ import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 
 export default ({ mode }) => {
-	process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
+	const myEnv = { ...process.env, ...loadEnv(mode, process.cwd()) };
+	console.log(myEnv.VITE_POCKETBASE);
 	return defineConfig({
 		plugins: [react()],
 		server: {
 			proxy: {
 				'^/api': {
-					target: `https://${process.env.VITE_DEV_HOST}`,
+					target: `${myEnv.VITE_POCKETBASE}`,
 					changeOrigin: true
 				},
 				'/ws': {
-					target: `wss://${process.env.VITE_DEV_HOST}`,
+					target: `${myEnv.VITE_SYNC}`,
 					ws: true,
+					changeOrigin: true
+				},
+				'/ical': {
+					target: `${myEnv.VITE_ICAL}`,
 					changeOrigin: true
 				}
 			}

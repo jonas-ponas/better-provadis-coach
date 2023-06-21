@@ -1,5 +1,5 @@
 // import pocketbaseEs, { ClientResponseError } from "pocketbase";
-import {Directory} from '../coach/Coach';
+import { Directory } from '../coach/Coach';
 import logger from '../logger';
 
 export default async function insertDirectories(

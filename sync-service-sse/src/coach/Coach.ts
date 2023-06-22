@@ -1,7 +1,7 @@
 import { HmacSHA256 } from 'crypto-js';
 import { stringify } from 'crypto-js/enc-hex';
 import { Logger } from 'winston';
-import { StateRecord } from '../schema';
+import { StateRecord } from '../pocketbase-types';
 import { ENV } from '..';
 
 const ZEROTIME = new Date(0).toISOString();
@@ -353,6 +353,14 @@ export class Coach {
 		return response.blob();
 	}
 
+	public async getFileContentStream(fileId: number): Promise<ArrayBuffer> {
+		this.checkAccessToken();
+		const response = await fetch(
+			`https://${this.url}/shared/filemanager/${fileId}?login_token=${this.coachToken?.token}`
+		);
+		return response.arrayBuffer();
+	}
+
 	public getFileStructure(): any {
 		// TODO: Take getFiles and getDirectories and turn it in one big structure
 		return [];
@@ -543,7 +551,7 @@ export interface Directory {
 		user: number; // user_id_modified
 	};
 	status: {
-		status: number; // object_status
+		status: number | string; // object_status
 		timestamp: string; // object_status_datetime
 		user: number; // user_id_status
 	};

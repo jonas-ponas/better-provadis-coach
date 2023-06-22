@@ -2,7 +2,7 @@ import express, { Response } from 'express';
 import logger from './logger';
 import { config } from 'dotenv';
 import { checkPocketbaseToken, getLoggedInClient } from './util';
-import { syncFiles } from './coach/syncProcess';
+import { syncFiles } from './sync/syncProcess';
 
 config();
 
@@ -34,11 +34,13 @@ const PORT = process.env.PORT ?? 8080;
 app.get('/sync/:userId', async (req, resp, next) => {
 	const authorization = req.header('authorization');
 	const userId = req.params.userId;
+
 	if (!authorization || !userId) {
 		logger.debug('Bad Request');
 		resp.status(400).send('Bad Request');
 		return next();
 	}
+	// logger.warn('SKIPPING AUTH!');
 	const isTokenValid = await checkPocketbaseToken(req.params.userId, authorization);
 	if (!isTokenValid) {
 		logger.debug('Unauthorized');
@@ -64,7 +66,8 @@ app.get('/sync/:userId', async (req, resp, next) => {
 		client,
 		userId,
 		onProgress(message) {
-			resp.write(`data: ${message}\n\n`);
+			// logger.verbose(`Sending: ${JSON.stringify(message)}`);
+			resp.write(`data: ${JSON.stringify(message)}\n\n`);
 		}
 	});
 

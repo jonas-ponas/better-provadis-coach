@@ -1,0 +1,756 @@
+[
+    {
+        "id": 2,
+        "name": "root",
+        "parent_id": -1,
+        "object": {
+            "id": 40,
+            "inc": 2,
+            "type": 14
+        },
+        "created": {
+            "timestamp": "2015-08-11 12:49:34",
+            "user": 1
+        },
+        "modified": {
+            "timestamp": "2023-06-22 14:01:48",
+            "user": 6686
+        },
+        "status": {
+            "status": "1",
+            "timestamp": "2015-08-11 12:49:34",
+            "user": 5
+        },
+        "display": 1,
+        "group_id": 2,
+        "subfolder": 24
+    },
+    {
+        "id": 337,
+        "name": "Allgemeines",
+        "parent_id": 2,
+        "object": {
+            "id": 8618,
+            "inc": 337,
+            "type": 14
+        },
+        "created": {
+            "timestamp": "2015-09-30 14:37:32",
+            "user": 6
+        },
+        "modified": {
+            "timestamp": "2023-06-16 09:27:49",
+            "user": 3228
+        },
+        "status": {
+            "status": "1",
+            "timestamp": "2015-09-30 14:37:32",
+            "user": 6
+        },
+        "display": 1,
+        "group_id": 2,
+        "subfolder": -1
+    },
+    {
+        "id": 4841,
+        "name": "Bachelor Informatik (Telekom)",
+        "parent_id": 2,
+        "object": {
+            "id": 61449,
+            "inc": 4841,
+            "type": 14
+        },
+        "created": {
+            "timestamp": "2021-10-12 12:15:26",
+            "user": 6524
+        },
+        "modified": {
+            "timestamp": "2023-06-22 09:46:03",
+            "user": 6847
+        },
+        "status": {
+            "status": "1",
+            "timestamp": "2021-10-12 12:15:26",
+            "user": 6524
+        },
+        "display": 1,
+        "group_id": 2,
+        "subfolder": 4
+    },
+    {
+        "id": 4838,
+        "name": "Jahrgang 2021",
+        "parent_id": 4841,
+        "object": {
+            "id": 61446,
+            "inc": 4838,
+            "type": 14
+        },
+        "created": {
+            "timestamp": "2021-10-12 12:01:39",
+            "user": 6524
+        },
+        "modified": {
+            "timestamp": "2023-06-22 09:46:03",
+            "user": 6847
+        },
+        "status": {
+            "status": "1",
+            "timestamp": "2021-10-12 12:01:39",
+            "user": 6524
+        },
+        "display": 1,
+        "group_id": 2,
+        "subfolder": 2
+    },
+    {
+        "id": 4805,
+        "name": "BIN-T21-F-1",
+        "parent_id": 4838,
+        "object": {
+            "id": 61409,
+            "inc": 4805,
+            "type": 14
+        },
+        "created": {
+            "timestamp": "2021-10-12 11:36:15",
+            "user": 6524
+        },
+        "modified": {
+            "timestamp": "2023-06-22 09:45:32",
+            "user": 6847
+        },
+        "status": {
+            "status": "1",
+            "timestamp": "2021-10-12 11:36:15",
+            "user": 6524
+        },
+        "display": 1,
+        "group_id": 2,
+        "subfolder": 5
+    },
+    {
+        "id": 4807,
+        "name": "1. Semester",
+        "parent_id": 4805,
+        "object": {
+            "id": 61413,
+            "inc": 4807,
+            "type": 14
+        },
+        "created": {
+            "timestamp": "2021-10-12 11:38:47",
+            "user": 6524
+        },
+        "modified": {
+            "timestamp": "2022-03-16 20:01:37",
+            "user": 6539
+        },
+        "status": {
+            "status": "1",
+            "timestamp": "2021-10-12 11:38:47",
+            "user": 6524
+        },
+        "display": 1,
+        "group_id": 2,
+        "subfolder": 6
+    },
+    {
+        "id": 4810,
+        "name": "Grundlagen der Informatik",
+        "parent_id": 4807,
+        "object": {
+            "id": 61416,
+            "inc": 4810,
+            "type": 14
+        },
+        "created": {
+            "timestamp": "2021-10-12 11:40:02",
+            "user": 6524
+        },
+        "modified": {
+            "timestamp": "2022-02-22 16:47:42",
+            "user": 4144
+        },
+        "status": {
+            "status": "1",
+            "timestamp": "2021-10-12 11:40:02",
+            "user": 6524
+        },
+        "display": 1,
+        "group_id": 2,
+        "subfolder": 1
+    },
+    {
+        "id": 4931,
+        "name": "Beispiele",
+        "parent_id": 4810,
+        "object": {
+            "id": 62764,
+            "inc": 4931,
+            "type": 14
+        },
+        "created": {
+            "timestamp": "2021-10-26 08:10:19",
+            "user": 4144
+        },
+        "modified": {
+            "timestamp": "2022-01-27 16:59:58",
+            "user": 4144
+        },
+        "status": {
+            "status": "1",
+            "timestamp": "2021-10-26 08:10:19",
+            "user": 4144
+        },
+        "display": 1,
+        "group_id": 2,
+        "subfolder": -1
+    },
+    {
+        "id": 4812,
+        "name": "Lerntechniken",
+        "parent_id": 4807,
+        "object": {
+            "id": 61418,
+            "inc": 4812,
+            "type": 14
+        },
+        "created": {
+            "timestamp": "2021-10-12 11:40:39",
+            "user": 6524
+        },
+        "modified": {
+            "timestamp": "2021-10-25 19:31:26",
+            "user": 3679
+        },
+        "status": {
+            "status": "1",
+            "timestamp": "2021-10-12 11:40:39",
+            "user": 6524
+        },
+        "display": 1,
+        "group_id": 2,
+        "subfolder": -1
+    },
+    {
+        "id": 4808,
+        "name": "Mathematik 1",
+        "parent_id": 4807,
+        "object": {
+            "id": 61414,
+            "inc": 4808,
+            "type": 14
+        },
+        "created": {
+            "timestamp": "2021-10-12 11:39:31",
+            "user": 6524
+        },
+        "modified": {
+            "timestamp": "2022-02-25 13:16:29",
+            "user": 4085
+        },
+        "status": {
+            "status": "1",
+            "timestamp": "2021-10-12 11:39:31",
+            "user": 6524
+        },
+        "display": 1,
+        "group_id": 2,
+        "subfolder": -1
+    },
+    {
+        "id": 4811,
+        "name": "Programmierung",
+        "parent_id": 4807,
+        "object": {
+            "id": 61417,
+            "inc": 4811,
+            "type": 14
+        },
+        "created": {
+            "timestamp": "2021-10-12 11:40:21",
+            "user": 6524
+        },
+        "modified": {
+            "timestamp": "2022-03-16 20:01:36",
+            "user": 6539
+        },
+        "status": {
+            "status": "1",
+            "timestamp": "2021-10-12 11:40:21",
+            "user": 6524
+        },
+        "display": 1,
+        "group_id": 2,
+        "subfolder": 4
+    },
+    {
+        "id": 4901,
+        "name": "Java",
+        "parent_id": 4811,
+        "object": {
+            "id": 62433,
+            "inc": 4901,
+            "type": 14
+        },
+        "created": {
+            "timestamp": "2021-10-20 09:02:44",
+            "user": 6539
+        },
+        "modified": {
+            "timestamp": "2022-02-25 22:55:52",
+            "user": 6539
+        },
+        "status": {
+            "status": "1",
+            "timestamp": "2021-10-20 09:02:44",
+            "user": 6539
+        },
+        "display": 1,
+        "group_id": 2,
+        "subfolder": 7
+    },
+    {
+        "id": 4954,
+        "name": "01_Foliensätze",
+        "parent_id": 4901,
+        "object": {
+            "id": 62910,
+            "inc": 4954,
+            "type": 14
+        },
+        "created": {
+            "timestamp": "2021-10-29 00:16:49",
+            "user": 6539
+        },
+        "modified": {
+            "timestamp": "2022-02-07 16:58:18",
+            "user": 6539
+        },
+        "status": {
+            "status": "1",
+            "timestamp": "2021-10-29 00:16:49",
+            "user": 6539
+        },
+        "display": 1,
+        "group_id": 2,
+        "subfolder": -1
+    },
+    {
+        "id": 4941,
+        "name": "02_Aufgabenblätter",
+        "parent_id": 4901,
+        "object": {
+            "id": 62839,
+            "inc": 4941,
+            "type": 14
+        },
+        "created": {
+            "timestamp": "2021-10-27 21:12:14",
+            "user": 6539
+        },
+        "modified": {
+            "timestamp": "2022-02-25 22:55:52",
+            "user": 6539
+        },
+        "status": {
+            "status": "1",
+            "timestamp": "2021-10-27 21:12:14",
+            "user": 6539
+        },
+        "display": 1,
+        "group_id": 2,
+        "subfolder": -1
+    },
+    {
+        "id": 5065,
+        "name": "03_Lösungen",
+        "parent_id": 4901,
+        "object": {
+            "id": 64426,
+            "inc": 5065,
+            "type": 14
+        },
+        "created": {
+            "timestamp": "2021-11-11 23:15:58",
+            "user": 6539
+        },
+        "modified": {
+            "timestamp": "2022-02-25 22:16:33",
+            "user": 6539
+        },
+        "status": {
+            "status": "1",
+            "timestamp": "2021-11-11 23:15:58",
+            "user": 6539
+        },
+        "display": 1,
+        "group_id": 2,
+        "subfolder": -1
+    },
+    {
+        "id": 5713,
+        "name": "04_Übungen",
+        "parent_id": 4901,
+        "object": {
+            "id": 70207,
+            "inc": 5713,
+            "type": 14
+        },
+        "created": {
+            "timestamp": "2021-12-15 18:24:04",
+            "user": 6539
+        },
+        "modified": {
+            "timestamp": "2021-12-15 18:26:57",
+            "user": 6539
+        },
+        "status": {
+            "status": "1",
+            "timestamp": "2021-12-15 18:24:04",
+            "user": 6539
+        },
+        "display": 1,
+        "group_id": 2,
+        "subfolder": -1
+    },
+    {
+        "id": 4966,
+        "name": "05_Übersichten",
+        "parent_id": 4901,
+        "object": {
+            "id": 63233,
+            "inc": 4966,
+            "type": 14
+        },
+        "created": {
+            "timestamp": "2021-11-03 18:43:25",
+            "user": 6539
+        },
+        "modified": {
+            "timestamp": "2021-11-07 23:22:25",
+            "user": 6539
+        },
+        "status": {
+            "status": "1",
+            "timestamp": "2021-11-03 18:43:25",
+            "user": 6539
+        },
+        "display": 1,
+        "group_id": 2,
+        "subfolder": -1
+    },
+    {
+        "id": 5567,
+        "name": "06_Projekte",
+        "parent_id": 4901,
+        "object": {
+            "id": 68403,
+            "inc": 5567,
+            "type": 14
+        },
+        "created": {
+            "timestamp": "2021-11-20 19:50:28",
+            "user": 6539
+        },
+        "modified": {
+            "timestamp": "2022-02-07 00:11:42",
+            "user": 6539
+        },
+        "status": {
+            "status": "1",
+            "timestamp": "2021-11-20 19:50:28",
+            "user": 6539
+        },
+        "display": 1,
+        "group_id": 2,
+        "subfolder": -1
+    },
+    {
+        "id": 4967,
+        "name": "07_Lehrfilme",
+        "parent_id": 4901,
+        "object": {
+            "id": 63241,
+            "inc": 4967,
+            "type": 14
+        },
+        "created": {
+            "timestamp": "2021-11-03 22:18:13",
+            "user": 6539
+        },
+        "modified": {
+            "timestamp": "2021-11-03 23:14:54",
+            "user": 6539
+        },
+        "status": {
+            "status": "1",
+            "timestamp": "2021-11-03 22:18:13",
+            "user": 6539
+        },
+        "display": 1,
+        "group_id": 2,
+        "subfolder": -1
+    },
+    {
+        "id": 5744,
+        "name": "Latex",
+        "parent_id": 4811,
+        "object": {
+            "id": 71466,
+            "inc": 5744,
+            "type": 14
+        },
+        "created": {
+            "timestamp": "2022-02-01 16:58:29",
+            "user": 6539
+        },
+        "modified": {
+            "timestamp": "2022-02-06 20:21:44",
+            "user": 6539
+        },
+        "status": {
+            "status": "1",
+            "timestamp": "2022-02-01 16:58:29",
+            "user": 6539
+        },
+        "display": 1,
+        "group_id": 2,
+        "subfolder": -1
+    },
+    {
+        "id": 4900,
+        "name": "Python",
+        "parent_id": 4811,
+        "object": {
+            "id": 62432,
+            "inc": 4900,
+            "type": 14
+        },
+        "created": {
+            "timestamp": "2021-10-20 09:01:15",
+            "user": 6539
+        },
+        "modified": {
+            "timestamp": "2021-10-28 23:41:47",
+            "user": 6539
+        },
+        "status": {
+            "status": "1",
+            "timestamp": "2021-10-20 09:01:15",
+            "user": 6539
+        },
+        "display": 1,
+        "group_id": 2,
+        "subfolder": 6
+    },
+    {
+        "id": 4902,
+        "name": "01_Foliensätze",
+        "parent_id": 4900,
+        "object": {
+            "id": 62434,
+            "inc": 4902,
+            "type": 14
+        },
+        "created": {
+            "timestamp": "2021-10-20 09:03:30",
+            "user": 6539
+        },
+        "modified": {
+            "timestamp": "2021-10-28 08:47:26",
+            "user": 6539
+        },
+        "status": {
+            "status": "1",
+            "timestamp": "2021-10-20 09:03:30",
+            "user": 6539
+        },
+        "display": 1,
+        "group_id": 2,
+        "subfolder": -1
+    },
+    {
+        "id": 4903,
+        "name": "02_Aufgabenblätter",
+        "parent_id": 4900,
+        "object": {
+            "id": 62435,
+            "inc": 4903,
+            "type": 14
+        },
+        "created": {
+            "timestamp": "2021-10-20 09:03:46",
+            "user": 6539
+        },
+        "modified": {
+            "timestamp": "2021-10-28 09:44:54",
+            "user": 6539
+        },
+        "status": {
+            "status": "1",
+            "timestamp": "2021-10-20 09:03:46",
+            "user": 6539
+        },
+        "display": 1,
+        "group_id": 2,
+        "subfolder": -1
+    },
+    {
+        "id": 4905,
+        "name": "03_Lösungen",
+        "parent_id": 4900,
+        "object": {
+            "id": 62437,
+            "inc": 4905,
+            "type": 14
+        },
+        "created": {
+            "timestamp": "2021-10-20 09:05:21",
+            "user": 6539
+        },
+        "modified": {
+            "timestamp": "2021-10-28 23:40:16",
+            "user": 6539
+        },
+        "status": {
+            "status": "1",
+            "timestamp": "2021-10-20 09:05:21",
+            "user": 6539
+        },
+        "display": 1,
+        "group_id": 2,
+        "subfolder": -1
+    },
+    {
+        "id": 4904,
+        "name": "04_Codierung",
+        "parent_id": 4900,
+        "object": {
+            "id": 62436,
+            "inc": 4904,
+            "type": 14
+        },
+        "created": {
+            "timestamp": "2021-10-20 09:04:16",
+            "user": 6539
+        },
+        "modified": {
+            "timestamp": "2021-10-28 23:41:47",
+            "user": 6539
+        },
+        "status": {
+            "status": "1",
+            "timestamp": "2021-10-20 09:04:16",
+            "user": 6539
+        },
+        "display": 1,
+        "group_id": 2,
+        "subfolder": -1
+    },
+    {
+        "id": 4906,
+        "name": "05_Übersichten",
+        "parent_id": 4900,
+        "object": {
+            "id": 62438,
+            "inc": 4906,
+            "type": 14
+        },
+        "created": {
+            "timestamp": "2021-10-20 09:06:13",
+            "user": 6539
+        },
+        "modified": {
+            "timestamp": "2021-10-28 00:42:29",
+            "user": 6539
+        },
+        "status": {
+            "status": "1",
+            "timestamp": "2021-10-20 09:06:13",
+            "user": 6539
+        },
+        "display": 1,
+        "group_id": 2,
+        "subfolder": -1
+    },
+    {
+        "id": 4907,
+        "name": "06_Projekte",
+        "parent_id": 4900,
+        "object": {
+            "id": 62439,
+            "inc": 4907,
+            "type": 14
+        },
+        "created": {
+            "timestamp": "2021-10-20 09:07:34",
+            "user": 6539
+        },
+        "modified": {
+            "timestamp": "1970-01-01T00:00:00.000Z",
+            "user": -1
+        },
+        "status": {
+            "status": "1",
+            "timestamp": "2021-10-20 09:07:34",
+            "user": 6539
+        },
+        "display": 1,
+        "group_id": 2,
+        "subfolder": -1
+    },
+    {
+        "id": 5718,
+        "name": "WAB",
+        "parent_id": 4811,
+        "object": {
+            "id": 70460,
+            "inc": 5718,
+            "type": 14
+        },
+        "created": {
+            "timestamp": "2022-01-04 18:21:26",
+            "user": 6539
+        },
+        "modified": {
+            "timestamp": "2022-03-16 20:01:36",
+            "user": 6539
+        },
+        "status": {
+            "status": "1",
+            "timestamp": "2022-01-04 18:21:26",
+            "user": 6539
+        },
+        "display": 1,
+        "group_id": 2,
+        "subfolder": 1
+    },
+    {
+        "id": 4813,
+        "name": "Sprachkompetenz Englisch",
+        "parent_id": 4807,
+        "object": {
+            "id": 61419,
+            "inc": 4813,
+            "type": 14
+        },
+        "created": {
+            "timestamp": "2021-10-12 11:41:07",
+            "user": 6524
+        },
+        "modified": {
+            "timestamp": "2021-12-02 15:33:42",
+            "user": 4520
+        },
+        "status": {
+            "status": "1",
+            "timestamp": "2021-10-12 11:41:07",
+            "user": 6524
+        },
+        "display": 1,
+        "group_id": 2,
+        "subfolder": 6
+    }
+]

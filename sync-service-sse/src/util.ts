@@ -41,3 +41,11 @@ export async function getLoggedInClient(): Promise<PocketBase> {
 	await client.admins.authWithPassword(ENV.PB_USER, ENV.PB_PASSWD);
 	return client;
 }
+
+export interface ClientResponseError extends Error {
+	url: string; // requested url
+	status: number; // response status code
+	response: { [key: string]: any }; // the API JSON error response
+	isAbort: boolean; // is abort/cancellation error
+	originalError: Error | null; // the original non-normalized error
+}

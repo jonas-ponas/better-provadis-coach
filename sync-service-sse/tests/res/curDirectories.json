@@ -1,0 +1,722 @@
+[
+    {
+        "coachId": 4695,
+        "collectionId": "d1vcgl0ttldpkz2",
+        "collectionName": "directory",
+        "created": "2023-06-22 09:11:09.844Z",
+        "expand": {
+            "parent": {
+                "coachId": 2,
+                "collectionId": "d1vcgl0ttldpkz2",
+                "collectionName": "directory",
+                "created": "2023-06-22 09:11:09.107Z",
+                "id": "uzu3l4mjv226c1g",
+                "name": "root",
+                "parent": "",
+                "timestamp": "2023-06-22 09:48:47.000Z",
+                "updated": "2023-06-22 09:11:09.107Z"
+            }
+        },
+        "id": "znxc30cscdoqx6d",
+        "name": "Prüfungsamt Telekom",
+        "parent": "uzu3l4mjv226c1g",
+        "timestamp": "2022-07-11 12:46:26.000Z",
+        "updated": "2023-06-22 09:11:09.844Z"
+    },
+    {
+        "coachId": 3,
+        "collectionId": "d1vcgl0ttldpkz2",
+        "collectionName": "directory",
+        "created": "2023-06-22 09:11:09.839Z",
+        "expand": {
+            "parent": {
+                "coachId": 2,
+                "collectionId": "d1vcgl0ttldpkz2",
+                "collectionName": "directory",
+                "created": "2023-06-22 09:11:09.107Z",
+                "id": "uzu3l4mjv226c1g",
+                "name": "root",
+                "parent": "",
+                "timestamp": "2023-06-22 09:48:47.000Z",
+                "updated": "2023-06-22 09:11:09.107Z"
+            }
+        },
+        "id": "uqp88ikeefff5xx",
+        "name": "Prüfungsamt Höchst, Berlin, Ostfildern",
+        "parent": "uzu3l4mjv226c1g",
+        "timestamp": "2022-05-24 16:10:32.000Z",
+        "updated": "2023-06-22 09:11:09.839Z"
+    },
+    {
+        "coachId": 3128,
+        "collectionId": "d1vcgl0ttldpkz2",
+        "collectionName": "directory",
+        "created": "2023-06-22 09:11:09.834Z",
+        "expand": {
+            "parent": {
+                "coachId": 2,
+                "collectionId": "d1vcgl0ttldpkz2",
+                "collectionName": "directory",
+                "created": "2023-06-22 09:11:09.107Z",
+                "id": "uzu3l4mjv226c1g",
+                "name": "root",
+                "parent": "",
+                "timestamp": "2023-06-22 09:48:47.000Z",
+                "updated": "2023-06-22 09:11:09.107Z"
+            }
+        },
+        "id": "sc7gd6vup2m9c85",
+        "name": "Bibliothek",
+        "parent": "uzu3l4mjv226c1g",
+        "timestamp": "2023-04-20 12:21:59.000Z",
+        "updated": "2023-06-22 09:11:09.834Z"
+    },
+    {
+        "coachId": 4866,
+        "collectionId": "d1vcgl0ttldpkz2",
+        "collectionName": "directory",
+        "created": "2023-06-22 09:11:09.827Z",
+        "expand": {
+            "parent": {
+                "coachId": 4806,
+                "collectionId": "d1vcgl0ttldpkz2",
+                "collectionName": "directory",
+                "created": "2023-06-22 09:11:09.447Z",
+                "id": "47g99yzhsyqlg4w",
+                "name": "BIN-T21-F-2",
+                "parent": "bayjf8vnzz2wkcp",
+                "timestamp": "2023-06-22 09:46:03.000Z",
+                "updated": "2023-06-22 09:11:09.447Z"
+            }
+        },
+        "id": "i6lgn6iuwo6fqx6",
+        "name": "Stundenplan",
+        "parent": "47g99yzhsyqlg4w",
+        "timestamp": "2023-03-14 10:19:57.000Z",
+        "updated": "2023-06-22 09:11:09.827Z"
+    },
+    {
+        "coachId": 7011,
+        "collectionId": "d1vcgl0ttldpkz2",
+        "collectionName": "directory",
+        "created": "2023-06-22 09:11:09.822Z",
+        "expand": {
+            "parent": {
+                "coachId": 7006,
+                "collectionId": "d1vcgl0ttldpkz2",
+                "collectionName": "directory",
+                "created": "2023-06-22 09:11:09.784Z",
+                "id": "5kjwh6s4zy2lobc",
+                "name": "4. Semester",
+                "parent": "47g99yzhsyqlg4w",
+                "timestamp": "2023-06-22 09:46:03.000Z",
+                "updated": "2023-06-22 09:11:09.784Z"
+            }
+        },
+        "id": "lcjx3s4g7hgnt13",
+        "name": "Wissensmanagement und Mensch-Maschine-Kommunikation",
+        "parent": "5kjwh6s4zy2lobc",
+        "timestamp": "2023-06-19 08:40:13.000Z",
+        "updated": "2023-06-22 09:11:09.822Z"
+    },
+    {
+        "coachId": 7010,
+        "collectionId": "d1vcgl0ttldpkz2",
+        "collectionName": "directory",
+        "created": "2023-06-22 09:11:09.817Z",
+        "expand": {
+            "parent": {
+                "coachId": 7006,
+                "collectionId": "d1vcgl0ttldpkz2",
+                "collectionName": "directory",
+                "created": "2023-06-22 09:11:09.784Z",
+                "id": "5kjwh6s4zy2lobc",
+                "name": "4. Semester",
+                "parent": "47g99yzhsyqlg4w",
+                "timestamp": "2023-06-22 09:46:03.000Z",
+                "updated": "2023-06-22 09:11:09.784Z"
+            }
+        },
+        "id": "zdxy2ro7wu1mleu",
+        "name": "Technische Informatik und Rechnerarchitekturen und XAAS",
+        "parent": "5kjwh6s4zy2lobc",
+        "timestamp": "2023-06-21 22:17:08.000Z",
+        "updated": "2023-06-22 09:11:09.817Z"
+    },
+    {
+        "coachId": 7009,
+        "collectionId": "d1vcgl0ttldpkz2",
+        "collectionName": "directory",
+        "created": "2023-06-22 09:11:09.810Z",
+        "expand": {
+            "parent": {
+                "coachId": 7006,
+                "collectionId": "d1vcgl0ttldpkz2",
+                "collectionName": "directory",
+                "created": "2023-06-22 09:11:09.784Z",
+                "id": "5kjwh6s4zy2lobc",
+                "name": "4. Semester",
+                "parent": "47g99yzhsyqlg4w",
+                "timestamp": "2023-06-22 09:46:03.000Z",
+                "updated": "2023-06-22 09:11:09.784Z"
+            }
+        },
+        "id": "7qk0fdqzykg1jh8",
+        "name": "Interkulturelle Kommunikation und heterogene Teams",
+        "parent": "5kjwh6s4zy2lobc",
+        "timestamp": "2023-06-15 17:28:06.000Z",
+        "updated": "2023-06-22 09:11:09.810Z"
+    },
+    {
+        "coachId": 7008,
+        "collectionId": "d1vcgl0ttldpkz2",
+        "collectionName": "directory",
+        "created": "2023-06-22 09:11:09.805Z",
+        "expand": {
+            "parent": {
+                "coachId": 7006,
+                "collectionId": "d1vcgl0ttldpkz2",
+                "collectionName": "directory",
+                "created": "2023-06-22 09:11:09.784Z",
+                "id": "5kjwh6s4zy2lobc",
+                "name": "4. Semester",
+                "parent": "47g99yzhsyqlg4w",
+                "timestamp": "2023-06-22 09:46:03.000Z",
+                "updated": "2023-06-22 09:11:09.784Z"
+            }
+        },
+        "id": "g3ugbdct7ek5ckk",
+        "name": "Data Analytics & Big Data",
+        "parent": "5kjwh6s4zy2lobc",
+        "timestamp": "2023-06-22 09:46:03.000Z",
+        "updated": "2023-06-22 09:11:09.805Z"
+    },
+    {
+        "coachId": 7386,
+        "collectionId": "d1vcgl0ttldpkz2",
+        "collectionName": "directory",
+        "created": "2023-06-22 09:11:09.800Z",
+        "expand": {
+            "parent": {
+                "coachId": 7007,
+                "collectionId": "d1vcgl0ttldpkz2",
+                "collectionName": "directory",
+                "created": "2023-06-22 09:11:09.789Z",
+                "id": "baaizm4r8flvej2",
+                "name": "Agile Software Engineering und Softwaretechnik",
+                "parent": "5kjwh6s4zy2lobc",
+                "timestamp": "2023-06-19 23:06:20.000Z",
+                "updated": "2023-06-22 09:11:09.789Z"
+            }
+        },
+        "id": "7wn1tsb918kvcz6",
+        "name": "Unterlagen",
+        "parent": "baaizm4r8flvej2",
+        "timestamp": "2023-06-19 23:06:20.000Z",
+        "updated": "2023-06-22 09:11:09.800Z"
+    },
+    {
+        "coachId": 7387,
+        "collectionId": "d1vcgl0ttldpkz2",
+        "collectionName": "directory",
+        "created": "2023-06-22 09:11:09.794Z",
+        "expand": {
+            "parent": {
+                "coachId": 7007,
+                "collectionId": "d1vcgl0ttldpkz2",
+                "collectionName": "directory",
+                "created": "2023-06-22 09:11:09.789Z",
+                "id": "baaizm4r8flvej2",
+                "name": "Agile Software Engineering und Softwaretechnik",
+                "parent": "5kjwh6s4zy2lobc",
+                "timestamp": "2023-06-19 23:06:20.000Z",
+                "updated": "2023-06-22 09:11:09.789Z"
+            }
+        },
+        "id": "ef6y8z7doybf5kj",
+        "name": "Folien",
+        "parent": "baaizm4r8flvej2",
+        "timestamp": "1970-01-01 00:00:00.000Z",
+        "updated": "2023-06-22 09:11:09.794Z"
+    },
+    {
+        "coachId": 7007,
+        "collectionId": "d1vcgl0ttldpkz2",
+        "collectionName": "directory",
+        "created": "2023-06-22 09:11:09.789Z",
+        "expand": {
+            "parent": {
+                "coachId": 7006,
+                "collectionId": "d1vcgl0ttldpkz2",
+                "collectionName": "directory",
+                "created": "2023-06-22 09:11:09.784Z",
+                "id": "5kjwh6s4zy2lobc",
+                "name": "4. Semester",
+                "parent": "47g99yzhsyqlg4w",
+                "timestamp": "2023-06-22 09:46:03.000Z",
+                "updated": "2023-06-22 09:11:09.784Z"
+            }
+        },
+        "id": "baaizm4r8flvej2",
+        "name": "Agile Software Engineering und Softwaretechnik",
+        "parent": "5kjwh6s4zy2lobc",
+        "timestamp": "2023-06-19 23:06:20.000Z",
+        "updated": "2023-06-22 09:11:09.789Z"
+    },
+    {
+        "coachId": 7006,
+        "collectionId": "d1vcgl0ttldpkz2",
+        "collectionName": "directory",
+        "created": "2023-06-22 09:11:09.784Z",
+        "expand": {
+            "parent": {
+                "coachId": 4806,
+                "collectionId": "d1vcgl0ttldpkz2",
+                "collectionName": "directory",
+                "created": "2023-06-22 09:11:09.447Z",
+                "id": "47g99yzhsyqlg4w",
+                "name": "BIN-T21-F-2",
+                "parent": "bayjf8vnzz2wkcp",
+                "timestamp": "2023-06-22 09:46:03.000Z",
+                "updated": "2023-06-22 09:11:09.447Z"
+            }
+        },
+        "id": "5kjwh6s4zy2lobc",
+        "name": "4. Semester",
+        "parent": "47g99yzhsyqlg4w",
+        "timestamp": "2023-06-22 09:46:03.000Z",
+        "updated": "2023-06-22 09:11:09.784Z"
+    },
+    {
+        "coachId": 6611,
+        "collectionId": "d1vcgl0ttldpkz2",
+        "collectionName": "directory",
+        "created": "2023-06-22 09:11:09.778Z",
+        "expand": {
+            "parent": {
+                "coachId": 6605,
+                "collectionId": "d1vcgl0ttldpkz2",
+                "collectionName": "directory",
+                "created": "2023-06-22 09:11:09.729Z",
+                "id": "wjry0vwyp4x7szc",
+                "name": "3. Semester",
+                "parent": "47g99yzhsyqlg4w",
+                "timestamp": "2023-06-07 08:50:27.000Z",
+                "updated": "2023-06-22 09:11:09.729Z"
+            }
+        },
+        "id": "ov5i2w4trrfjy3v",
+        "name": "Projektmanagement",
+        "parent": "wjry0vwyp4x7szc",
+        "timestamp": "2022-11-28 13:47:19.000Z",
+        "updated": "2023-06-22 09:11:09.778Z"
+    },
+    {
+        "coachId": 6607,
+        "collectionId": "d1vcgl0ttldpkz2",
+        "collectionName": "directory",
+        "created": "2023-06-22 09:11:09.769Z",
+        "expand": {
+            "parent": {
+                "coachId": 6605,
+                "collectionId": "d1vcgl0ttldpkz2",
+                "collectionName": "directory",
+                "created": "2023-06-22 09:11:09.729Z",
+                "id": "wjry0vwyp4x7szc",
+                "name": "3. Semester",
+                "parent": "47g99yzhsyqlg4w",
+                "timestamp": "2023-06-07 08:50:27.000Z",
+                "updated": "2023-06-22 09:11:09.729Z"
+            }
+        },
+        "id": "v3snnoxrec8ct7i",
+        "name": "Netze & Verteilte Systeme",
+        "parent": "wjry0vwyp4x7szc",
+        "timestamp": "2023-06-07 08:50:27.000Z",
+        "updated": "2023-06-22 09:11:09.769Z"
+    },
+    {
+        "coachId": 6609,
+        "collectionId": "d1vcgl0ttldpkz2",
+        "collectionName": "directory",
+        "created": "2023-06-22 09:11:09.763Z",
+        "expand": {
+            "parent": {
+                "coachId": 6605,
+                "collectionId": "d1vcgl0ttldpkz2",
+                "collectionName": "directory",
+                "created": "2023-06-22 09:11:09.729Z",
+                "id": "wjry0vwyp4x7szc",
+                "name": "3. Semester",
+                "parent": "47g99yzhsyqlg4w",
+                "timestamp": "2023-06-07 08:50:27.000Z",
+                "updated": "2023-06-22 09:11:09.729Z"
+            }
+        },
+        "id": "s80oa4re0tstu79",
+        "name": "Informationssicherheit",
+        "parent": "wjry0vwyp4x7szc",
+        "timestamp": "2023-06-03 09:12:51.000Z",
+        "updated": "2023-06-22 09:11:09.763Z"
+    },
+    {
+        "coachId": 6891,
+        "collectionId": "d1vcgl0ttldpkz2",
+        "collectionName": "directory",
+        "created": "2023-06-22 09:11:09.754Z",
+        "expand": {
+            "parent": {
+                "coachId": 6610,
+                "collectionId": "d1vcgl0ttldpkz2",
+                "collectionName": "directory",
+                "created": "2023-06-22 09:11:09.740Z",
+                "id": "0gytz86zkc0908y",
+                "name": "Datenmodellierung und Datenbanken mit WAB (Datenbankprogrammierung)",
+                "parent": "wjry0vwyp4x7szc",
+                "timestamp": "2023-06-05 15:18:50.000Z",
+                "updated": "2023-06-22 09:11:09.740Z"
+            }
+        },
+        "id": "q57mj16nqmwv9m8",
+        "name": "Zusatzmaterial",
+        "parent": "0gytz86zkc0908y",
+        "timestamp": "2023-06-05 15:18:50.000Z",
+        "updated": "2023-06-22 09:11:09.754Z"
+    },
+    {
+        "coachId": 6828,
+        "collectionId": "d1vcgl0ttldpkz2",
+        "collectionName": "directory",
+        "created": "2023-06-22 09:11:09.748Z",
+        "expand": {
+            "parent": {
+                "coachId": 6610,
+                "collectionId": "d1vcgl0ttldpkz2",
+                "collectionName": "directory",
+                "created": "2023-06-22 09:11:09.740Z",
+                "id": "0gytz86zkc0908y",
+                "name": "Datenmodellierung und Datenbanken mit WAB (Datenbankprogrammierung)",
+                "parent": "wjry0vwyp4x7szc",
+                "timestamp": "2023-06-05 15:18:50.000Z",
+                "updated": "2023-06-22 09:11:09.740Z"
+            }
+        },
+        "id": "ac0nyetzx61ygfu",
+        "name": "Folien",
+        "parent": "0gytz86zkc0908y",
+        "timestamp": "2023-03-30 13:57:58.000Z",
+        "updated": "2023-06-22 09:11:09.748Z"
+    },
+    {
+        "coachId": 6610,
+        "collectionId": "d1vcgl0ttldpkz2",
+        "collectionName": "directory",
+        "created": "2023-06-22 09:11:09.740Z",
+        "expand": {
+            "parent": {
+                "coachId": 6605,
+                "collectionId": "d1vcgl0ttldpkz2",
+                "collectionName": "directory",
+                "created": "2023-06-22 09:11:09.729Z",
+                "id": "wjry0vwyp4x7szc",
+                "name": "3. Semester",
+                "parent": "47g99yzhsyqlg4w",
+                "timestamp": "2023-06-07 08:50:27.000Z",
+                "updated": "2023-06-22 09:11:09.729Z"
+            }
+        },
+        "id": "0gytz86zkc0908y",
+        "name": "Datenmodellierung und Datenbanken mit WAB (Datenbankprogrammierung)",
+        "parent": "wjry0vwyp4x7szc",
+        "timestamp": "2023-06-05 15:18:50.000Z",
+        "updated": "2023-06-22 09:11:09.740Z"
+    },
+    {
+        "coachId": 6608,
+        "collectionId": "d1vcgl0ttldpkz2",
+        "collectionName": "directory",
+        "created": "2023-06-22 09:11:09.736Z",
+        "expand": {
+            "parent": {
+                "coachId": 6605,
+                "collectionId": "d1vcgl0ttldpkz2",
+                "collectionName": "directory",
+                "created": "2023-06-22 09:11:09.729Z",
+                "id": "wjry0vwyp4x7szc",
+                "name": "3. Semester",
+                "parent": "47g99yzhsyqlg4w",
+                "timestamp": "2023-06-07 08:50:27.000Z",
+                "updated": "2023-06-22 09:11:09.729Z"
+            }
+        },
+        "id": "d44k0hy5tirgxst",
+        "name": "Betriebssysteme",
+        "parent": "wjry0vwyp4x7szc",
+        "timestamp": "2023-05-09 13:49:01.000Z",
+        "updated": "2023-06-22 09:11:09.736Z"
+    },
+    {
+        "coachId": 6605,
+        "collectionId": "d1vcgl0ttldpkz2",
+        "collectionName": "directory",
+        "created": "2023-06-22 09:11:09.729Z",
+        "expand": {
+            "parent": {
+                "coachId": 4806,
+                "collectionId": "d1vcgl0ttldpkz2",
+                "collectionName": "directory",
+                "created": "2023-06-22 09:11:09.447Z",
+                "id": "47g99yzhsyqlg4w",
+                "name": "BIN-T21-F-2",
+                "parent": "bayjf8vnzz2wkcp",
+                "timestamp": "2023-06-22 09:46:03.000Z",
+                "updated": "2023-06-22 09:11:09.447Z"
+            }
+        },
+        "id": "wjry0vwyp4x7szc",
+        "name": "3. Semester",
+        "parent": "47g99yzhsyqlg4w",
+        "timestamp": "2023-06-07 08:50:27.000Z",
+        "updated": "2023-06-22 09:11:09.729Z"
+    },
+    {
+        "coachId": 5840,
+        "collectionId": "d1vcgl0ttldpkz2",
+        "collectionName": "directory",
+        "created": "2023-06-22 09:11:09.723Z",
+        "expand": {
+            "parent": {
+                "coachId": 5783,
+                "collectionId": "d1vcgl0ttldpkz2",
+                "collectionName": "directory",
+                "created": "2023-06-22 09:11:09.664Z",
+                "id": "lmzjsljvnqei7ut",
+                "name": "2. Semester",
+                "parent": "47g99yzhsyqlg4w",
+                "timestamp": "2023-04-06 12:26:39.000Z",
+                "updated": "2023-06-22 09:11:09.664Z"
+            }
+        },
+        "id": "o9zuizmo1b4a5md",
+        "name": "Theoretische Informatik 1",
+        "parent": "lmzjsljvnqei7ut",
+        "timestamp": "2022-10-30 12:23:07.000Z",
+        "updated": "2023-06-22 09:11:09.723Z"
+    },
+    {
+        "coachId": 5839,
+        "collectionId": "d1vcgl0ttldpkz2",
+        "collectionName": "directory",
+        "created": "2023-06-22 09:11:09.718Z",
+        "expand": {
+            "parent": {
+                "coachId": 5783,
+                "collectionId": "d1vcgl0ttldpkz2",
+                "collectionName": "directory",
+                "created": "2023-06-22 09:11:09.664Z",
+                "id": "lmzjsljvnqei7ut",
+                "name": "2. Semester",
+                "parent": "47g99yzhsyqlg4w",
+                "timestamp": "2023-04-06 12:26:39.000Z",
+                "updated": "2023-06-22 09:11:09.664Z"
+            }
+        },
+        "id": "18le8abd31iouqu",
+        "name": "Mathematik 2",
+        "parent": "lmzjsljvnqei7ut",
+        "timestamp": "2023-04-06 12:26:39.000Z",
+        "updated": "2023-06-22 09:11:09.718Z"
+    },
+    {
+        "coachId": 5838,
+        "collectionId": "d1vcgl0ttldpkz2",
+        "collectionName": "directory",
+        "created": "2023-06-22 09:11:09.710Z",
+        "expand": {
+            "parent": {
+                "coachId": 5783,
+                "collectionId": "d1vcgl0ttldpkz2",
+                "collectionName": "directory",
+                "created": "2023-06-22 09:11:09.664Z",
+                "id": "lmzjsljvnqei7ut",
+                "name": "2. Semester",
+                "parent": "47g99yzhsyqlg4w",
+                "timestamp": "2023-04-06 12:26:39.000Z",
+                "updated": "2023-06-22 09:11:09.664Z"
+            }
+        },
+        "id": "6dy4vrnxjw570m5",
+        "name": "Kommunikationskompetenz",
+        "parent": "lmzjsljvnqei7ut",
+        "timestamp": "2022-10-16 12:40:44.000Z",
+        "updated": "2023-06-22 09:11:09.710Z"
+    },
+    {
+        "coachId": 5858,
+        "collectionId": "d1vcgl0ttldpkz2",
+        "collectionName": "directory",
+        "created": "2023-06-22 09:11:09.705Z",
+        "expand": {
+            "parent": {
+                "coachId": 5837,
+                "collectionId": "d1vcgl0ttldpkz2",
+                "collectionName": "directory",
+                "created": "2023-06-22 09:11:09.687Z",
+                "id": "cvajcwxa04zybv7",
+                "name": "Fortgeschrittene Programmierung",
+                "parent": "lmzjsljvnqei7ut",
+                "timestamp": "2023-02-08 11:42:49.000Z",
+                "updated": "2023-06-22 09:11:09.687Z"
+            }
+        },
+        "id": "wnto0tav72cqyzi",
+        "name": "08_Lehrfilme",
+        "parent": "cvajcwxa04zybv7",
+        "timestamp": "2023-02-08 11:42:49.000Z",
+        "updated": "2023-06-22 09:11:09.705Z"
+    },
+    {
+        "coachId": 5853,
+        "collectionId": "d1vcgl0ttldpkz2",
+        "collectionName": "directory",
+        "created": "2023-06-22 09:11:09.700Z",
+        "expand": {
+            "parent": {
+                "coachId": 5837,
+                "collectionId": "d1vcgl0ttldpkz2",
+                "collectionName": "directory",
+                "created": "2023-06-22 09:11:09.687Z",
+                "id": "cvajcwxa04zybv7",
+                "name": "Fortgeschrittene Programmierung",
+                "parent": "lmzjsljvnqei7ut",
+                "timestamp": "2023-02-08 11:42:49.000Z",
+                "updated": "2023-06-22 09:11:09.687Z"
+            }
+        },
+        "id": "e7kpkg9uozhp9hm",
+        "name": "03_Installation",
+        "parent": "cvajcwxa04zybv7",
+        "timestamp": "2022-06-29 19:32:47.000Z",
+        "updated": "2023-06-22 09:11:09.700Z"
+    },
+    {
+        "coachId": 5851,
+        "collectionId": "d1vcgl0ttldpkz2",
+        "collectionName": "directory",
+        "created": "2023-06-22 09:11:09.693Z",
+        "expand": {
+            "parent": {
+                "coachId": 5837,
+                "collectionId": "d1vcgl0ttldpkz2",
+                "collectionName": "directory",
+                "created": "2023-06-22 09:11:09.687Z",
+                "id": "cvajcwxa04zybv7",
+                "name": "Fortgeschrittene Programmierung",
+                "parent": "lmzjsljvnqei7ut",
+                "timestamp": "2023-02-08 11:42:49.000Z",
+                "updated": "2023-06-22 09:11:09.687Z"
+            }
+        },
+        "id": "igjac99yip5q4m1",
+        "name": "01_Foliensätze",
+        "parent": "cvajcwxa04zybv7",
+        "timestamp": "2022-05-05 13:51:49.000Z",
+        "updated": "2023-06-22 09:11:09.693Z"
+    },
+    {
+        "coachId": 5837,
+        "collectionId": "d1vcgl0ttldpkz2",
+        "collectionName": "directory",
+        "created": "2023-06-22 09:11:09.687Z",
+        "expand": {
+            "parent": {
+                "coachId": 5783,
+                "collectionId": "d1vcgl0ttldpkz2",
+                "collectionName": "directory",
+                "created": "2023-06-22 09:11:09.664Z",
+                "id": "lmzjsljvnqei7ut",
+                "name": "2. Semester",
+                "parent": "47g99yzhsyqlg4w",
+                "timestamp": "2023-04-06 12:26:39.000Z",
+                "updated": "2023-06-22 09:11:09.664Z"
+            }
+        },
+        "id": "cvajcwxa04zybv7",
+        "name": "Fortgeschrittene Programmierung",
+        "parent": "lmzjsljvnqei7ut",
+        "timestamp": "2023-02-08 11:42:49.000Z",
+        "updated": "2023-06-22 09:11:09.687Z"
+    },
+    {
+        "coachId": 6033,
+        "collectionId": "d1vcgl0ttldpkz2",
+        "collectionName": "directory",
+        "created": "2023-06-22 09:11:09.682Z",
+        "expand": {
+            "parent": {
+                "coachId": 5836,
+                "collectionId": "d1vcgl0ttldpkz2",
+                "collectionName": "directory",
+                "created": "2023-06-22 09:11:09.669Z",
+                "id": "8rm7pdapptjccj5",
+                "name": "Algorithmen und Datenstrukturen mit WAB",
+                "parent": "lmzjsljvnqei7ut",
+                "timestamp": "2022-11-03 19:47:52.000Z",
+                "updated": "2023-06-22 09:11:09.669Z"
+            }
+        },
+        "id": "sl3yjduzdp8p1f7",
+        "name": "Code",
+        "parent": "8rm7pdapptjccj5",
+        "timestamp": "2022-09-08 22:52:41.000Z",
+        "updated": "2023-06-22 09:11:09.682Z"
+    },
+    {
+        "coachId": 6172,
+        "collectionId": "d1vcgl0ttldpkz2",
+        "collectionName": "directory",
+        "created": "2023-06-22 09:11:09.675Z",
+        "expand": {
+            "parent": {
+                "coachId": 5836,
+                "collectionId": "d1vcgl0ttldpkz2",
+                "collectionName": "directory",
+                "created": "2023-06-22 09:11:09.669Z",
+                "id": "8rm7pdapptjccj5",
+                "name": "Algorithmen und Datenstrukturen mit WAB",
+                "parent": "lmzjsljvnqei7ut",
+                "timestamp": "2022-11-03 19:47:52.000Z",
+                "updated": "2023-06-22 09:11:09.669Z"
+            }
+        },
+        "id": "8g1fc631bdsqh0f",
+        "name": "Bastelaufgaben",
+        "parent": "8rm7pdapptjccj5",
+        "timestamp": "2022-04-07 11:21:54.000Z",
+        "updated": "2023-06-22 09:11:09.675Z"
+    },
+    {
+        "coachId": 5836,
+        "collectionId": "d1vcgl0ttldpkz2",
+        "collectionName": "directory",
+        "created": "2023-06-22 09:11:09.669Z",
+        "expand": {
+            "parent": {
+                "coachId": 5783,
+                "collectionId": "d1vcgl0ttldpkz2",
+                "collectionName": "directory",
+                "created": "2023-06-22 09:11:09.664Z",
+                "id": "lmzjsljvnqei7ut",
+                "name": "2. Semester",
+                "parent": "47g99yzhsyqlg4w",
+                "timestamp": "2023-04-06 12:26:39.000Z",
+                "updated": "2023-06-22 09:11:09.664Z"
+            }
+        },
+        "id": "8rm7pdapptjccj5",
+        "name": "Algorithmen und Datenstrukturen mit WAB",
+        "parent": "lmzjsljvnqei7ut",
+        "timestamp": "2022-11-03 19:47:52.000Z",
+        "updated": "2023-06-22 09:11:09.669Z"
+    }
+]

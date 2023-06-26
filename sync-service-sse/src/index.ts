@@ -2,7 +2,7 @@ import express, { Response } from 'express';
 import logger from './logger';
 import { config } from 'dotenv';
 import { checkPocketbaseToken, getLoggedInClient } from './util';
-import { syncFiles } from './sync/syncProcess';
+import { syncFiles } from './sync';
 
 config();
 

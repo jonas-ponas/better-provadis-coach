@@ -4,9 +4,11 @@ WORKDIR /app
 
 COPY . .
 
-RUN yarn install --immutable 
-RUN yarn build
+
+RUN npm install -g pnpm
+RUN pnpm install 
+RUN pnpm run build
 
 EXPOSE 8080
 
-ENTRYPOINT [ "yarn", "start" ]
+ENTRYPOINT [ "pnpm", "run", "start" ]

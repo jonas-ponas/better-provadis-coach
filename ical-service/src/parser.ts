@@ -1,6 +1,7 @@
 import { decode } from 'html-entities';
 import logger from './logger';
 import ICAL, { Component } from 'ical.js';
+import { SHA1 } from 'crypto-js';
 
 type Link = { teacher: string; link: string };
 type ContentWithFilename = { name: string; content: string };
@@ -61,8 +62,8 @@ export function getCalendarComponent(filenames: string[]): Component {
 	const vCalendar = new Component('vcalendar');
 	setProperties(vCalendar, {
 		PRODID: 'Better Provadis Coach',
-		VERSION: '0.0.1-alpha',
-		'BPC-VERSION': '0.0.1-alpha',
+		VERSION: '2.0', // RFC 5545
+		'BPC-VERSION': '0.2',
 		'BPC-CONTAINS': filenames
 	});
 	vCalendar.addSubcomponent(getTimezoneComponent());
@@ -97,18 +98,20 @@ export function getTimezoneComponent(): Component {
 
 function getEvent(event: Component, links: Link[], id: number) {
 	const component = new Component('vevent');
+	const uid = SHA1(JSON.stringify(event)).toString().slice(0, 8);
 	const title = event.getFirstPropertyValue('summary');
 	const dtstamp = event.getFirstPropertyValue('dtstamp');
 	const dtstart = event.getFirstPropertyValue('dtstart');
 	const dtend = event.getFirstPropertyValue('dtend');
 	if (!dtstart || !dtstamp || !dtend || !title) {
-		event.addPropertyWithValue('uid', `BCP${id}`);
+		event.addPropertyWithValue('uid', uid);
 		return event;
 	}
 	setProperties(component, {
 		dtstart,
 		dtstamp,
-		dtend
+		dtend,
+		uid
 	});
 	const [lesson, teacher] = title.split(' - ');
 	if (!lesson || !teacher) {
@@ -117,8 +120,7 @@ function getEvent(event: Component, links: Link[], id: number) {
 	} else {
 		const zoomLink = findLinkForTeacher(links, teacher);
 		let properties = {
-			summary: lesson,
-			uid: `BCP${id}`
+			summary: lesson
 		};
 		if (zoomLink) {
 			setProperties(component, {

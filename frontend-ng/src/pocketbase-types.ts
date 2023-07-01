@@ -4,16 +4,14 @@
 
 export enum Collections {
 	Acl = 'acl',
-	Changelog = 'changelog',
 	Directory = 'directory',
 	File = 'file',
 	LatestSystemMessage = 'latestSystemMessage',
 	News = 'news',
 	State = 'state',
-	SystemMessage = 'systemMessage',
+	SystemMessages = 'systemMessages',
 	UserFiles = 'userFiles',
-	Users = 'users',
-	VisibleFileCount = 'visibleFileCount'
+	Users = 'users'
 }
 
 // Alias types for improved usability
@@ -45,20 +43,12 @@ export type AclRecord = {
 	file?: RecordIdString;
 };
 
-export type ChangelogRecord<Tdiff = unknown> = {
-	time?: IsoDateString;
-	triggered_by?: RecordIdString;
-	diff?: null | Tdiff;
-	success?: boolean;
-	reason?: string;
-};
-
 export type DirectoryRecord = {
 	name: string;
 	timestamp: IsoDateString;
 	parent?: RecordIdString;
 	coachId: number;
-	fullpath: string;
+	allowedUser?: RecordIdString[];
 };
 
 export type FileRecord = {
@@ -104,7 +94,7 @@ export type StateRecord = {
 	lastDirHash?: string;
 };
 
-export type SystemMessageRecord = {
+export type SystemMessagesRecord = {
 	title?: string;
 	text?: HTMLString;
 };
@@ -131,54 +121,42 @@ export type UsersRecord = {
 	avatarUrl?: string;
 	autoSync?: boolean;
 	scheduleDirectory?: RecordIdString;
-	completedOnboarding?: boolean;
-};
-
-export type VisibleFileCountRecord = {
-	fileCount?: number;
 };
 
 // Response types include system fields and match responses from the PocketBase API
 export type AclResponse<Texpand = unknown> = Required<AclRecord> & BaseSystemFields<Texpand>;
-export type ChangelogResponse<Tdiff = unknown, Texpand = unknown> = Required<ChangelogRecord<Tdiff>> &
-	BaseSystemFields<Texpand>;
 export type DirectoryResponse<Texpand = unknown> = Required<DirectoryRecord> & BaseSystemFields<Texpand>;
 export type FileResponse<Texpand = unknown> = Required<FileRecord> & BaseSystemFields<Texpand>;
 export type LatestSystemMessageResponse<Texpand = unknown> = Required<LatestSystemMessageRecord> &
 	BaseSystemFields<Texpand>;
 export type NewsResponse<Texpand = unknown> = Required<NewsRecord> & BaseSystemFields<Texpand>;
 export type StateResponse<Texpand = unknown> = Required<StateRecord> & BaseSystemFields<Texpand>;
-export type SystemMessageResponse<Texpand = unknown> = Required<SystemMessageRecord> & BaseSystemFields<Texpand>;
+export type SystemMessagesResponse<Texpand = unknown> = Required<SystemMessagesRecord> & BaseSystemFields<Texpand>;
 export type UserFilesResponse<Texpand = unknown> = Required<UserFilesRecord> & BaseSystemFields<Texpand>;
 export type UsersResponse<Texpand = unknown> = Required<UsersRecord> & AuthSystemFields<Texpand>;
-export type VisibleFileCountResponse<Texpand = unknown> = Required<VisibleFileCountRecord> & BaseSystemFields<Texpand>;
 
 // Types containing all Records and Responses, useful for creating typing helper functions
 
 export type CollectionRecords = {
 	acl: AclRecord;
-	changelog: ChangelogRecord;
 	directory: DirectoryRecord;
 	file: FileRecord;
-	latestSystemMessage: LatestSystemMessageRecord;
+	latest_system_message: LatestSystemMessageRecord;
 	news: NewsRecord;
 	state: StateRecord;
-	systemMessage: SystemMessageRecord;
+	system_messages: SystemMessagesRecord;
 	userFiles: UserFilesRecord;
 	users: UsersRecord;
-	visibleFileCount: VisibleFileCountRecord;
 };
 
 export type CollectionResponses = {
 	acl: AclResponse;
-	changelog: ChangelogResponse;
 	directory: DirectoryResponse;
 	file: FileResponse;
-	latestSystemMessage: LatestSystemMessageResponse;
+	latest_system_message: LatestSystemMessageResponse;
 	news: NewsResponse;
 	state: StateResponse;
-	systemMessage: SystemMessageResponse;
+	system_messages: SystemMessagesResponse;
 	userFiles: UserFilesResponse;
 	users: UsersResponse;
-	visibleFileCount: VisibleFileCountResponse;
 };

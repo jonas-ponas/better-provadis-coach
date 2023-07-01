@@ -1,16 +1,15 @@
 {
   "name": "better-provadis-coach",
   "private": true,
+  "scripts": {
+    "frontend:dev": "cd frontend-ng && pnpm dev",
+    "sync:dev": "cd sync-service-sse && pnpm dev"
+  },
   "workspaces": [
     "frontend",
+    "frontend-ng",
     "sync-service",
+    "sync-service-sse",
     "ical-service"
-  ],
-  "packageManager": "yarn@3.5.0",
-  "devDependencies": {
-    "@types/prettier": "^2",
-    "@yarnpkg/sdks": "^3.0.0-rc.40",
-    "prettier": "^2.8.7",
-    "typescript": "^5.0.2"
-  }
+  ]
 }

@@ -142,7 +142,7 @@ export async function sync({
 			expires: new Date(currentState.expires || 0).toISOString(),
 			url: currentState.url,
 			coachUserId: currentState.userId,
-			lastSync: success ? new Date().toISOString : state.lastSync,
+			lastSync: success ? new Date().toISOString() : state.lastSync,
 			lastSyncSuccessful: success,
 			coachUsername: username || state.coachUsername,
 			lastFilesHash: filesHash,

@@ -1,7 +1,7 @@
 {
   "name": "sync-service-sse",
   "version": "1.0.0",
-  "description": "",
+  "description": "Improved Sync Service using Server Sent Events (SSE)",
   "main": "index.js",
   "scripts": {
     "dev": "pnpm exec nodemon ./src/index.ts",

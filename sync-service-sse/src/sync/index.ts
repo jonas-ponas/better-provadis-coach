@@ -1,19 +1,24 @@
 import PocketBase from 'pocketbase/cjs';
 import {
+	ChangelogRecord,
 	Collections,
 	DirectoryResponse,
 	FileRecord,
 	FileResponse,
+	StateRecord,
 	StateResponse,
 	UserFilesResponse
 } from '../pocketbase-types';
 import logger from '../logger';
 import { Coach, UserInfo, File, Directory } from '../coach/Coach';
-import { fileDiff, seperateFilesToInsertFromFilesToGrant } from './fileDiff';
+import { FileDiffResult, fileDiff, seperateFilesToInsertFromFilesToGrant } from './fileDiff';
 import { SHA1 } from 'crypto-js';
-import { ActionResult, grant, insert, insertAndGrant, insertDirectoriesInOrder, insertDirectory } from './actions';
-import { directoryDiff, sortDirectoriesByHirarchy } from './dirDiff';
-import { writeFileSync } from 'fs';
+import { ActionResult, grant, insertAndGrant, insertDirectoriesInOrder, insertDirectory } from './actions';
+import { directoryDiff } from './dirDiff';
+
+// Message Types
+type CloseMessage = { type: 'close'; success: boolean; reason: string };
+type ProgressMessage = { type: 'progress'; stage: string; message?: string; [key: string]: any };
 
 export async function syncFiles({
 	client,
@@ -22,9 +27,71 @@ export async function syncFiles({
 }: {
 	client: PocketBase;
 	userId: string;
-	onProgress: (message: { [key: string]: any }) => void;
+	onProgress: (message: CloseMessage | ProgressMessage) => void;
 }) {
-	onProgress({ type: 'prepare' });
+	async function endWithSuccess(
+		reason: string,
+		options: {
+			stateId: string;
+			coach: Coach;
+			hash?: {
+				file?: string;
+				directory?: string;
+				news?: string;
+			};
+			report?: {
+				success: number;
+				fail: number;
+				total: number;
+			};
+			diff?: FileDiffResult;
+		}
+	) {
+		const changelogRequest = client.collection(Collections.Changelog).create<ChangelogRecord>({
+			time: new Date().toISOString(),
+			triggered_by: userId,
+			diff: options.diff
+				? JSON.stringify({
+						a: options.diff.added?.map(f => f.name),
+						m: options.diff.modified?.map(f => f.coach.name),
+						r: options.diff.removed?.map(f => f.name)
+				  })
+				: '{}',
+			success: true,
+			reason
+		});
+		const coachState = coach.exportFromState();
+		const expires = new Date(coachState.expires || 0).toISOString();
+		const stateRequest = client.collection(Collections.State).update<StateRecord>(options.stateId, {
+			lastFilesHash: options.hash?.file ?? undefined,
+			lastNewsHash: options.hash?.news ?? undefined,
+			lastDirHash: options.hash?.directory ?? undefined,
+			...coachState,
+			expires
+		});
+		await Promise.all([changelogRequest, stateRequest]);
+		onProgress({ type: 'close', success: true, reason: '' });
+	}
+
+	async function endWithFailure(
+		reason: string,
+		options: {
+			coach?: Coach;
+			doNotStore?: boolean;
+		} = {}
+	) {
+		const changelogRequest = client.collection(Collections.Changelog).create<ChangelogRecord>({
+			time: new Date().toISOString(),
+			triggered_by: userId,
+			diff: '{}',
+			success: false,
+			reason
+		});
+		await Promise.all([changelogRequest]);
+		onProgress({ type: 'close', success: false, reason: reason });
+	}
+
+	onProgress({ type: 'progress', stage: 'dump', progress: 0, total: 4 });
 
 	// Get Files from DB
 	let currentFiles: FileResponse[];
@@ -32,30 +99,33 @@ export async function syncFiles({
 	let currentUserFiles: UserFilesResponse[];
 	try {
 		currentFiles = await client.collection(Collections.File).getFullList();
+		onProgress({ type: 'progress', stage: 'dump', progress: 1, total: 4 });
+
 		currentUserFiles = await client.collection(Collections.UserFiles).getFullList({
 			filter: `user.id = '${userId}'`
 		});
+		onProgress({ type: 'progress', stage: 'dump', progress: 2, total: 4 });
 		currentDirs = await client.collection(Collections.Directory).getFullList();
+		onProgress({ type: 'progress', stage: 'dump', progress: 3, total: 4 });
 	} catch (e: unknown) {
 		logger.error(`S5 Could not retrieve current Database State! Check Credentials! ${e}`);
 		if (e instanceof Error) logger.error(e.stack);
-		onProgress({ type: 'error', message: 'error while data dump' }); // ERROR S2
-		await endWithFailure();
+		await endWithFailure('error while data dump');
 		return;
 	}
 	logger.debug(`Retrieved Current DB: ${currentFiles.length} ${currentUserFiles.length} ${currentDirs.length}`);
-	onProgress({ db: currentFiles.length, user: currentUserFiles.length, dirs: currentDirs.length });
 	// Get State from DB
 	let state: StateResponse;
 	try {
 		state = await client.collection('state').getFirstListItem(`user.id = "${userId}"`);
-		onProgress({ type: 'prepare', message: 'retrieved state' });
+		onProgress({ type: 'progress', stage: 'dump', progress: 4, total: 4 });
 	} catch (e: unknown) {
-		onProgress({ type: 'error', message: 'error while state retrieval!' });
 		logger.error(e);
-		await endWithFailure();
+		await endWithFailure('error while state retrieval');
 		return;
 	}
+
+	onProgress({ type: 'progress', stage: 'coach', progress: 0, total: 2 });
 
 	// Initialize Coach
 	let coach: Coach;
@@ -64,11 +134,10 @@ export async function syncFiles({
 			if (!accessToken || !refreshToken || !expires) return;
 			updateTokenStore(state.id, client, { accessToken, refreshToken, expires });
 		});
-		onProgress({ type: 'prepare', message: 'coach logged in' });
+		onProgress({ type: 'progress', stage: 'coach', message: 'coach logged in', progress: 1, total: 2 });
 	} catch (e: unknown) {
-		onProgress({ type: 'error', error: 'error while coach init!' });
 		logger.error(e);
-		await endWithFailure();
+		await endWithFailure('error while coach init');
 		return;
 	}
 
@@ -78,11 +147,12 @@ export async function syncFiles({
 		userinfo = await coach.getUserInfo();
 		const fullname = userinfo.user.firstname + ' ' + userinfo.user.familyname;
 		logger.info('Got User-Name' + fullname);
-		onProgress({ type: 'prepare', message: fullname });
+		onProgress({ type: 'progress', stage: 'coach', progress: 2, total: 2, fullname });
 	} catch (e: unknown) {
-		onProgress({ type: 'error', message: 'error while getting user-info' });
 		logger.error(e);
-		await endWithFailure();
+		await endWithFailure('error while getting user-info', {
+			coach
+		});
 		return;
 	}
 
@@ -91,18 +161,20 @@ export async function syncFiles({
 	try {
 		directories = await coach.getDirectories();
 		logger.info('Retrieved ' + directories.length + ' Directories');
-		onProgress({ type: 'directory-sync', message: 'got dirs', count: directories.length });
+		onProgress({ type: 'progress', stage: 'directory-sync', message: 'got dirs', count: directories.length });
 	} catch (e: unknown) {
-		onProgress({ type: 'error', message: 'error while directory retrieving' });
 		logger.error(e);
-		await endWithFailure();
+		await endWithFailure('error while retrieving directory ', { coach });
 		return;
 	}
 
 	const hashedDirResponse = SHA1(JSON.stringify(directories)).toString();
 	if (hashedDirResponse == state.lastDirHash) {
-		onProgress({ type: 'directory-sync', message: '`same directory response! end.`' });
-		await endWithSuccess();
+		await endWithSuccess('directory response hash equals', {
+			stateId: state.id,
+			coach,
+			hash: { directory: hashedDirResponse }
+		});
 		return;
 	}
 
@@ -111,32 +183,32 @@ export async function syncFiles({
 		incoming: directories
 	});
 	logger.info(`Directory-Diff: +${addedDirs?.length}`);
-	onProgress({ type: 'directory-sync', insert: addedDirs?.length });
+	onProgress({ type: 'progress', stage: 'directory-sync', progress: 0, total: addedDirs?.length });
 
 	const idMap = await insertDirectoriesInOrder(client, addedDirs ?? [], currentDirs, (current, total) => {
-		onProgress({ type: 'directory-sync', progress: current, total: total });
+		onProgress({ type: 'progress', stage: 'directory-sync', progress: current, total: total });
 	});
-
-	onProgress({ type: 'directory-sync', message: 'finished dirs :)' });
 
 	// Get Coach Files
 	let files: File[];
 	try {
 		files = await coach.getFiles();
 		logger.info('Retrieved ' + files.length + ' Files');
-		onProgress({ type: 'file-sync', message: 'got files', count: files.length });
+		onProgress({ type: 'progress', stage: 'file-sync', message: 'got files', count: files.length });
 	} catch (e: unknown) {
-		onProgress({ type: 'error', message: 'error while file retrieving' });
 		logger.error(e);
-		await endWithFailure();
+		await endWithFailure('error while retrieving files', { coach });
 		return;
 	}
 
 	// Check hash
 	const hashedFileResponse = SHA1(JSON.stringify(files)).toString();
 	if (hashedFileResponse == state.lastFilesHash) {
-		onProgress({ type: 'file-sync', message: '`same files response! end.`' });
-		await endWithSuccess();
+		await endWithSuccess('file response hash equals', {
+			stateId: state.id,
+			coach,
+			hash: { file: hashedFileResponse, directory: hashedDirResponse }
+		});
 		return;
 	}
 
@@ -146,8 +218,11 @@ export async function syncFiles({
 		incoming: files
 	});
 	if (diff.added?.length === 0 && diff.removed?.length === 0 && diff.modified?.length === 0) {
-		onProgress({ type: 'file-sync', message: `no changes! end.` });
-		await endWithSuccess();
+		await endWithSuccess('file difference is zero', {
+			stateId: state.id,
+			coach,
+			hash: { file: hashedFileResponse, directory: hashedDirResponse }
+		});
 		return;
 	}
 
@@ -159,9 +234,11 @@ export async function syncFiles({
 
 	// Get Concrete Actions to Do
 	const { filesToGrant, filesToInsert } = seperateFilesToInsertFromFilesToGrant(diff, userDiff, currentFiles);
-	const filesToRevoke = userDiff.removed;
-	const filesToModify = diff.modified;
+	const filesToRevoke = userDiff.removed ?? [];
+	const filesToModify = diff.modified ?? [];
 	onProgress({
+		type: 'progress',
+		stage: 'file-diff',
 		insert: filesToInsert?.length,
 		grant: filesToGrant?.length,
 		revoke: filesToRevoke?.length,
@@ -170,7 +247,7 @@ export async function syncFiles({
 	let success = 0;
 	let fail = 0;
 	let percent = 0;
-	const total = filesToInsert.length + filesToGrant.length;
+	const total = filesToInsert.length + filesToGrant.length + filesToRevoke?.length + filesToModify.length;
 
 	function updateState(result: ActionResult) {
 		if (result.success) success = success + 1;
@@ -178,7 +255,7 @@ export async function syncFiles({
 		const p = ((success + fail) / total) * 100;
 		if (Math.floor(p) > Math.floor(percent)) {
 			percent = Math.floor(p);
-			onProgress({ type: 'file-sync', progress: percent, fail, success, total });
+			onProgress({ type: 'progress', stage: 'file-insert', progress: percent, fail, success, total });
 		}
 	}
 
@@ -205,7 +282,19 @@ export async function syncFiles({
 	// TODO: Revoke
 
 	await Promise.all([grants, inserts]);
-	onProgress({ type: 'file-sync', message: 'finished :)' });
+	endWithSuccess('Sync successful!', {
+		stateId: state.id,
+		coach,
+		hash:
+			fail > 0 || fail + success < total
+				? undefined
+				: {
+						file: hashedFileResponse,
+						directory: hashedDirResponse
+				  },
+		diff: userDiff,
+		report: { fail, success, total }
+	});
 }
 
 async function updateTokenStore(
@@ -229,7 +318,3 @@ async function updateTokenStore(
 		if (e instanceof Error) logger.error((e as Error).stack);
 	}
 }
-
-async function endWithSuccess() {}
-
-async function endWithFailure() {}

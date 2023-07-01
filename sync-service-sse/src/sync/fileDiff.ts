@@ -7,7 +7,7 @@ export type ModifiedFile = {
 	coach: File;
 };
 
-type FileDiffResult = {
+export type FileDiffResult = {
 	added?: File[];
 	removed?: FileResponse[];
 	modified?: ModifiedFile[];

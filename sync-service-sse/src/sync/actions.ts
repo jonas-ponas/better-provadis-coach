@@ -25,15 +25,20 @@ export type IdMap = { [key: number]: string };
 export async function insertDirectory(
 	client: PocketBase,
 	directory: Directory,
-	parentId: string | null
+	parentId: string | null,
+	allDirs: DirectoryResponse[]
 ): Promise<ActionResult> {
 	try {
 		const record: DirectoryRecord = {
 			name: directory.name,
 			coachId: directory.id,
 			timestamp: directory.modified.timestamp,
-			parent: parentId === null ? undefined : parentId
+			parent: parentId === null ? undefined : parentId,
+			fullpath: ''
 		};
+		record.fullpath = JSON.stringify(
+			getFullPathForDirectory(Object.assign({ id: '' }, record) as DirectoryResponse, allDirs)
+		);
 		const result = await client
 			.collection(Collections.Directory)
 			.create<DirectoryResponse>(record, { $cancelKey: `${record.coachId}` });
@@ -71,10 +76,11 @@ export async function insertDirectoriesInOrder(
 			} else {
 				if (result.directory) {
 					idMap[result.directory.coachId] = result.directory.id;
+					directoriesInDB.push(result.directory);
 				}
 				const parentId = coachIdToPbId(next.parent_id);
 				if (parentId === null) logger.warn('Parent-Id is null for ' + next.name);
-				return insertDirectory(client, next, parentId);
+				return insertDirectory(client, next, parentId, directoriesInDB);
 			}
 		});
 	}, new Promise<ActionResult>(resolve => resolve({ success: true })));
@@ -178,6 +184,15 @@ function getFullPath(dir: Directory, allDirs: Directory[]): string[] {
 	const parentDir = allDirs.find(v => v.id === dir.parent_id);
 	if (!parentDir) return [''];
 	return [...getFullPath(parentDir, allDirs), dir.name];
+}
+
+function getFullPathForDirectory(
+	dir: DirectoryResponse,
+	allDirs: DirectoryResponse[]
+): { id?: string; label: string }[] {
+	const parentDir = allDirs.find(v => v.id == dir.parent);
+	if (!parentDir) return [];
+	return [...getFullPathForDirectory(parentDir, allDirs), { label: dir.name, id: dir.id }];
 }
 
 type grantArgs = {

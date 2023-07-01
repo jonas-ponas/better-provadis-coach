@@ -2,3 +2,5 @@ packages:
   - "frontend"
   - "sync-service"
   - "ical-service"
+  - "sync-service-sse"
+  - "frontend-ng"

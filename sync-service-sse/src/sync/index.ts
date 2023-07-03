@@ -3,7 +3,6 @@ import {
 	ChangelogRecord,
 	Collections,
 	DirectoryResponse,
-	FileRecord,
 	FileResponse,
 	StateRecord,
 	StateResponse,
@@ -29,6 +28,8 @@ export async function syncFiles({
 	userId: string;
 	onProgress: (message: CloseMessage | ProgressMessage) => void;
 }) {
+	const startTime = new Date();
+
 	async function endWithSuccess(
 		reason: string,
 		options: {
@@ -58,6 +59,7 @@ export async function syncFiles({
 				  })
 				: '{}',
 			success: true,
+			secondsSpent: new Date().getTime() - startTime.getTime() / 1000,
 			reason
 		});
 		const coachState = coach.exportFromState();
@@ -85,6 +87,7 @@ export async function syncFiles({
 			triggered_by: userId,
 			diff: '{}',
 			success: false,
+			secondsSpent: new Date().getTime() - startTime.getTime() / 1000,
 			reason
 		});
 		await Promise.all([changelogRequest]);

@@ -77,8 +77,6 @@ export async function sync({
 		onProgress({ type: 'progress', phase: 'database', step: 1 });
 		filesHash = createHash('md5').update(JSON.stringify(files)).digest('hex');
 
-		writeFileSync('files.json', JSON.stringify(files));
-
 		if (filesHash !== state.lastFilesHash) {
 			const ctoPb = await coachToPocketbase.insertDirectories(dirs, pb, state.user, new Map(), (i, t) => {
 				onProgress({ type: 'progress', phase: 'database', step: 1, detail: i, total: t });

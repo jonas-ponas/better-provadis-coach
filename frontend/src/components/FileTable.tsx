@@ -10,7 +10,8 @@ import {
 	Menu,
 	MenuItem,
 	ListItemIcon,
-	modalClasses
+	modalClasses,
+	Tooltip
 } from '@mui/material';
 import { useNavigate, Link as RouterLink, useLocation } from 'react-router-dom';
 import { DirectoryRecord, FileRecord } from '../records';
@@ -141,6 +142,25 @@ export default function FileTable({ directory }: { directory: DirectoryRecord })
 				if (row.type == 'file') {
 					if (!client) return <>{row.name}</>;
 					const url = client.getFileUrl(row.record, row.record.cachedFile);
+					if (row.record.cachedFile === '') {
+						return (
+							<Tooltip
+								title={
+									<>
+										Datei-Format wird nicht unterstützt. Bitte lade diese Datei im richtigen Coach
+										runter
+									</>
+								}>
+								<Box
+									sx={{
+										color: theme.palette.text.primary,
+										textDecorationColor: theme.palette.text.primary
+									}}>
+									{row.name}
+								</Box>
+							</Tooltip>
+						);
+					}
 					return (
 						<Link
 							href={url}

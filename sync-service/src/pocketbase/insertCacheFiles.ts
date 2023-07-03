@@ -1,5 +1,6 @@
 import { Coach, File } from '../coach/Coach';
 import logger from '../logger';
+import { UNSUPPORTED_FILES } from '../server';
 // import pocketbaseEs from "pocketbase"
 
 export default async function insertCacheFiles(
@@ -13,24 +14,29 @@ export default async function insertCacheFiles(
 	const total = fToPbMap.size;
 	let i = 0;
 	for (const [coachId, { pbId, name }] of fToPbMap) {
-		let blob;
-		try {
-			blob = await coach.getFileContents(coachId);
-		} catch (e) {
-			logger.warn(`Failed download from Coach ${name}. ${e}`);
-			continue;
-		}
-		try {
-			const formData = new FormData();
-			formData.append('cachedFile', blob, name);
+		const fileFormat = name.split('.').at(-1) ?? '';
+		if (UNSUPPORTED_FILES.includes(fileFormat)) {
+			logger.warn(`File ${name} has unsupported Format '${fileFormat}!'`);
+		} else {
+			let blob;
+			try {
+				blob = await coach.getFileContents(coachId);
+			} catch (e) {
+				logger.warn(`Failed download from Coach ${name}. ${e}`);
+				continue;
+			}
+			try {
+				const formData = new FormData();
+				formData.append('cachedFile', blob, name);
 
-			const response = await pb.collection('file').update(pbId, formData);
-			logger.debug(`Uploaded file ${name}`);
-			if (onProgress) onProgress(++i, total);
-		} catch (e) {
-			logger.warn(`Failed upload ${name} ${pbId} ${e}`);
-			if (onProgress) onProgress(++i, total);
-			continue;
+				const response = await pb.collection('file').update(pbId, formData);
+				logger.debug(`Uploaded file ${name}`);
+				if (onProgress) onProgress(++i, total);
+			} catch (e) {
+				logger.warn(`Failed upload ${name} ${pbId} ${e}`);
+				if (onProgress) onProgress(++i, total);
+				continue;
+			}
 		}
 	}
 }

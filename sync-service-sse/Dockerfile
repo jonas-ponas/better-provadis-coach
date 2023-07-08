@@ -1,18 +1,19 @@
 FROM node:18-alpine AS build
 
-COPY . .
+WORKDIR /srv
 
 RUN npm install -g pnpm
-RUN pnpm install 
-RUN pnpm run build
 
-FROM node:18-alpine
+COPY package*.json /srv/
+RUN pnpm install
+COPY tsconfig.json /srv/
+COPY src /srv/src/
+RUN pnpm build
+RUN pnpm install --prod
 
-WORKDIR /app
-
-
-COPY --from=build ./dist .
-
-EXPOSE 8080
-
-ENTRYPOINT [ "node", "index.js" ]
+FROM alpine:3
+RUN apk add nodejs --no-cache
+WORKDIR /srv
+COPY --from=build /srv/node_modules /srv/node_modules
+COPY --from=build /srv/dist /srv/
+CMD node index.js

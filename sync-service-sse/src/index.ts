@@ -27,8 +27,6 @@ app.use((request, response, next) => {
 	next();
 });
 
-let clients: { id: number; response: Response }[] = [];
-
 const PORT = process.env.PORT ?? 8080;
 
 app.get('/sync/:userId', async (req, resp, next) => {
@@ -74,6 +72,39 @@ app.get('/sync/:userId', async (req, resp, next) => {
 	req.on('close', () => {
 		logger.info('Client disconnected');
 	});
+});
+
+app.get('/health', async (req, resp, next) => {
+	let client;
+	try {
+		client = await getLoggedInClient();
+		if (!client.authStore.isValid) {
+			logger.error('Auth-Store is invalid!');
+			resp.status(500).send({ code: 500, message: "Can't reach Database (1)" });
+			return next();
+		}
+	} catch (e: any) {
+		logger.error('PocketBase Health-Check Failed!');
+		logger.error(e instanceof Error ? e.stack : e);
+		if (e.status) logger.debug(JSON.stringify(e));
+
+		resp.status(500).send({ code: 500, message: "Can't reach Database (2)" });
+		return next();
+	}
+
+	let healthCheck;
+	try {
+		healthCheck = await client.health.check();
+	} catch (e) {
+		logger.error('PocketBase Health-Check Failed!');
+		logger.error(e instanceof Error ? e.stack : e);
+		if (e instanceof ClientResponseError) logger.debug(JSON.stringify(e));
+		resp.status(500).send({ code: 500, message: "Can't reach Database (3)" });
+		return next();
+	}
+
+	resp.status(200).send({ code: 200, message: 'Sync-Service is healthy' });
+	return next();
 });
 
 app.listen(PORT, () => {

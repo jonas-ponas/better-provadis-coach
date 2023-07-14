@@ -1,0 +1,52 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress
+  labels:
+    name: ingress
+    namespace: better-provadis-coach
+spec:
+  rules:
+  - host: ingress.local
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/api"
+        backend:
+          service:
+            name: pocketbase-svc
+            port: 
+              number: 8090
+      - pathType: Prefix
+        path: "/_"
+        backend:
+          service:
+            name: pocketbase-svc
+            port: 
+              number: 8090
+      - pathType: Prefix
+        path: "/sync"
+        backend:
+          service:
+            name: sync-sse-svc
+            port: 
+              number: 8080
+      - pathType: Prefix
+        path: "/ical"
+        backend:
+          service:
+            name: ical-svc
+            port: 
+              number: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: loadbalancer
+  namespace: better-provadis-coach
+spec:
+  type: LoadBalancer
+  selector:
+    app: ingress
+  ports:
+  - port: 80

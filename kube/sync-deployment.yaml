@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sync-sse
+  namespace: better-provadis-coach
+spec:
+  selector:
+    matchLabels:
+      app: sync-sse
+  template:
+    metadata:
+      namespace: better-provadis-coach
+      labels:
+        app: sync-sse
+    spec:
+      imagePullSecrets:
+        - name: dockerconfigjson-ghcr-io
+      containers:
+      - name: sync-sse
+        image: ghcr.io/jonas-ponas/bpc-sync-sse:latest
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8080
+          name: sync-sse-svc
+        env:
+        - name: PB_USER
+          valueFrom:
+            configMapKeyRef:
+              name: pocketbase-consumer-config
+              key: user
+        - name: PB_URL
+          valueFrom:
+            configMapKeyRef:
+              name: pocketbase-consumer-config
+              key: url
+        - name: PB_PASSWD
+          valueFrom:
+            secretKeyRef:
+              name: secrets
+              key: service-account-password
+        - name: CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: secrets
+              key: client-id
+        - name: CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: secrets
+              key: client-secret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sync-sse-svc
+  namespace: better-provadis-coach
+spec:
+  type: NodePort
+  selector:
+    app: sync-sse
+  ports:
+  - port: 8080
+    targetPort: sync-sse-svc
+    nodePort: 30001
+

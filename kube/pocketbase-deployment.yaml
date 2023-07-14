@@ -1,0 +1,54 @@
+# ----------
+# DEPLOYMENT
+# ----------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pocketbase
+  namespace: better-provadis-coach
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pocketbase
+  template:
+    metadata:
+      namespace: better-provadis-coach
+      labels:
+        app: pocketbase
+    spec:
+      imagePullSecrets:
+        - name: dockerconfigjson-ghcr-io
+      containers:
+      - name: pocketbase
+        image: ghcr.io/jonas-ponas/pocketbase:latest
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8090
+          name: pocketbase-port
+        env:
+          - name: SERVICE_ACCOUNT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: secrets
+                key: service-account-password
+---
+# -------
+# SERVICE
+# -------
+apiVersion: v1
+kind: Service
+metadata:
+  name: pocketbase-svc
+  namespace: better-provadis-coach
+spec:
+  type: NodePort
+  selector:
+    app: pocketbase
+  ports:
+  - port: 8090 
+    targetPort: pocketbase-port
+    nodePort: 30000

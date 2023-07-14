@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pocketbase-consumer-config
+  namespace: better-provadis-coach
+data:
+  user: service@docker.internal
+  url: "http://10.108.246.41:30000"

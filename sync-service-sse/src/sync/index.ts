@@ -90,8 +90,13 @@ export async function syncFiles({
 			secondsSpent: new Date().getTime() - startTime.getTime() / 1000,
 			reason
 		});
-		await Promise.all([changelogRequest]);
-		onProgress({ type: 'close', success: false, reason: reason });
+		try {
+			await Promise.all([changelogRequest]);
+		} catch (e) {
+			logger.error(e);
+		} finally {
+			onProgress({ type: 'close', success: false, reason: reason });
+		}
 	}
 
 	onProgress({ type: 'progress', stage: 'dump', progress: 0, total: 4 });

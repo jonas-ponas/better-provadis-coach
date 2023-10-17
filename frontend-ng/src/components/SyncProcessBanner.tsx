@@ -99,7 +99,7 @@ const SyncProcessBanner = forwardRef<HTMLDivElement, SyncProcessBannerProps & Cu
 				}
 			};
 
-			events.onerror = event => {
+			events.onerror = _ => {
 				setSuccess(false);
 				setLoading(false);
 				setText('Ein Fehler ist beim Verbindungsaufbau aufgetreten!');

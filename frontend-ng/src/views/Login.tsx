@@ -42,13 +42,13 @@ export default function Login() {
 				setIsAuthenticating(false);
 				navigate('/');
 			})
-			.catch(e => {
+			.catch(_ => {
 				setAuthError('Nutzername oder Passwort falsch.');
 				setIsAuthenticating(false);
 			});
 	}
 
-	function loginWithProvider(provider: AuthProviderInfo) {
+	function loginWithProvider(_provider: AuthProviderInfo) {
 		return () => {
 			// todo
 		};

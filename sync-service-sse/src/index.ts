@@ -64,7 +64,7 @@ app.get('/sync/:userId', async (req, resp, next) => {
 		client,
 		userId,
 		onProgress(message) {
-			// logger.verbose(`Sending: ${JSON.stringify(message)}`);
+			logger.verbose(`Sending: ${JSON.stringify(message)}`);
 			resp.write(`data: ${JSON.stringify(message)}\n\n`);
 		}
 	});

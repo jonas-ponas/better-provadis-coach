@@ -1,5 +1,12 @@
 version: '3.7'
 services:
+    frontend:
+        build:
+            context: ./frontend-ng
+        container_name: 'bpc-ng-frontend'
+        restart: unless-stopped
+        networks:
+            - reverse-proxy
     pocketbase:
         build:
             context: ./pocketbase

@@ -1,44 +1,51 @@
-version: "3.7"
+version: '3.7'
 services:
-  pocketbase:
-    image: ghcr.io/jonas-ponas/expert-giggle-frontend:latest
-    container_name: "pocketbase"
-    restart: unless-stopped
-    volumes: 
-      - ./data:/pb_data
-    ports:
-      - "8090:8090"
-    networks:
-      - back
-    healthcheck:
-      test: wget --no-verbose --tries=1 --spider http://pocketbase:8090/api/health || exit 1
-      interval: 10s
-      timeout: 10s
-      retries: 3
-  sync:
-    image: ghcr.io/jonas-ponas/expert-giggle:latest
-    container_name: "sync-service"
-    restart: unless-stopped
-    environment:
-      - PB_URL=http://pocketbase:8090/
-      - PB_USER=
-      - PB_PASSWD=
-      - CLIENT_SECRET=
-      - CLIENT_ID=
-    networks:
-      - reverse-proxy
-      - back
-  ical:
-    image: ghcr.io/jonas-ponas/bpc-ical-service:latest
-    container_name: "bpc-ical-service"
-    restart: unless-stopped
-    environment:
-      - PB_URL=http://pocketbase:8090/
-      - PB_USER=
-      - PB_PASSWD=
-    networks:
-      - reverse-proxy
-      - back
+    pocketbase:
+        build:
+            context: ./pocketbase
+        container_name: 'bpc-ng-pocketbase'
+        restart: unless-stopped
+        volumes:
+            - ./data:/pb_data
+        # ports:
+        #     - '8090:8090'
+        networks:
+            - back
+            - reverse-proxy
+        healthcheck:
+            test: wget --no-verbose --tries=1 --spider http://bpc-ng-pocketbase:8090/api/health || exit 1
+            interval: 10s
+            timeout: 10s
+            retries: 3
+    sync:
+        build:
+            context: ./sync-service-sse
+        container_name: 'bpc-ng-sync'
+        restart: unless-stopped
+        environment:
+            - PB_URL=http://bpc-ng-pocketbase:8090/
+            - PB_USER=
+            - PB_PASSWD=
+            - CLIENT_SECRET=
+            - CLIENT_ID=
+        networks:
+            - reverse-proxy
+            - back
+    ical:
+        build:
+            context: ./ical-service
+        container_name: 'bpc-ng-ical'
+        restart: unless-stopped
+        environment:
+            - PB_URL=http://bpc-ng-pocketbase:8090/
+            - PB_USER=
+            - PB_PASSWD=
+        networks:
+            - reverse-proxy
+            - back
 networks:
-  back:
-    driver: bridge
+    back:
+        driver: bridge
+    reverse-proxy:
+        external:
+            name: reverse-proxy

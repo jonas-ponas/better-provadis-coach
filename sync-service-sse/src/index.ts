@@ -98,7 +98,8 @@ app.get('/health', async (req, resp, next) => {
 	} catch (e) {
 		logger.error('PocketBase Health-Check Failed!');
 		logger.error(e instanceof Error ? e.stack : e);
-		if (e instanceof ClientResponseError) logger.debug(JSON.stringify(e));
+		// if (e instanceof ClientResponseError) logger.debug(JSON.stringify(e));
+		if ((e as any).isAbort !== undefined) logger.debug(JSON.stringify(e)); // Check if Error Object has "isAbort" field -> Then it is probably a ClientResponseError
 		resp.status(500).send({ code: 500, message: "Can't reach Database (3)" });
 		return next();
 	}

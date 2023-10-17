@@ -80,6 +80,7 @@ export default ({ mode }) => {
 				plugins: [
 					// Enable rollup polyfills plugin
 					// used during production bundling
+					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
 					rollupNodePolyFill()
 				]

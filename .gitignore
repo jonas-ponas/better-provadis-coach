@@ -23,6 +23,7 @@ dist-ssr
 *.sln
 *.sw?
 .env
+!.env.example
 
 # Yarn
 .pnp.*

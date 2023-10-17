@@ -116,7 +116,7 @@ export async function syncFiles({
 		currentDirs = await client.collection(Collections.Directory).getFullList();
 		onProgress({ type: 'progress', stage: 'dump', progress: 3, total: 4 });
 	} catch (e: unknown) {
-		logger.error(`S5 Could not retrieve current Database State! Check Credentials! ${e}`);
+		logger.error(`Could not retrieve current Database State! Check Credentials! ${e}`);
 		if (e instanceof Error) logger.error(e.stack);
 		await endWithFailure('error while data dump');
 		return;
@@ -128,7 +128,8 @@ export async function syncFiles({
 		state = await client.collection('state').getFirstListItem(`user.id = "${userId}"`);
 		onProgress({ type: 'progress', stage: 'dump', progress: 4, total: 4 });
 	} catch (e: unknown) {
-		logger.error(e);
+		logger.error(`Could not retrieve user state! ${e}`);
+		if (e instanceof Error) logger.error(e.stack);
 		await endWithFailure('error while state retrieval');
 		return;
 	}
@@ -144,7 +145,8 @@ export async function syncFiles({
 		});
 		onProgress({ type: 'progress', stage: 'coach', message: 'coach logged in', progress: 1, total: 2 });
 	} catch (e: unknown) {
-		logger.error(e);
+		logger.error(`Could not init coach! ${e}`);
+		if (e instanceof Error) logger.error(e.stack);
 		await endWithFailure('error while coach init');
 		return;
 	}
@@ -157,7 +159,8 @@ export async function syncFiles({
 		logger.info('Got User-Name' + fullname);
 		onProgress({ type: 'progress', stage: 'coach', progress: 2, total: 2, fullname });
 	} catch (e: unknown) {
-		logger.error(e);
+		logger.error(`Could not get coach user info! ${e}`);
+		if (e instanceof Error) logger.error(e.stack);
 		await endWithFailure('error while getting user-info', {
 			coach
 		});
@@ -171,7 +174,8 @@ export async function syncFiles({
 		logger.info('Retrieved ' + directories.length + ' Directories');
 		onProgress({ type: 'progress', stage: 'directory-sync', message: 'got dirs', count: directories.length });
 	} catch (e: unknown) {
-		logger.error(e);
+		logger.error(`Could not retrieve coach directories! ${e}`);
+		if (e instanceof Error) logger.error(e.stack);
 		await endWithFailure('error while retrieving directory ', { coach });
 		return;
 	}
@@ -204,7 +208,8 @@ export async function syncFiles({
 		logger.info('Retrieved ' + files.length + ' Files');
 		onProgress({ type: 'progress', stage: 'file-sync', message: 'got files', count: files.length });
 	} catch (e: unknown) {
-		logger.error(e);
+		logger.error(`Could not retrieve coach files! ${e}`);
+		if (e instanceof Error) logger.error(e.stack);
 		await endWithFailure('error while retrieving files', { coach });
 		return;
 	}

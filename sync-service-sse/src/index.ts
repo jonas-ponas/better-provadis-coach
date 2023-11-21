@@ -55,6 +55,7 @@ app.get('/sync/:userId', async (req, resp, next) => {
 
 	const headers = {
 		'Content-Type': 'text/event-stream',
+		'X-Accel-Buffering': 'no',
 		Connection: 'keep-alive',
 		'Cache-Control': 'no-cache'
 	};

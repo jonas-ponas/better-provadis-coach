@@ -3,6 +3,6 @@ workflows:
 sync:
   - 'sync-service/**'
 ical:
-  - 'ical-service/**'
+  - 'go-ical-service/**'
 fronted:
   - 'frontend/**'

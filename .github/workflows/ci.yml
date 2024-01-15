@@ -54,7 +54,7 @@ jobs:
     uses: ./.github/workflows/build.yml
     with:
       docker-image-name: "jonas-ponas/bpc-ical-service"
-      context: ./ical-service/
+      context: ./go-ical-service/
     secrets: inherit
   deploy:
     name: "Deploy"

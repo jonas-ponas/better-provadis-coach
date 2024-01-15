@@ -33,3 +33,5 @@ dist-ssr
 !.yarn/sdks
 !.yarn/versions
 pocketbase_*_windows_*
+
+tmp

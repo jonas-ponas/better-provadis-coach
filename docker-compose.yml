@@ -33,9 +33,11 @@ services:
     container_name: "bpc-ical-service"
     restart: unless-stopped
     environment:
-      - PB_URL=http://pocketbase:8090/
+      - PB_HOST=http://pocketbase:8090
       - PB_USER=
-      - PB_PASSWD=
+      - PB_PASSWORD=
+      - BASENAME=/ical
+      - DEBUG=false
     networks:
       - reverse-proxy
       - back

@@ -22,8 +22,10 @@ type AdminToken struct {
 
 func GetAdminToken() (*AdminToken, error) {
 	jsonBody := fmt.Sprintf("{\"identity\":\"%s\",\"password\":\"%s\"}", POCKETBASE_USER, POCKETBASE_PASSWORD)
-	url := POCKETBASE_HOST + "/api/admins/auth-with-password"
-	request, err := http.NewRequest("POST", url, bytes.NewBuffer([]byte(jsonBody)))
+	requestUrl := POCKETBASE_HOST + "/api/admins/auth-with-password"
+
+	debug(fmt.Sprintf("%s %s %s", "POST", requestUrl, jsonBody))
+	request, err := http.NewRequest("POST", requestUrl, bytes.NewBuffer([]byte(jsonBody)))
 	request.Header.Add("Content-Type", "application/json")
 	if err != nil {
 		return nil, errors.Join(errors.New("getAdminToken failed: failed to create request"), err)
@@ -35,6 +37,11 @@ func GetAdminToken() (*AdminToken, error) {
 	}
 
 	if response.StatusCode != http.StatusOK {
+		if DEBUG {
+			defer response.Body.Close()
+			body, _ := io.ReadAll(response.Body)
+			debug(string(body))
+		}
 		return nil, fmt.Errorf("getAdminToken failed: got statuscode %d, expected %d", response.StatusCode, http.StatusOK)
 	}
 
@@ -69,8 +76,9 @@ type IcalRecord struct {
 }
 
 func GetIcalRecord(recordId string, token string) (*IcalRecord, error) {
-
-	request, err := http.NewRequest("GET", POCKETBASE_HOST+"/api/collections/icals/records/"+recordId, nil)
+	requestUrl := POCKETBASE_HOST + "/api/collections/icals/records/" + recordId
+	debug(fmt.Sprintf("%s %s", "GET", requestUrl))
+	request, err := http.NewRequest("GET", requestUrl, nil)
 	request.Header.Add("Content-Type", "application/json")
 	request.Header.Add("Authorization", "Bearer "+token)
 	if err != nil {
@@ -87,6 +95,11 @@ func GetIcalRecord(recordId string, token string) (*IcalRecord, error) {
 	}
 
 	if response.StatusCode != http.StatusOK {
+		if DEBUG {
+			defer response.Body.Close()
+			body, _ := io.ReadAll(response.Body)
+			debug(string(body))
+		}
 		return nil, fmt.Errorf("getIcalRecord failed: got status code %d, expected %d", response.StatusCode, http.StatusOK)
 	}
 
@@ -117,11 +130,12 @@ type FileRecord struct {
 
 func getFileList(filter string, token string) ([]FileRecord, error) {
 
-	endpoint, err := url.Parse(POCKETBASE_HOST + "/api/collections/file/records?filter=" + url.QueryEscape(filter))
+	requestUrl, err := url.Parse(POCKETBASE_HOST + "/api/collections/file/records?filter=" + url.QueryEscape(filter))
 	if err != nil {
 		return nil, errors.Join(errors.New("getFileList failed: could not create url"), err)
 	}
-	request, err := http.NewRequest("GET", endpoint.String(), nil)
+	debug(fmt.Sprintf("%s %s", "GET", requestUrl))
+	request, err := http.NewRequest("GET", requestUrl.String(), nil)
 	request.Header.Add("Content-Type", "application/json")
 	request.Header.Add("Authorization", "Bearer "+token)
 	if err != nil {
@@ -138,6 +152,11 @@ func getFileList(filter string, token string) ([]FileRecord, error) {
 	}
 
 	if response.StatusCode != http.StatusOK {
+		if DEBUG {
+			defer response.Body.Close()
+			body, _ := io.ReadAll(response.Body)
+			debug(string(body))
+		}
 		return nil, fmt.Errorf("getFileList failed: got status code %d, expected %d", response.StatusCode, http.StatusOK)
 
 	}
@@ -154,12 +173,18 @@ func getFileList(filter string, token string) ([]FileRecord, error) {
 
 // Taken From https://medium.com/@dhanushgopinath/concurrent-http-downloads-using-go-32fecfa1ed27
 func downloadFile(URL string) ([]byte, error) {
+	debug(fmt.Sprintf("GET %s", URL))
 	response, err := http.Get(URL)
 	if err != nil {
 		return nil, err
 	}
 	defer response.Body.Close()
 	if response.StatusCode != http.StatusOK {
+		if DEBUG {
+			defer response.Body.Close()
+			body, _ := io.ReadAll(response.Body)
+			debug(string(body))
+		}
 		return nil, fmt.Errorf("getFileList failed: got status code %d, expected %d", response.StatusCode, http.StatusOK)
 	}
 	var data bytes.Buffer

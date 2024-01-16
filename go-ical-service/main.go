@@ -17,6 +17,7 @@ var POCKETBASE_HOST = os.Getenv("PB_HOST")
 var POCKETBASE_USER = os.Getenv("PB_USER")
 var POCKETBASE_PASSWORD = os.Getenv("PB_PASSWORD")
 var BASENAME = os.Getenv("BASENAME")
+var DEBUG = strings.ToLower(os.Getenv("DEBUG")) == "true"
 
 const CONTENT_TYPE_ICS = "text/calendar"
 
@@ -32,8 +33,13 @@ var Cache map[string]CacheEntry = make(map[string]CacheEntry)
 var adminToken *AdminToken
 
 func main() {
+
+	if PORT == "" || POCKETBASE_HOST == "" || POCKETBASE_PASSWORD == "" || POCKETBASE_USER == "" {
+		log.Fatal("Some env variables are not set!")
+	}
+
 	http.HandleFunc(BASENAME+"/", func(w http.ResponseWriter, req *http.Request) {
-		log.Printf("HTTP: %s %s %s", req.RemoteAddr, req.Method, req.URL.Path)
+		log.Printf("[HTTP] %s %s %s", req.RemoteAddr, req.Method, req.URL.Path)
 
 		if !strings.HasPrefix(req.URL.Path, BASENAME+"/") {
 			http.Error(w, "404 not found.", http.StatusNotFound)
@@ -52,18 +58,22 @@ func main() {
 
 		// Check adminToken
 		if adminToken == nil || adminToken.expires.Before(time.Now()) {
+			debug("Refreshing adminToken")
 			token, err := GetAdminToken()
 			adminToken = token
 			if r := handleInternalError(err, w); r {
 				return
 			}
 		}
+		debug(fmt.Sprintf("admin-token: %s %s", adminToken.token, adminToken.expires.String()))
 
 		// check and get ical record
+		debug(fmt.Sprintf("ical-Id: %s", icalId))
 		icalRecord, err := GetIcalRecord(icalId, adminToken.token)
 		if r := handleInternalError(err, w); r {
 			return
 		}
+		debug(fmt.Sprintf("ical-record: %v", icalRecord))
 		if icalRecord == nil || (icalRecord != nil && len(icalRecord.FileList) == 0) {
 			http.Error(w, "404 not found.", http.StatusNotFound)
 			log.Printf("icalRecord not found: %s", icalId)
@@ -105,7 +115,7 @@ func main() {
 		fmt.Fprint(w, cal.Serialize())
 	})
 
-	log.Printf("Starting server at port %v\n\tPB_HOST: %s\n\tPB_USER: %s\n\tBASENAME: %s", PORT, POCKETBASE_HOST, POCKETBASE_USER, BASENAME)
+	log.Printf("Starting server at port %v\n\tPB_HOST: %s\n\tPB_USER: %s\n\tBASENAME: %s\n\tDEBUG: %t", PORT, POCKETBASE_HOST, POCKETBASE_USER, BASENAME, DEBUG)
 
 	if err := http.ListenAndServe(fmt.Sprintf(":%v", PORT), nil); err != nil {
 		log.Fatal(err)
@@ -135,11 +145,13 @@ func getCache(icalRecord *IcalRecord) *ics.Calendar {
 	}
 
 	if cacheEntry.recordHash != hash {
+		debug("Hash mismatch: " + cacheEntry.recordHash + " != " + hash)
 		delete(Cache, icalRecord.Id)
 		return nil
 	}
 
 	if cacheEntry.expires.Before(time.Now()) {
+		debug("Cache expired")
 		delete(Cache, icalRecord.Id)
 		return nil
 	}

@@ -59,3 +59,9 @@ func handleInternalError(err error, w http.ResponseWriter) bool {
 	}
 	return false
 }
+
+func debug(s string) {
+	if DEBUG {
+		log.Print("[DEBUG] " + s)
+	}
+}

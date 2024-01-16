@@ -26,28 +26,28 @@ func GetAdminToken() (*AdminToken, error) {
 	request, err := http.NewRequest("POST", POCKETBASE_HOST+"/api/admins/auth-with-password", bytes.NewBuffer([]byte(jsonBody)))
 	request.Header.Add("Content-Type", "application/json")
 	if err != nil {
-		return nil, err
+		return nil, errors.Join(errors.New("getAdminToken failed: failed to create request"), err)
 	}
 
 	response, err := httpClient.Do(request)
 	if err != nil {
-		return nil, err
+		return nil, errors.Join(errors.New("getAdminToken failed: http request failed"), err)
 	}
 
 	if response.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("got code %d", response.StatusCode)
+		return nil, fmt.Errorf("getAdminToken failed: got statuscode %d, expected %d", response.StatusCode, http.StatusOK)
 	}
 
 	var jsonResponse map[string]any
 	defer response.Body.Close()
 	if err := json.NewDecoder(response.Body).Decode(&jsonResponse); err != nil {
-		return nil, err
+		return nil, errors.Join(errors.New("getAdminToken failed: failed to parse json"), err)
 	}
 	if tokenStr, ok := jsonResponse["token"]; ok {
 		parser := jwt.NewParser(jwt.WithExpirationRequired())
 		token, _, err := parser.ParseUnverified(tokenStr.(string), jwt.MapClaims{})
 		if err != nil {
-			return nil, err
+			return nil, errors.Join(errors.New("getAdminToken failed: failed to parse jwt"), err)
 		}
 		expiration, _ := token.Claims.GetExpirationTime()
 		return &AdminToken{
@@ -55,7 +55,7 @@ func GetAdminToken() (*AdminToken, error) {
 			expiration.Time,
 		}, nil
 	}
-	return nil, fmt.Errorf("could not parse response")
+	return nil, fmt.Errorf("getAdminToken failed: failed to parse response")
 }
 
 type IcalRecord struct {
@@ -74,12 +74,12 @@ func GetIcalRecord(recordId string, token string) (*IcalRecord, error) {
 	request.Header.Add("Content-Type", "application/json")
 	request.Header.Add("Authorization", "Bearer "+token)
 	if err != nil {
-		return nil, err
+		return nil, errors.Join(errors.New("getIcalRecord failed: could not create request"), err)
 	}
 
 	response, err := httpClient.Do(request)
 	if err != nil {
-		return nil, err
+		return nil, errors.Join(errors.New("getIcalRecord failed: http request failed"), err)
 	}
 
 	if response.StatusCode == http.StatusNotFound {
@@ -87,13 +87,14 @@ func GetIcalRecord(recordId string, token string) (*IcalRecord, error) {
 	}
 
 	if response.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("got code %d", response.StatusCode)
+		return nil, fmt.Errorf("getIcalRecord failed: got status code %d, expected %d", response.StatusCode, http.StatusOK)
 	}
 
 	var icalRecord IcalRecord
 	defer response.Body.Close()
 	if err := json.NewDecoder(response.Body).Decode(&icalRecord); err != nil {
-		return nil, err
+		return nil, errors.Join(errors.New("getIcalRecord failed: could not parse response json"), err)
+
 	}
 	return &icalRecord, nil
 }
@@ -118,18 +119,18 @@ func getFileList(filter string, token string) ([]FileRecord, error) {
 
 	endpoint, err := url.Parse(POCKETBASE_HOST + "/api/collections/file/records?filter=" + url.QueryEscape(filter))
 	if err != nil {
-		return nil, err
+		return nil, errors.Join(errors.New("getFileList failed: could not create url"), err)
 	}
 	request, err := http.NewRequest("GET", endpoint.String(), nil)
 	request.Header.Add("Content-Type", "application/json")
 	request.Header.Add("Authorization", "Bearer "+token)
 	if err != nil {
-		return nil, err
+		return nil, errors.Join(errors.New("getFileList failed: could not create request"), err)
 	}
 
 	response, err := httpClient.Do(request)
 	if err != nil {
-		return nil, err
+		return nil, errors.Join(errors.New("getFileList failed: http request failed"), err)
 	}
 
 	if response.StatusCode == http.StatusNotFound {
@@ -137,7 +138,8 @@ func getFileList(filter string, token string) ([]FileRecord, error) {
 	}
 
 	if response.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("got code %d", response.StatusCode)
+		return nil, fmt.Errorf("getFileList failed: got status code %d, expected %d", response.StatusCode, http.StatusOK)
+
 	}
 
 	var result struct {
@@ -145,7 +147,7 @@ func getFileList(filter string, token string) ([]FileRecord, error) {
 	}
 	defer response.Body.Close()
 	if err := json.NewDecoder(response.Body).Decode(&result); err != nil {
-		return nil, err
+		return nil, errors.Join(errors.New("getFileList failed: could not parse response json"), err)
 	}
 	return result.Files, nil
 }
@@ -158,7 +160,7 @@ func downloadFile(URL string) ([]byte, error) {
 	}
 	defer response.Body.Close()
 	if response.StatusCode != http.StatusOK {
-		return nil, errors.New(response.Status)
+		return nil, fmt.Errorf("getFileList failed: got status code %d, expected %d", response.StatusCode, http.StatusOK)
 	}
 	var data bytes.Buffer
 	_, err = io.Copy(&data, response.Body)

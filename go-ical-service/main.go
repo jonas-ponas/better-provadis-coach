@@ -29,10 +29,7 @@ type CacheEntry struct {
 
 var Cache map[string]CacheEntry = make(map[string]CacheEntry)
 
-var adminToken struct {
-	token   string
-	expires time.Time
-}
+var adminToken *AdminToken
 
 func main() {
 	http.HandleFunc(BASENAME+"/", func(w http.ResponseWriter, req *http.Request) {
@@ -52,9 +49,9 @@ func main() {
 		icalId = strings.TrimSuffix(icalId, ".ics") // Remove ".ics" if there
 
 		// Check adminToken
-		if adminToken.expires.Before(time.Now()) {
+		if adminToken == nil || adminToken.expires.Before(time.Now()) {
 			token, err := GetAdminToken()
-			adminToken = *token
+			adminToken = token
 			if r := handleInternalError(err, w); r {
 				return
 			}

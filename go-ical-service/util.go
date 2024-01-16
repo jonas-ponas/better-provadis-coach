@@ -54,7 +54,7 @@ func buildUrls(files []FileRecord) []string {
 func handleInternalError(err error, w http.ResponseWriter) bool {
 	if err != nil {
 		http.Error(w, "500 Internal server error.", http.StatusInternalServerError)
-		log.Fatal(fmt.Errorf("internal server error!\n%w", err))
+		log.Print(fmt.Errorf("internal server error: %w", err))
 		return true
 	}
 	return false

@@ -38,11 +38,13 @@ func main() {
 	http.HandleFunc(BASENAME+"/", func(w http.ResponseWriter, req *http.Request) {
 		if !strings.HasPrefix(req.URL.Path, BASENAME+"/") {
 			http.Error(w, "404 not found.", http.StatusNotFound)
+			log.Printf("path not found: %s", req.URL.Path)
 			return
 		}
 
 		if req.Method != "GET" {
 			http.Error(w, "405 method is not supported.", http.StatusMethodNotAllowed)
+			log.Printf("method not supported: %s", req.Method)
 			return
 		}
 
@@ -65,13 +67,15 @@ func main() {
 		}
 		if icalRecord == nil || (icalRecord != nil && len(icalRecord.FileList) == 0) {
 			http.Error(w, "404 not found.", http.StatusNotFound)
+			log.Printf("icalRecord not found: %s", icalId)
 			return
 		}
 
 		// Check Cache
 		cachedCal := getCache(icalRecord)
 		if cachedCal != nil {
-			w.Header().Add("Content-Type", "text/calendar")
+			log.Printf("found calendar in cache: %s", icalRecord.Id)
+			w.Header().Add("Content-Type", CONTENT_TYPE_ICS)
 			fmt.Fprint(w, cachedCal.Serialize())
 			return
 		}
@@ -81,12 +85,14 @@ func main() {
 		if r := handleInternalError(err, w); r {
 			return
 		}
+
 		// get file urls and download
 		urls := buildUrls(fileList)
 		files, err := downloadMultipleFiles(urls)
 		if r := handleInternalError(err, w); r {
 			return
 		}
+
 		// Parse
 		cal, err := ParseMultipleHtml(files)
 		if r := handleInternalError(err, w); r {
@@ -95,11 +101,12 @@ func main() {
 
 		insertCache(icalRecord, cal)
 
+		log.Printf("parsed calendar: %s", icalRecord.Id)
 		w.Header().Add("Content-Type", CONTENT_TYPE_ICS)
 		fmt.Fprint(w, cal.Serialize())
 	})
 
-	log.Printf("Starting server at port %v\n", PORT)
+	log.Printf("Starting server at port %v\n\tPB_HOST: %s\n\tPB_USER: %s\n\tBASENAME: %s", PORT, POCKETBASE_HOST, POCKETBASE_USER, BASENAME)
 
 	if err := http.ListenAndServe(fmt.Sprintf(":%v", PORT), nil); err != nil {
 		log.Fatal(err)

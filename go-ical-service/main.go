@@ -33,6 +33,8 @@ var adminToken *AdminToken
 
 func main() {
 	http.HandleFunc(BASENAME+"/", func(w http.ResponseWriter, req *http.Request) {
+		log.Printf("HTTP: %s %s %s", req.RemoteAddr, req.Method, req.URL.Path)
+
 		if !strings.HasPrefix(req.URL.Path, BASENAME+"/") {
 			http.Error(w, "404 not found.", http.StatusNotFound)
 			log.Printf("path not found: %s", req.URL.Path)

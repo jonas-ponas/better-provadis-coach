@@ -22,8 +22,8 @@ type AdminToken struct {
 
 func GetAdminToken() (*AdminToken, error) {
 	jsonBody := fmt.Sprintf("{\"identity\":\"%s\",\"password\":\"%s\"}", POCKETBASE_USER, POCKETBASE_PASSWORD)
-
-	request, err := http.NewRequest("POST", POCKETBASE_HOST+"/api/admins/auth-with-password", bytes.NewBuffer([]byte(jsonBody)))
+	url := POCKETBASE_HOST + "/api/admins/auth-with-password"
+	request, err := http.NewRequest("POST", url, bytes.NewBuffer([]byte(jsonBody)))
 	request.Header.Add("Content-Type", "application/json")
 	if err != nil {
 		return nil, errors.Join(errors.New("getAdminToken failed: failed to create request"), err)

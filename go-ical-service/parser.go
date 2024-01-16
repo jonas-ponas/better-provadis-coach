@@ -12,10 +12,37 @@ import (
 	"golang.org/x/net/html"
 )
 
-func ParseHtmlToEvents(reader io.Reader) []*ics.VEvent {
+func ParseMultipleHtml(files [][]byte) (*ics.Calendar, error) {
+	// Parse Html to Ical Files
+	done := make(chan []*ics.VEvent, len(files))
+	errch := make(chan error, len(files))
+	for _, file := range files {
+		go func(file []byte) {
+			events, err := ParseHtmlToEvents(strings.NewReader(string(file)))
+			if err != nil {
+				errch <- err
+				done <- []*ics.VEvent{}
+				return
+			}
+			errch <- nil
+			done <- events
+		}(file)
+	}
+	events := make([]*ics.VEvent, 0)
+	var errs error = nil
+	for i := 0; i < len(files); i++ {
+		if err := <-errch; err != nil {
+			errs = errors.Join(errs, err)
+		}
+		events = append(events, <-done...)
+	}
+	return CalendarFromEvents(events), errs
+}
+
+func ParseHtmlToEvents(reader io.Reader) ([]*ics.VEvent, error) {
 	htmlDoc, err := html.Parse(reader)
 	if err != nil {
-		panic("AA")
+		return nil, err
 	}
 	events := make([]*ics.VEvent, 0)
 	tables := findTables(htmlDoc)
@@ -30,17 +57,20 @@ func ParseHtmlToEvents(reader io.Reader) []*ics.VEvent {
 		}
 	}
 
-	return events
+	return events, nil
 }
 
-func ParseHtmlToIcal(reader io.Reader) *ics.Calendar {
+func ParseHtmlToIcal(reader io.Reader) (*ics.Calendar, error) {
 	cal := ics.NewCalendarFor("Better Provadis Coach")
 	cal.SetTimezoneId("Europe/Berlin")
-	events := ParseHtmlToEvents(reader)
+	events, err := ParseHtmlToEvents(reader)
+	if err != nil {
+		return nil, err
+	}
 	for _, event := range events {
 		cal.AddVEvent(event)
 	}
-	return cal
+	return cal, nil
 }
 
 func CalendarFromEvents(events []*ics.VEvent) *ics.Calendar {
@@ -157,13 +187,13 @@ func toUtf8(iso8859_1_buf []byte) string {
 }
 
 type EventData struct {
-	Id      string   `json:"id"`
-	Name    string   `json:"name"`
-	Date    string   `json:"date"`
-	Time    string   `json:"time"`
-	Type    string   `json:"type"` // "Vorlesung" or "E-Learning"
-	Teacher []string `json:"teacher"`
-	Url     []string `json:"url"`
+	Id      string
+	Name    string
+	Date    string
+	Time    string
+	Type    string // "Vorlesung" or "E-Learning"
+	Teacher []string
+	Url     []string
 }
 
 func (ed *EventData) toIcalEvent() (*ics.VEvent, error) {

@@ -18,6 +18,8 @@ var POCKETBASE_USER = os.Getenv("PB_USER")
 var POCKETBASE_PASSWORD = os.Getenv("PB_PASSWORD")
 var BASENAME = os.Getenv("BASENAME")
 
+const CONTENT_TYPE_ICS = "text/calendar"
+
 type CacheEntry struct {
 	key        string
 	expires    time.Time
@@ -34,7 +36,6 @@ var adminToken struct {
 
 func main() {
 	http.HandleFunc(BASENAME+"/", func(w http.ResponseWriter, req *http.Request) {
-		log.Println(req.URL.Path)
 		if !strings.HasPrefix(req.URL.Path, BASENAME+"/") {
 			http.Error(w, "404 not found.", http.StatusNotFound)
 			return
@@ -52,17 +53,14 @@ func main() {
 		if adminToken.expires.Before(time.Now()) {
 			token, err := GetAdminToken()
 			adminToken = *token
-			if err != nil {
-				http.Error(w, "500 internal server error.", http.StatusInternalServerError)
+			if r := handleInternalError(err, w); r {
 				return
 			}
-
 		}
 
 		// check and get ical record
 		icalRecord, err := GetIcalRecord(icalId, adminToken.token)
-		if err != nil {
-			http.Error(w, "500 internal server error.", http.StatusInternalServerError)
+		if r := handleInternalError(err, w); r {
 			return
 		}
 		if icalRecord == nil || (icalRecord != nil && len(icalRecord.FileList) == 0) {
@@ -73,7 +71,6 @@ func main() {
 		// Check Cache
 		cachedCal := getCache(icalRecord)
 		if cachedCal != nil {
-			fmt.Println("Cache Hit")
 			w.Header().Add("Content-Type", "text/calendar")
 			fmt.Fprint(w, cachedCal.Serialize())
 			return
@@ -81,38 +78,24 @@ func main() {
 
 		// build filter and get file list
 		fileList, err := getFileList(buildFilter(icalRecord.FileList), adminToken.token)
-		if err != nil {
-			http.Error(w, "500 internal server error.", http.StatusInternalServerError)
-			log.Fatal(err)
+		if r := handleInternalError(err, w); r {
 			return
 		}
-
 		// get file urls and download
 		urls := buildUrls(fileList)
 		files, err := downloadMultipleFiles(urls)
-		if err != nil {
-			http.Error(w, "500 internal server error.", http.StatusInternalServerError)
-			log.Fatal(err)
+		if r := handleInternalError(err, w); r {
+			return
+		}
+		// Parse
+		cal, err := ParseMultipleHtml(files)
+		if r := handleInternalError(err, w); r {
 			return
 		}
 
-		// Parse Html to Ical Files
-		done := make(chan []*ics.VEvent, len(files))
-		for _, file := range files {
-			go func(file []byte) {
-				events := ParseHtmlToEvents(strings.NewReader(string(file)))
-				done <- events
-			}(file)
-		}
-		events := make([]*ics.VEvent, 0)
-		for i := 0; i < len(urls); i++ {
-			events = append(events, (<-done)...)
-		}
-		cal := CalendarFromEvents(events)
-
 		insertCache(icalRecord, cal)
 
-		w.Header().Add("Content-Type", "text/calendar")
+		w.Header().Add("Content-Type", CONTENT_TYPE_ICS)
 		fmt.Fprint(w, cal.Serialize())
 	})
 

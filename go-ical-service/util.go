@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"net/http"
 	"sort"
 	"strings"
 	"time"
@@ -47,4 +49,13 @@ func buildUrls(files []FileRecord) []string {
 		urls = append(urls, value)
 	}
 	return urls
+}
+
+func handleInternalError(err error, w http.ResponseWriter) bool {
+	if err != nil {
+		http.Error(w, "500 Internal server error.", http.StatusInternalServerError)
+		log.Fatal(fmt.Errorf("internal server error!\n%w", err))
+		return true
+	}
+	return false
 }

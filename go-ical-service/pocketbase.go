@@ -9,16 +9,18 @@ import (
 	"net/http"
 	"net/url"
 	"time"
+
+	"github.com/golang-jwt/jwt/v5"
 )
 
 var httpClient = &http.Client{}
 
-func GetAdminToken() (*struct {
+type AdminToken struct {
 	token   string
 	expires time.Time
-}, error) {
-	// /api/admins/auth-with-password
+}
 
+func GetAdminToken() (*AdminToken, error) {
 	jsonBody := fmt.Sprintf("{\"identity\":\"%s\",\"password\":\"%s\"}", POCKETBASE_USER, POCKETBASE_PASSWORD)
 
 	request, err := http.NewRequest("POST", POCKETBASE_HOST+"/api/admins/auth-with-password", bytes.NewBuffer([]byte(jsonBody)))
@@ -41,13 +43,16 @@ func GetAdminToken() (*struct {
 	if err := json.NewDecoder(response.Body).Decode(&jsonResponse); err != nil {
 		return nil, err
 	}
-	if token, ok := jsonResponse["token"]; ok {
-		return &struct {
-			token   string
-			expires time.Time
-		}{
-			token.(string),
-			time.Now().Add(1 * time.Hour),
+	if tokenStr, ok := jsonResponse["token"]; ok {
+		parser := jwt.NewParser(jwt.WithExpirationRequired())
+		token, _, err := parser.ParseUnverified(tokenStr.(string), jwt.MapClaims{})
+		if err != nil {
+			return nil, err
+		}
+		expiration, _ := token.Claims.GetExpirationTime()
+		return &AdminToken{
+			tokenStr.(string),
+			expiration.Time,
 		}, nil
 	}
 	return nil, fmt.Errorf("could not parse response")
